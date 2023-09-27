@@ -27,13 +27,10 @@ class GameLogic extends Component{
       promotion: "q"
     })
 
-    if(current_move === null){
-      return;
-    }
-
-    this.setState(({ history, pieceSquare}) =>({
+    if (current_move === null) return;
+    this.setState(({ history }) => ({
       fen: this.game.fen(),
-      history: this.game.history({ verbose: true}),
+      history: this.game.history({ verbose: true })
     }));
     
   };
