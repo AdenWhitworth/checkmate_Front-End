@@ -1,0 +1,24 @@
+<svg width="44" height="32" viewBox="0 0 44 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1 31H28V28H1V31Z" fill="white" stroke="#AAAAAA" stroke-width="1.5" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M4 28V24H25V28H4Z" fill="white" stroke="#AAAAAA" stroke-width="1.5" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M3 6V1H7V3H12V1H17V3H22V1H26V6" fill="white"/>
+<path d="M3 6V1H7V3H12V1H17V3H22V1H26V6" stroke="#AAAAAA" stroke-width="1.5" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M26 6L23 9H6L3 6" fill="white"/>
+<path d="M26 6L23 9H6L3 6" stroke="#AAAAAA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M23 9V21.5H6V9" fill="white"/>
+<path d="M23 9V21.5H6V9" stroke="#AAAAAA" stroke-width="1.5"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M23 21.5L24.5 24H4.5L6 21.5" fill="white"/>
+<path d="M23 21.5L24.5 24H4.5L6 21.5" stroke="#AAAAAA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3 6H26" stroke="#AAAAAA" stroke-width="1.5" stroke-linecap="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M16 31H43V28H16V31Z" fill="white" stroke="#AAAAAA" stroke-width="1.5" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M19 28V24H40V28H19Z" fill="white" stroke="#AAAAAA" stroke-width="1.5" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M18 6V1H22V3H27V1H32V3H37V1H41V6" fill="white"/>
+<path d="M18 6V1H22V3H27V1H32V3H37V1H41V6" stroke="#AAAAAA" stroke-width="1.5" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M41 6L38 9H21L18 6" fill="white"/>
+<path d="M41 6L38 9H21L18 6" stroke="#AAAAAA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M38 9V21.5H21V9" fill="white"/>
+<path d="M38 9V21.5H21V9" stroke="#AAAAAA" stroke-width="1.5"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M38 21.5L39.5 24H19.5L21 21.5" fill="white"/>
+<path d="M38 21.5L39.5 24H19.5L21 21.5" stroke="#AAAAAA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M18 6H41" stroke="#AAAAAA" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
