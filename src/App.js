@@ -4,6 +4,8 @@ import {useState, useEffect} from "react";
 import king_logo_white from "./Images/King Logo White.svg";
 import bell from "./Images/Bell.svg";
 import flag from "./Images/Flag.svg";
+import bars from "./Images/bars-solid.svg";
+import close_white from "./Images/close white.svg";
 
 import SignUpModal from "./components/SignUpModal";
 import LogInModal from "./components/LogInModal";
@@ -25,7 +27,6 @@ import socket from "./socket";
 
 const FillButton = styled(Button)(({ theme }) => ({
     color: '#000000',
-    width: '15vw',
     backgroundColor: '#FFCD05',
     borderColor: '#FFCD05',
     borderRadius: '26px',
@@ -37,7 +38,6 @@ const FillButton = styled(Button)(({ theme }) => ({
 
 const HollowButton = styled(Button)(({ theme }) => ({
     color: '#FFCD05',
-    width: '15vw',
     borderColor: '#FFCD05',
     borderWidth: '4px',
     borderRadius: '26px',
@@ -65,6 +65,7 @@ export default function App() {
   const [LogOutCSS, setLogOutCSS] = useState('hideNavButton');
   const [BadgeCSS, setBadgeCSS] = useState('notification showNavButton');
   const [FlagCSS, setFlagCSS] = useState('end-game-flag hideNavButton');
+  const [MobileCSS, setMobileCSS] = useState('nav-links nav-hide');
 
   const [leaders, setLeaders] = useState([]);
 
@@ -270,6 +271,14 @@ export default function App() {
     handleSoccetUser();
   }, [username]);
 
+  const showMenu = () => {
+    setMobileCSS('nav-links nav-show');
+  }
+
+  const closeMenu = () => {
+    setMobileCSS('nav-links nav-hide');
+  }
+
   /*
     <body>
       
@@ -343,15 +352,19 @@ export default function App() {
 
           </div>
 
-          <ul class="nav-links">
+          <ul class={MobileCSS}>
             <div class="menu">
-              <li class={SignUpCSS}><Box display="flex" sx={{ height: '52px'}}><FillButton onClick={() => {setSignUpOpen(true)}} variant="outlined">Sign Up</FillButton></Box></li>
-              <li class={LogInCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton onClick={() => {setLogInOpen(true)}} variant="outlined">Log In</HollowButton></Box></li>
-              <li class={LogOutCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton onClick={handleLogout} variant="outlined">Log Out</HollowButton></Box></li>
+              <li><img class="nav-close" onClick={closeMenu} src={close_white}></img></li>
+              <li class={SignUpCSS}><Box display="flex" sx={{ height: '52px'}}><FillButton sx={{width:{xs: '85%',md: '15vw'}}} onClick={() => {setSignUpOpen(true)}} variant="outlined">Sign Up</FillButton></Box></li>
+              <li class={LogInCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton sx={{width:{xs: '85%',md: '15vw'}}} onClick={() => {setLogInOpen(true)}} variant="outlined">Log In</HollowButton></Box></li>
+              <li class={LogOutCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton sx={{width:{xs: '85%',md: '15vw'}}} onClick={handleLogout} variant="outlined">Log Out</HollowButton></Box></li>
               <li><Badge onClick={handleBadge} badgeContent={inviteBadge} color="primary"><img class={BadgeCSS} src={bell}></img></Badge></li>
               <li><img onClick={handleFlag} class={FlagCSS} src={flag}></img></li>
             </div>
           </ul>
+
+          <img class="nav-bars" onClick={showMenu} src={bars}></img>
+
         </nav>
       </section>
       
