@@ -4,10 +4,21 @@ html,body {
     padding: 0;
     overflow-y: hidden;
     background: #212121;
+    width: 100%;
+    height: 100%;
 }
 
 ::-webkit-scrollbar { background: #181818; }
 ::-webkit-scrollbar-thumb { background-color: #3D3D3D; -webkit-border-radius: 1ex; }
+
+.Body{
+    height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    position: absolute;
+}
 
 .header{ 
     height: 12vh;
@@ -79,7 +90,7 @@ li {
 
 .welcome{
     grid-area: welcome;
-    padding-top: 4vh;
+    /*padding-top: 4vh;*/
 }
 
 .leaderboard{
@@ -97,19 +108,25 @@ li {
 
 .board-logo{
    width: 35%;
+   top:26vh;
+   margin-top: 0;
    padding-top: 0;
+   height: 62vh;
+   object-fit: fill;
    position: absolute;
 }
 
 .pawn-logo{
     height: 20vh;
-    padding-top: 8vh;
+    /*padding-top: 8vh;*/
 }
 
 .play{
     position: relative;
     text-align: center;
     align-items: center;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .pawn-btn-fill{
@@ -231,28 +248,37 @@ li {
 
 .dashboard{
     width: 100%;
-    height: auto;
+    height: 100%;
 }
 
 .dashboard-content{
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    /*display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 10%;
     grid-template-areas: 'activeGame infoCard';
-    padding-left: 10%;
-    width: 80%;
-    height: 100%;
-    padding-top: 5%;
+    */
+    margin-top: 4%;
+    width: 100%;
+    height: 74%;
+    display: flex;
+    flex-direction: row;
 }
+
 
 .active-game{
     grid-area: activeGame;
+    display: flex;
+    align-items: center;
+    margin-left: 10vw;
 }
 
 .info-card{
     grid-area: infoCard;
-    background-color: #181818;
+    background-color: hsl(0, 0%, 9%);
     border-radius: 20px;
+    height: 100%;
+    width: 30vw;
+    margin-left: 10vw;
 }
 
 .player-selection{
@@ -261,6 +287,21 @@ li {
     grid-template-areas: 'playersOption inviteOption';
     width: 100%;
     height: 20%;
+}
+
+.board{
+    width: 40vw;
+    /*margin-left: 10vw;*/
+
+    margin: auto;
+    
+
+    /*
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    */
+   
 }
 
 .info-selection{
@@ -405,6 +446,10 @@ li {
 .game-card{
     background-color: #181818;
     border-radius: 20px;
+
+    height: 100%;
+    width: 30vw;
+    margin-left: 10vw;
 }
 
 .game-info{

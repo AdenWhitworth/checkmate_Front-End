@@ -117,8 +117,10 @@ export default function ActiveGame({forfeitGame, gameplayers, room, orientation,
         <div class="active-game">
             
             <div className="board" style={{
-            
-            width: '100%',
+              
+              /*
+              width: '100%',
+              */
             
             }}>
             <Chessboard

@@ -270,7 +270,7 @@ export default function App() {
     handleSoccetUser();
   }, [username]);
 
-  return (
+  /*
     <body>
       
       <section class="header">
@@ -329,5 +329,67 @@ export default function App() {
       {alert ? <AlertDialog severity={alertSeverity} contentText={alertContent} handleClose={() => {setAlert(false)}}></AlertDialog> : <></>}
       
     </body>
+    */
+
+  return (
+    
+    <div class="Body">
+      
+      <section class="header">
+        <nav>
+          <div class="nav-image">
+            
+            <img class="king-logo" onClick={handleHome} src={king_logo_white}></img>
+
+          </div>
+
+          <ul class="nav-links">
+            <div class="menu">
+              <li class={SignUpCSS}><Box display="flex" sx={{ height: '52px'}}><FillButton onClick={() => {setSignUpOpen(true)}} variant="outlined">Sign Up</FillButton></Box></li>
+              <li class={LogInCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton onClick={() => {setLogInOpen(true)}} variant="outlined">Log In</HollowButton></Box></li>
+              <li class={LogOutCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton onClick={handleLogout} variant="outlined">Log Out</HollowButton></Box></li>
+              <li><Badge onClick={handleBadge} badgeContent={inviteBadge} color="primary"><img class={BadgeCSS} src={bell}></img></Badge></li>
+              <li><img onClick={handleFlag} class={FlagCSS} src={flag}></img></li>
+            </div>
+          </ul>
+        </nav>
+      </section>
+      
+      {playFrields? <DashboardCard SetPlayFrields={SetPlayFrields} setTriggerHome={setTriggerHome} triggerHome={triggerHome} room={room} setRoom={setRoom} setBadgeCSS={setBadgeCSS} setFlagCSS={setFlagCSS} forfeitOpen={forfeitOpen} setForfeitOpen={setForfeitOpen} inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} username={username} userId={userId} playerId={playerId} invites={invites} win={win} loss={loss}></DashboardCard> : <HomeCard handlePlayFriends={() => {
+          if (activeUser == false) {
+            //prompt to sign in
+            setLogInOpen(true);
+          } else {
+            //send to dashboard
+            SetPlayFrields(true);
+            fetchInvites();
+          }
+        }} leaders={leaders}></HomeCard>}
+      
+      <SignUpModal 
+        open={signUpOpen}
+        handleSignUp={() => {
+          setSignUpOpen(false);
+        }}
+        openLogIn={() => {
+          setSignUpOpen(false);
+          setLogInOpen(true);
+        }}
+      ></SignUpModal>
+
+      <LogInModal 
+        open={loginOpen}
+        handleLogIn={() => {
+          setLogInOpen(false);
+        }}
+        openSignUp={() => {
+          setLogInOpen(false);
+          setSignUpOpen(true);
+        }}
+      ></LogInModal>
+
+      {alert ? <AlertDialog severity={alertSeverity} contentText={alertContent} handleClose={() => {setAlert(false)}}></AlertDialog> : <></>}
+      
+    </div>
   );
 }
