@@ -31,20 +31,20 @@ export default function InvitesItem({count ,item, index, playerId, userId, usern
 
     const handleSoccetJoinRoom = () => {
         if (!item.item.requestRoom) return;
-        socket.emit("joinRoom", { roomId: item.item.requestRoom }, (response) => {
-          if (response.error) return console.log(response.error);
-          console.log("response:", response);
-          setRoom(response?.roomId);
-          setGamePlayers(response?.players);
-          setOrientation("black");
+            socket.emit("joinRoom", { roomId: item.item.requestRoom }, (response) => {
+            if (response.error) return console.log(response.error);
+            console.log("response:", response);
+            setRoom(response?.roomId);
+            setGamePlayers(response?.players);
+            setOrientation("black");
 
-          const userCollection = collection(db, 'users');
-          const DocRef = doc(userCollection, userId);
-          const inviteCollection = collection(DocRef,'invites');
-          const DocRef2 = doc(inviteCollection, item.id);
-          deleteDoc(DocRef2);
-        });
-      }
+            const userCollection = collection(db, 'users');
+            const DocRef = doc(userCollection, userId);
+            const inviteCollection = collection(DocRef,'invites');
+            const DocRef2 = doc(inviteCollection, item.id);
+            deleteDoc(DocRef2);
+            });
+        }
     
     useEffect(() =>{
 

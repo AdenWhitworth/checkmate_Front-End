@@ -14,7 +14,7 @@ export default function PlayersItem({count ,item, index, playerId, userId, usern
     const [colorStyle, setColorStyle] = useState("");
     const [startRoom, setStartRoom] = useState("");
 
-    const {setOpponentUserName, setOpponentUserId, setOpponentPlayerId, setOpponentWin, setOpponentLoss} = useContext(GameContext);
+    const {setOpponentInviteId, setOpponentUserName, setOpponentUserId, setOpponentPlayerId, setOpponentWin, setOpponentLoss} = useContext(GameContext);
     
     const handleSoccetCreateRoom = (e) => {
         e.preventDefault();  
@@ -30,7 +30,7 @@ export default function PlayersItem({count ,item, index, playerId, userId, usern
         //e.preventDefault();  
        
         try {
-
+            console.log(item.item);
             const userCollection = collection(db, 'users');
 
             const DocRef2 = doc(userCollection, item.item.userID);
@@ -43,10 +43,10 @@ export default function PlayersItem({count ,item, index, playerId, userId, usern
                 console.log("No such document!");
             }
 
-            setOpponentUserName(item.item.username);
-            setOpponentUserId(item.item.uid);
-            setOpponentPlayerId(item.item.playerID);
-            console.log("wins", item.item.win, "losses", item.item.loss);
+            setOpponentUserName(docSnap.data().username);
+            setOpponentUserId(item.item.userID);
+            setOpponentPlayerId(docSnap.data().playerID);
+            console.log("wins", docSnap.data().win, "losses", docSnap.data().loss);
             setOpponentWin(docSnap.data().win);
             setOpponentLoss(docSnap.data().loss);
             
@@ -65,6 +65,7 @@ export default function PlayersItem({count ,item, index, playerId, userId, usern
             });
             setRoom(startRoom);
             console.log("Document written with ID: ", docRef.id);
+            setOpponentInviteId(docRef.id);
 
           } catch (e) {
             console.error("Error adding document: ", e);

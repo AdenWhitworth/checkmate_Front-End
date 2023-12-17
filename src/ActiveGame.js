@@ -5,14 +5,18 @@ import socket from "./socket";
 import CustomDialog from "./components/CustomDialog";
 import {GameContext} from "./components/DashboardCard";
 
-export default function ActiveGame({forfeitGame, gameplayers, room, orientation, cleanup, setBadgeCSS, setFlagCSS, checkSendHome, opponentUserName}) {
+import { db } from './firebase';
+import { collection, doc, increment, updateDoc} from "firebase/firestore";
+
+export default function ActiveGame({forfeitGame, gameplayers, room, orientation, cleanup, setBadgeCSS, setFlagCSS, checkSendHome, opponentUserName, userId, win, loss}) {
   const chess = useMemo(() => new Chess(), []);
   const [fen, setFen] = useState(chess.fen());
   
   const [over, setOver] = useState("");
   const [overDialog, setOverDialog] = useState(false);
 
-  const {setPlayerTurn, setHistory} = useContext(GameContext);
+  const {opponentUserId, opponentWin, opponentLoss, setPlayerTurn, setHistory} = useContext(GameContext);
+  
 
   const makeAMove = useCallback(
     (move) => {
@@ -112,6 +116,63 @@ export default function ActiveGame({forfeitGame, gameplayers, room, orientation,
         });
     }, [room, cleanup]);
 
+    const handleWinLossChange = async () => {
+
+      console.log(opponentUserId,opponentWin,opponentLoss);
+      
+      const userCollection = collection(db, 'users');
+      const DocRef = doc(userCollection, userId);
+      const DocRefOpponent = doc(userCollection, opponentUserId);
+
+      const rank = win * win / (win + loss);
+      const rankOpponent = opponentWin * opponentWin / (opponentWin + opponentLoss);
+
+      var winner = "";
+
+      if (over == "Checkmate! black wins!"){
+        if (orientation[0] == "white"){
+          winner = "player";
+        }else {
+          winner = "opponent";
+        }
+      } else if (over == "Checkmate! white wins!") {
+        if (orientation[0] == "white"){
+          winner = "player";
+        }else {
+          winner = "opponent";
+        }
+      } else if (over == opponentUserName + " has Forfeited"){
+        if (orientation[0] == "white"){
+          winner = "player";
+        }else {
+          winner = "opponent";
+        }
+      }
+
+      if (winner = "player"){
+        await updateDoc(DocRef, {
+          win: increment(1),
+          rank: rank,
+        });
+
+        await updateDoc(DocRefOpponent, {
+          loss: increment(1),
+          rank: rankOpponent,
+        });
+
+      } else {
+        await updateDoc(DocRefOpponent, {
+          win: increment(1),
+          rank: rankOpponent,
+        });
+
+        await updateDoc(DocRef, {
+          loss: increment(1),
+          rank: rank,
+        });
+      }
+      
+    }
       
     return (
         <div class="active-game">
@@ -140,6 +201,7 @@ export default function ActiveGame({forfeitGame, gameplayers, room, orientation,
                 open={overDialog}
                 title={over}
                 handleContinue={() => {
+                    handleWinLossChange();
                     socket.emit("closeRoom", { roomId: room });
                     setFen('start');
                     cleanup();

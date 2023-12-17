@@ -18,7 +18,7 @@ export default function HomeCard({leaders,handlePlayFriends}) {
             <div class="leaderboard">
                 <h1>Leader Board</h1>
                 <ul class="leader-list">
-                    {leaders.map(item => <LeaderItem key={item.id} item={item} />)}
+                    {leaders.map((item, index) => <LeaderItem key={item.id} item={item} index={index}/>)}
                 
                 </ul>
             </div>

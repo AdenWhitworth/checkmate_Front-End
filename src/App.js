@@ -5,6 +5,7 @@ import king_logo_white from "./Images/King Logo White.svg";
 import bell from "./Images/Bell.svg";
 import flag from "./Images/Flag.svg";
 import bars from "./Images/bars-solid.svg";
+import arrow_left from "./Images/Arrow Left.svg";
 import close_white from "./Images/close white.svg";
 
 import SignUpModal from "./components/SignUpModal";
@@ -21,7 +22,7 @@ import Badge from '@mui/material/Badge';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from './firebase';
 import { signOut } from "firebase/auth";
-import { query, onSnapshot, orderBy, getDocs, collection, where, doc } from "firebase/firestore";  
+import { query, onSnapshot, orderBy, getDocs, collection, where, doc, limit } from "firebase/firestore";  
 import socket from "./socket";
 
 
@@ -66,6 +67,7 @@ export default function App() {
   const [BadgeCSS, setBadgeCSS] = useState('notification showNavButton');
   const [FlagCSS, setFlagCSS] = useState('end-game-flag hideNavButton');
   const [MobileCSS, setMobileCSS] = useState('nav-links nav-hide');
+  const [ExitCSS, setExitCSS] = useState('exit-arrow hideNavButton');
 
   const [leaders, setLeaders] = useState([]);
 
@@ -87,10 +89,11 @@ export default function App() {
   const [forfeitOpen, setForfeitOpen] = useState(false);
   const [room, setRoom] = useState("");
   const [triggerHome, setTriggerHome] = useState(false);
+  const [triggerExit, setTriggerExit] = useState(false);
 
   const fetchLeaderboard = async () => {
       var leadersCopy = [];
-      const q = query(collection(db, "leaderboard"), orderBy("place"));
+      const q = query(collection(db, "users"), orderBy("rank","desc"), limit(10));
       onSnapshot(q, (snapshot) => {
         leadersCopy = snapshot.docs.map(doc => ({
             id: doc.id,
@@ -114,7 +117,6 @@ export default function App() {
     fetchInvites();
     //console.log("Active Invites",invites);
   },[invites])
-  
 
   useEffect(() =>{
     onAuthStateChanged(auth, (user) => {
@@ -161,10 +163,11 @@ export default function App() {
           setWin(doc.data().win);
           setLoss(doc.data().loss)
           console.log("here",playerId,userId,username,email,win,loss);
-
       });
     }
   }
+
+  
 
   const fetchInvites = async () => {
 
@@ -279,66 +282,12 @@ export default function App() {
     setMobileCSS('nav-links nav-hide');
   }
 
-  /*
-    <body>
-      
-      <section class="header">
-        <nav>
-          <div class="nav-image">
-            
-            <img class="king-logo" onClick={handleHome} src={king_logo_white}></img>
-
-          </div>
-
-          <ul class="nav-links">
-            <div class="menu">
-              <li class={SignUpCSS}><Box display="flex" sx={{ height: '52px'}}><FillButton onClick={() => {setSignUpOpen(true)}} variant="outlined">Sign Up</FillButton></Box></li>
-              <li class={LogInCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton onClick={() => {setLogInOpen(true)}} variant="outlined">Log In</HollowButton></Box></li>
-              <li class={LogOutCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton onClick={handleLogout} variant="outlined">Log Out</HollowButton></Box></li>
-              <li><Badge onClick={handleBadge} badgeContent={inviteBadge} color="primary"><img class={BadgeCSS} src={bell}></img></Badge></li>
-              <li><img onClick={handleFlag} class={FlagCSS} src={flag}></img></li>
-            </div>
-          </ul>
-        </nav>
-      </section>
-      
-      {playFrields? <DashboardCard SetPlayFrields={SetPlayFrields} setTriggerHome={setTriggerHome} triggerHome={triggerHome} room={room} setRoom={setRoom} setBadgeCSS={setBadgeCSS} setFlagCSS={setFlagCSS} forfeitOpen={forfeitOpen} setForfeitOpen={setForfeitOpen} inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} username={username} userId={userId} playerId={playerId} invites={invites} win={win} loss={loss}></DashboardCard> : <HomeCard handlePlayFriends={() => {
-          if (activeUser == false) {
-            //prompt to sign in
-            setLogInOpen(true);
-          } else {
-            //send to dashboard
-            SetPlayFrields(true);
-            fetchInvites();
-          }
-        }} leaders={leaders}></HomeCard>}
-      
-      <SignUpModal 
-        open={signUpOpen}
-        handleSignUp={() => {
-          setSignUpOpen(false);
-        }}
-        openLogIn={() => {
-          setSignUpOpen(false);
-          setLogInOpen(true);
-        }}
-      ></SignUpModal>
-
-      <LogInModal 
-        open={loginOpen}
-        handleLogIn={() => {
-          setLogInOpen(false);
-        }}
-        openSignUp={() => {
-          setLogInOpen(false);
-          setSignUpOpen(true);
-        }}
-      ></LogInModal>
-
-      {alert ? <AlertDialog severity={alertSeverity} contentText={alertContent} handleClose={() => {setAlert(false)}}></AlertDialog> : <></>}
-      
-    </body>
-    */
+  const handleExit = () => {
+    setTriggerExit(true);
+    setAlertSeverity('success'); 
+    setAlertContent('Successfully Exited Game!');
+    setAlert(true); 
+  };
 
   return (
     
@@ -359,6 +308,7 @@ export default function App() {
               <li class={LogInCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton sx={{width:{xs: '85%',md: '15vw'}}} onClick={() => {setLogInOpen(true)}} variant="outlined">Log In</HollowButton></Box></li>
               <li class={LogOutCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton sx={{width:{xs: '85%',md: '15vw'}}} onClick={handleLogout} variant="outlined">Log Out</HollowButton></Box></li>
               <li><Badge onClick={handleBadge} badgeContent={inviteBadge} color="primary"><img class={BadgeCSS} src={bell}></img></Badge></li>
+              <li><img onClick={handleExit} class={ExitCSS} src={arrow_left}></img></li>
               <li><img onClick={handleFlag} class={FlagCSS} src={flag}></img></li>
             </div>
           </ul>
@@ -368,7 +318,7 @@ export default function App() {
         </nav>
       </section>
       
-      {playFrields? <DashboardCard SetPlayFrields={SetPlayFrields} setTriggerHome={setTriggerHome} triggerHome={triggerHome} room={room} setRoom={setRoom} setBadgeCSS={setBadgeCSS} setFlagCSS={setFlagCSS} forfeitOpen={forfeitOpen} setForfeitOpen={setForfeitOpen} inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} username={username} userId={userId} playerId={playerId} invites={invites} win={win} loss={loss}></DashboardCard> : <HomeCard handlePlayFriends={() => {
+      {playFrields? <DashboardCard setTriggerExit={setTriggerExit} triggerExit={triggerExit} SetPlayFrields={SetPlayFrields} setTriggerHome={setTriggerHome} triggerHome={triggerHome} room={room} setRoom={setRoom} setBadgeCSS={setBadgeCSS} setFlagCSS={setFlagCSS} setExitCSS={setExitCSS} forfeitOpen={forfeitOpen} setForfeitOpen={setForfeitOpen} inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} username={username} userId={userId} playerId={playerId} invites={invites} win={win} loss={loss}></DashboardCard> : <HomeCard handlePlayFriends={() => {
           if (activeUser == false) {
             //prompt to sign in
             setLogInOpen(true);

@@ -66,6 +66,11 @@ li {
     cursor: pointer;
 }
 
+.exit-arrow{
+    height: 52px;
+    cursor: pointer;
+}
+
 .king-logo{
     height: 52px;
     cursor: pointer;
