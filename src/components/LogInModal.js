@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth} from '../firebase';
 
@@ -57,6 +57,9 @@ export default function LogInModal({ open, handleLogIn, openSignUp}) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const [error, setError] = useState('');
+    const [errorCSS, setErrorCSS] = useState('error-message error-hide');
     
     const onLogin = (e) => {
         e.preventDefault();
@@ -64,15 +67,18 @@ export default function LogInModal({ open, handleLogIn, openSignUp}) {
         .then((userCredential) => {
             // Signed in
             const user = userCredential.user;
+            setErrorCSS('error-message error-hide');
             handleLogIn();
         })
         .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage)
+            setError(error.code);
+            setErrorCSS('error-message');
         });
-       
     }
+
+    useEffect(() => {
+        setErrorCSS('error-message error-hide');
+    }, [open]);
 
     return (
     <Modal open={open}>
@@ -96,43 +102,11 @@ export default function LogInModal({ open, handleLogIn, openSignUp}) {
                     
                     </div>
 
-                    {/*
-                    <TextField
-                        variant="outlined"
-                        sx={{
-                            width: '70%'
-                        }}
-                        margin="normal"
-                        placeholder="Email"
-                        type="email"
-                        required
-                        onChange={(e) => setEmail(e.target.value)}
-                        InputProps={{
-                        startAdornment: (
-                            <img src={mail}></img>
-                        ),
-                        }}
-                    />
-                    
-                    <TextField
-                        variant="outlined"
-                        sx={{
-                            width: '70%'
-                        }}
-                        placeholder="Password"
-                        margin="normal"
-                        type="password"
-                        required
-                        onChange={(e) => setPassword(e.target.value)}
-                        InputProps={{
-                        startAdornment: (
-                            <img src={key}></img>
-                        ),
-                        }}
-                    /> */}
                     <div>
                         <FillButton type="submit" variant="contained">Log In</FillButton>
                     </div>
+
+                    <h4 class={errorCSS} >{error}</h4>
 
                     <h4>or</h4>
                     <h3>New Player?</h3>

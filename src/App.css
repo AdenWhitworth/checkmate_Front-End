@@ -214,6 +214,14 @@ li {
     height: 8vh;
 }
 
+.error-message{
+    color: red;
+}
+
+.error-hide{
+    display: none;
+}
+
 .input-text{
    
     padding-bottom: 5%;

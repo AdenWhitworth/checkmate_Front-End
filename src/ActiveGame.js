@@ -90,7 +90,7 @@ export default function ActiveGame({forfeitGame, gameplayers, room, orientation,
     useEffect(() => {
         socket.on('playerDisconnected', (player) => {
             console.log("socket opponent",player.username);
-            setOver(`${player.username} has disconnected`); // set game over
+            setOver(`${player.username} has Forfeited`); // set game over
             setOverDialog(true);
         });
     }, []);

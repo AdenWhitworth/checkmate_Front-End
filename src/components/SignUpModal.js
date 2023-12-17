@@ -10,10 +10,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from '../firebase';
-import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import { collection, addDoc, setDoc, doc, where, query, getDocs} from "firebase/firestore";
 
 const FillButton = styled(Button)(({ theme }) => ({
     color: '#000000',
@@ -64,24 +64,36 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
     const [username, setUserName] = useState('');
     const [uid, setUID] = useState('');
 
+    const [error, setError] = useState('');
+    const [errorCSS, setErrorCSS] = useState('error-message error-hide');
+
     const onSubmit = async (e) => {
       e.preventDefault()
-     
-      await createUserWithEmailAndPassword(auth, email, password)
+
+      const q = query(collection(db, "users"), where("username", "==", username));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.size == 0){
+        
+        await createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             // Signed in
+            setErrorCSS('error-message error-hide');
             const user = userCredential.user;
             setUID(user.uid);
             SaveNewUser();
             handleSignUp();
         })
         .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode, errorMessage);
+            setError(error.code);
+            setErrorCSS('error-message');
         });
- 
-   
+
+      } else {
+        setError('Username is taken');
+        setErrorCSS('error-message');
+      }
+
     }
 
     const SaveNewUser = async (e) => {
@@ -98,6 +110,7 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
               playerID: docRef2.id,
               loss: 0,
               win: 0,
+              rank: 0,
             });
             console.log("Document written with ID: ", docRef.id);
 
@@ -116,6 +129,10 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
             console.error("Error adding document: ", e);
           }
     }
+
+    useEffect(() => {
+        setErrorCSS('error-message error-hide');
+    }, [open]);
 
     return (
     <Modal open={open}>
@@ -145,63 +162,12 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
                         <input onChange={(e) => setPassword(e.target.value)} required spellCheck="false" type="password" placeholder="Password"></input>
                     
                     </div>
-                    
-                    {/*
-                    <TextField
-                        variant="outlined"
-                        sx={{
-                            width: '70%'
-                        }}
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUserName(e.target.value)}
-                        required
-                        margin="normal"
-                        InputProps={{
-                        startAdornment: (
-                            <img src={user}></img>
-                        ),
-                        }}
-                    />
-                    <TextField
-                        variant="outlined"
-                        sx={{
-                            width: '70%'
-                        }}
-                        margin="normal"
-                        placeholder="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        InputProps={{
-                        startAdornment: (
-                            <img src={mail}></img>
-                        ),
-                        }}
-                    />
-                    <TextField
-                        variant="outlined"
-                        sx={{
-                            width: '70%'
-                        }}
-                        placeholder="Password"
-                        margin="normal"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        InputProps={{
-                        startAdornment: (
-                            <img src={key}></img>
-                        ),
-                        }}
-                    />
-                    */}
 
                     <div>
                         <FillButton type="submit" variant="contained">Sign Up</FillButton>
                     </div>
+
+                    <h4 class={errorCSS} >{error}</h4>
 
                     <h4>or</h4>
                     <h3>Existing Player?</h3>
