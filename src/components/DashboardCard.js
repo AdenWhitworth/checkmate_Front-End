@@ -89,19 +89,20 @@ export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, 
   }
 
   useEffect(() => {
-    window.addEventListener('beforeunload', (event) => {
-      // Execute your function here
-      if (gameplayers.length == 0){
-        handleExit();
+    const onUnload = () => {
+
+      if (room != "" && gameplayers.length == 0){
+          handleExit();
       }
-    });
-  
-    return () => {
-      window.removeEventListener('beforeunload', (event) => {
-        // Remove the event listener here
-      });
+      
     };
-  }, []);
+
+    window.addEventListener("unload", onUnload);
+
+    return () => {
+      window.removeEventListener("unload", onUnload);
+    };
+  }, [opponentInviteId,opponentUserId]);
 
   const cleanup = useCallback(() => {
     console.log("clean room");
