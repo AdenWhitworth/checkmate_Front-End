@@ -4,12 +4,10 @@ import king_logo_black from "../Images/King Logo Black.svg";
 import user from "../Images/User.svg";
 import key from "../Images/Key.svg";
 import mail from "../Images/Mail.svg";
-import closeX from "../Images/close.svg"
+import closeX from "../Images/close.svg";
 import "../App.css";
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-
 import {useState, useEffect} from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from '../firebase';
@@ -39,7 +37,6 @@ const HollowButton = styled(Button)(({ theme }) => ({
     },
 }));
 
-
 const style = {
     position: 'absolute',
     top: '50%',
@@ -52,27 +49,24 @@ const style = {
     outline: '0',
     borderRadius: 5,
 };
-  
 
 export default function SignUpModal({ open, handleSignUp, openLogIn }) {
+    const [email, setEmail] = useState('');//use to set email
+    const [password, setPassword] = useState('');//use to set password
+    const [username, setUserName] = useState('');//use to set username
+    const [uid, setUID] = useState('');//use to set auth uid
+    const [error, setError] = useState('');//use to set error message
+    const [errorCSS, setErrorCSS] = useState('error-message error-hide');//use to show/hide error message
 
-
-    //creating a formData state to hold each state for email and password
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('');
-
-    const [username, setUserName] = useState('');
-    const [uid, setUID] = useState('');
-
-    const [error, setError] = useState('');
-    const [errorCSS, setErrorCSS] = useState('error-message error-hide');
-
+    //sign up the new user based on username, email, and password
+    //only show error message when there is an issue signing up
     const onSubmit = async (e) => {
       e.preventDefault()
 
+      //query current player usernames to make sure new username isnt taken
       const q = query(collection(db, "users"), where("username", "==", username));
       const querySnapshot = await getDocs(q);
-
+  
       if (querySnapshot.size == 0){
         
         await createUserWithEmailAndPassword(auth, email, password)
@@ -96,9 +90,8 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
 
     }
 
+    //after new user is created save this users information in the database 
     const SaveNewUser = async (e) => {
-        //e.preventDefault();  
-       
         try {
 
             const docRef2 = doc(collection(db, "players"));
@@ -112,25 +105,24 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
               win: 0,
               rank: 0,
             });
-            console.log("Document written with ID: ", docRef.id);
 
             try {
                 await setDoc(docRef2, {
                   username: username,
                   userID: docRef.id,    
                 });
-                console.log("Document written with ID: ", docRef2.id);
               } catch (e) {
-                console.error("Error adding document: ", e);
+                return
               }
 
 
           } catch (e) {
-            console.error("Error adding document: ", e);
+            return
           }
     }
 
     useEffect(() => {
+        //reset the error message on each open of the modal
         setErrorCSS('error-message error-hide');
     }, [open]);
 

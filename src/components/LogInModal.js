@@ -1,15 +1,12 @@
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import king_logo_black from "../Images/King Logo Black.svg";
-import user from "../Images/User.svg";
 import key from "../Images/Key.svg";
 import mail from "../Images/Mail.svg";
 import closeX from "../Images/close.svg"
 import "../App.css";
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-
 import {useState, useEffect} from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth} from '../firebase';
@@ -38,7 +35,6 @@ const HollowButton = styled(Button)(({ theme }) => ({
     },
 }));
 
-
 const style = {
     position: 'absolute',
     top: '50%',
@@ -55,12 +51,13 @@ const style = {
 
 export default function LogInModal({ open, handleLogIn, openSignUp}) {
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    const [error, setError] = useState('');
-    const [errorCSS, setErrorCSS] = useState('error-message error-hide');
+    const [email, setEmail] = useState('');//use to set email
+    const [password, setPassword] = useState('');//use to set password
+    const [error, setError] = useState('');//use to set error message
+    const [errorCSS, setErrorCSS] = useState('error-message error-hide');//use to show/hide error message
     
+    //log in the user based on email and password
+    //only show error message when there is an issue signing in
     const onLogin = (e) => {
         e.preventDefault();
         signInWithEmailAndPassword(auth, email, password)
@@ -77,6 +74,7 @@ export default function LogInModal({ open, handleLogIn, openSignUp}) {
     }
 
     useEffect(() => {
+        //reset the error message on each open of the modal
         setErrorCSS('error-message error-hide');
     }, [open]);
 

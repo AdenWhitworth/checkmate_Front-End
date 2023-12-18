@@ -11,28 +11,29 @@ export const GameContext = createContext();
 
 export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, playerId, userId, username, invites, win, loss, inviteBadgeClick, setInviteBadgeClick, setFlagCSS, setForfeitOpen, forfeitOpen, setBadgeCSS, room, setRoom, triggerHome, setTriggerHome,SetPlayFrields}) {
 
-  const [playerTurn, setPlayerTurn] = useState("w");
-  const [history, setHistory] = useState([]);
-
-  const [opponentUserName, setOpponentUserName] = useState("");
-  const [opponentUserId, setOpponentUserId] = useState("");
-  const [opponentPlayerId, setOpponentPlayerId] = useState("");
-  const [opponentWin, setOpponentWin] = useState("");
-  const [opponentLoss, setOpponentLoss] = useState("");
-  const [opponentInviteId, setOpponentInviteId] = useState("");
-
-  //const [room, setRoom] = useState("");
-  const [orientation, setOrientation] = useState("");
-  const [gameplayers, setGamePlayers] = useState([]);
-  const [forfeitGame, setForfeitGame] = useState(false);
+  const [playerTurn, setPlayerTurn] = useState("w"); //use for player turn
+  const [history, setHistory] = useState([]);//object of game history
+  const [opponentUserName, setOpponentUserName] = useState("");//use for opponent username
+  const [opponentUserId, setOpponentUserId] = useState("");//use for opponent user id
+  const [opponentPlayerId, setOpponentPlayerId] = useState("");//use for opponent player id
+  const [opponentWin, setOpponentWin] = useState("");//use for opponent win
+  const [opponentLoss, setOpponentLoss] = useState("");//use for opponent loss
+  const [opponentInviteId, setOpponentInviteId] = useState("");//use for opponent invite id
+  const [orientation, setOrientation] = useState("");//use for board orientation for current player
+  const [gameplayers, setGamePlayers] = useState([]);//array of players in active game
+  const [forfeitGame, setForfeitGame] = useState(false);//use for when current player forfeits game
 
   useEffect(() => {
+    //listen to join room socket for oppenent joining the game
     handleSoccetOpponentJoinRoom();
   }, []);
 
   useEffect(() => {
+    //give current player the ability to either see invites, exit game, or end game
+    //when no invite is sent then there is no active room. Show only notification
+    //when invite is sent but the opponent has not joined. Show exit game
+    //when both players are in the room. show end game
     if (room != ""){
-      console.log(gameplayers.length);
       if (gameplayers.length == 0){
         setBadgeCSS('notification hideNavButton');
         setFlagCSS('end-game-flag hideNavButton');
@@ -53,12 +54,13 @@ export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, 
 
 
   const handleSoccetOpponentJoinRoom = () => {
+    //attach socket for opponent joining room
     socket.on("opponentJoined", (roomData) => {
-      console.log("roomData", roomData);
       setGamePlayers(roomData.players);
     });
   }
 
+  //if current player selects to go home send them there
   const checkSendHome = () => {
     if (triggerHome == true){
       setTriggerHome(false);
@@ -67,14 +69,14 @@ export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, 
   }
 
   useEffect(() => {
-    //when exit button is clicked
+    //when exit button is clicked return the user to invites screen and delete active invite to opponent
     if (triggerExit == true){
       handleExit();
     }
   }, [triggerExit]);
 
+  //delete active invite sent to opponent triggered when current player exits the game
   const handleExit = () => {
-    console.log("handle exit",opponentUserId,opponentInviteId);
     
     setTriggerExit(false);
 
@@ -89,12 +91,15 @@ export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, 
   }
 
   useEffect(() => {
+
+    //when current player refreshes the page check to see if an active invite is pending
     const onUnload = () => {
 
+      //when there is a room created and one player in it then there is an invite pending
+      //before page refreshes delete pending invite
       if (room != "" && gameplayers.length == 0){
           handleExit();
       }
-      
     };
 
     window.addEventListener("unload", onUnload);
@@ -105,7 +110,7 @@ export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, 
   }, [opponentInviteId,opponentUserId]);
 
   const cleanup = useCallback(() => {
-    console.log("clean room");
+    //reset the board and game data
     setRoom("");
     setOrientation("");
     setGamePlayers("");
@@ -118,7 +123,7 @@ export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, 
 
             <ActiveGame win={win} loss={loss} userId={userId} opponentUserName={opponentUserName} checkSendHome={checkSendHome} setBadgeCSS={setBadgeCSS} setFlagCSS={setFlagCSS} forfeitGame={forfeitGame} room={room} orientation={orientation} username={username} gameplayers={gameplayers} cleanup={cleanup}></ActiveGame>
             
-            {room? <GameCard win={win} loss={loss} orientation={orientation} playerId={playerId} userId={userId} username={username} gameplayers={gameplayers}></GameCard> : <InfoCard inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} win={win} loss={loss} playerId={playerId} userId={userId} username={username} invites={invites} setRoom={setRoom} setOrientation={setOrientation} setGamePlayers={setGamePlayers}></InfoCard>}
+            {room? <GameCard win={win} loss={loss} orientation={orientation} username={username} gameplayers={gameplayers}></GameCard> : <InfoCard inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} win={win} loss={loss} playerId={playerId} userId={userId} username={username} invites={invites} setRoom={setRoom} setOrientation={setOrientation} setGamePlayers={setGamePlayers}></InfoCard>}
             
             <EndGameDialog 
               open={forfeitOpen} 

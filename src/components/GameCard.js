@@ -1,7 +1,6 @@
 import "../App.css";
 import user_circle from "../Images/User Circle.svg"
 import arrow_point from "../Images/Arrow Point.svg"
-
 import pawn_white from "../Images/Pawn White.svg"
 import pawn_white2 from "../Images/Pawn White 2.svg"
 import pawn_white3 from "../Images/Pawn White 3.svg"
@@ -17,7 +16,6 @@ import castle_white2 from "../Images/Castle White 2.svg"
 import knight_white from "../Images/Knight White.svg"
 import knight_white2 from "../Images/Knight White 2.svg"
 import queen_white from "../Images/Queen White.svg"
-
 import pawn_black from "../Images/Pawn Black.svg"
 import pawn_black2 from "../Images/Pawn Black 2.svg"
 import pawn_black3 from "../Images/Pawn Black 3.svg"
@@ -33,19 +31,16 @@ import castle_black2 from "../Images/Castle Black 2.svg"
 import knight_black from "../Images/Knight Black.svg"
 import knight_black2 from "../Images/Knight Black 2.svg"
 import queen_black from "../Images/Queen Black.svg"
-
 import {useState, useEffect, useContext} from "react";
 import {GameContext} from "../components/DashboardCard";
 import GameItem from "../components/GameItem";
 import {v4 as uuidv4} from "uuid";
 
 
-export default function GameCard({gameplayers, playerId, userId, username, orientation, win, loss}) {
+export default function GameCard({gameplayers, username, orientation, win, loss}) {
 
-    const [opponentPlayerStyle, setOpponentPlayerStyle] = useState("game-info player-turn");
-    const [activePlayerStyle, setActivePlayerStyle] = useState("game-info");
-    
-
+    const [opponentPlayerStyle, setOpponentPlayerStyle] = useState("game-info player-turn");//CSS for opponent player to show turn
+    const [activePlayerStyle, setActivePlayerStyle] = useState("game-info");//CSS for active player to show turn
     const [capturedPieces, setCapturedPieces] = useState([
         {
             player: "w",
@@ -63,8 +58,9 @@ export default function GameCard({gameplayers, playerId, userId, username, orien
             r: 0,
             q: 0,
         }
-    ]);
+    ]);//object to record number of each pieces captured for white and black
 
+    //active player CSS and img styling
     const [playerPawnStyle, setPlayerPawnStyle] = useState("");
     const [playerPawnImg, setPlayerPawnImg] = useState();
     const [playerKnightStyle, setPlayerKnightStyle] = useState("");
@@ -75,7 +71,7 @@ export default function GameCard({gameplayers, playerId, userId, username, orien
     const [playerCastleImg, setPlayerCastleImg] = useState("");
     const [playerQueenStyle, setPlayerQueenStyle] = useState("");
     const [playerQueenImg, setPlayerQueenImg] = useState("");
-
+    //opponent player CSS and img styling
     const [opponentPawnStyle, setOpponentPawnStyle] = useState("");
     const [opponentPawnImg, setOpponentPawnImg] = useState();
     const [opponentKnightStyle, setOpponentKnightStyle] = useState("");
@@ -87,9 +83,8 @@ export default function GameCard({gameplayers, playerId, userId, username, orien
     const [opponentQueenStyle, setOpponentQueenStyle] = useState("");
     const [opponentQueenImg, setOpponentQueenImg] = useState("");
 
-
-    const gameContext = useContext(GameContext);
-    const [gameMoves, setGameMoves] = useState([]);
+    const gameContext = useContext(GameContext);//context to access game history and player turn
+    const [gameMoves, setGameMoves] = useState([]);//object for game moves
 
     const updateCapturedPieces = () => {
         if (orientation[0] == "w"){
@@ -471,7 +466,9 @@ export default function GameCard({gameplayers, playerId, userId, username, orien
 
     }
 
+    //see whos turn it is change the player card to highlight that players turn
     const activeTurn = () => {
+        //compare player turn to orientation of the board in order to see who the active and opponent players are
         if (orientation[0] == "w" && gameContext.playerTurn == "w"){
             setOpponentPlayerStyle("game-info");
             setActivePlayerStyle("game-info player-turn");
@@ -487,41 +484,50 @@ export default function GameCard({gameplayers, playerId, userId, username, orien
         }
     }
 
+    //take the history object created by chess.js api and format it for our UI
     const formatHistory = () => {
 
+        //only format history once the first move is made
         if (gameContext.history.length != 0){
 
+            //for the game moves ovject format where each index has one white and black move
             const historyLength = gameContext.history.length;
-            const gameMovesCopy = [...gameMoves];
+            const gameMovesCopy = [...gameMoves];//make a copy of game moves
             const gameMovesCopyLength = gameMovesCopy.length
-            const id = uuidv4();
-
+            const id = uuidv4();//create a unique id for the map
+            
             if (Math.abs(historyLength % 2) == 1){
-                //odd
+                //odd occurance
+                //create a new index of the object
+                //Move made by white and then a blank move for black
                 const item = [gameContext.history[historyLength-1].to,""]
                 gameMovesCopy.push({id: id, item: item});
-                console.log(gameMovesCopy);
                 setGameMoves(gameMovesCopy);
                 
             } else {
-                //even
+                //even occurance
+                //replace the blank move made by black in the odd occurance with the actual move now made by black
                 gameMovesCopy[gameMovesCopyLength-1].item[1] = gameContext.history[historyLength-1].to;
-                console.log(gameMovesCopy);
                 setGameMoves(gameMovesCopy);
 
             }
         }
     }
 
+    //check to see which pieces in the game history were just captured
+    //this will be used to update the UI of the captured pieces
     const checkCaptured = () => {
+        //only check once the first move has been made
         if (gameContext.history.length != 0){
 
             const historyLength = gameContext.history.length;
 
-            const capturedPiecesCopy = [...capturedPieces];
+            const capturedPiecesCopy = [...capturedPieces];//copy the captured pieces object
 
-            const capturedPiece = gameContext.history[historyLength-1].captured;
+            const capturedPiece = gameContext.history[historyLength-1].captured; //get the last captured piece from the history
             
+            //check to see whos turn it was when the piece was captured
+            //update the captured pieces object based on the turn and the piece captured
             if (gameContext.history[historyLength-1].color == "w"){
 
                 if (capturedPiece == "p"){
@@ -551,21 +557,23 @@ export default function GameCard({gameplayers, playerId, userId, username, orien
 
             }
 
-            console.log(capturedPiecesCopy);
-            setCapturedPieces(capturedPiecesCopy);
+            setCapturedPieces(capturedPiecesCopy);//trigger a re-render based on the new captured pieces
 
         }
     }
 
     useEffect(() => {
+        //update the captured pieces
         updateCapturedPieces();
     }, [capturedPieces]);
 
     useEffect(() => {
+        //update UI to show which players turn it is
         activeTurn();
     }, [gameContext.playerTurn]);
 
     useEffect(() => {
+        //Format the history so that we can check for captured peices
         formatHistory();
         checkCaptured();
     }, [gameContext.history]);

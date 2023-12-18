@@ -1,57 +1,46 @@
 import user_white from "../Images/User White.svg";
 import plane from "../Images/Paper Plane.svg";
 import {useState, useEffect, useContext} from "react";
-
 import { db } from '../firebase';
 import { collection, addDoc, doc, getDoc} from "firebase/firestore";
 import socket from "../socket";
-
 import {GameContext} from "../components/DashboardCard";
 
 
 export default function PlayersItem({count ,item, index, playerId, userId, username, setRoom, setOrientation, win, loss}) {
     
-    const [colorStyle, setColorStyle] = useState("");
-    const [startRoom, setStartRoom] = useState("");
+    const [colorStyle, setColorStyle] = useState("");//CSS for list item odd or even color
+    const [startRoom, setStartRoom] = useState("");//use to create room
 
-    const {setOpponentInviteId, setOpponentUserName, setOpponentUserId, setOpponentPlayerId, setOpponentWin, setOpponentLoss} = useContext(GameContext);
+    const {setOpponentInviteId, setOpponentUserName, setOpponentUserId, setOpponentPlayerId, setOpponentWin, setOpponentLoss} = useContext(GameContext);//get opponent data stored in context
     
+    //create a new room for the new game 
+    //set the player creating the room to white
     const handleSoccetCreateRoom = (e) => {
         e.preventDefault();  
         socket.emit("createRoom", (response) => {
-            console.log("create room:",response);
             setStartRoom(response);
             setOrientation("white");
-            console.log("start room:",startRoom);
         });
     }
 
-    const invitePlayer = async (e) => {
-        //e.preventDefault();  
+    //invite opponent to game based on the selection from the list
+    const invitePlayer = async (e) => { 
        
         try {
-            console.log(item.item);
+            //use the user id given in this item to get all the other opponent data for this player
             const userCollection = collection(db, 'users');
-
             const DocRef2 = doc(userCollection, item.item.userID);
             const docSnap = await getDoc(DocRef2);
-
-            if (docSnap.exists()) {
-                console.log("Document data:", docSnap.data());
-            } else {
-                // docSnap.data() will be undefined in this case
-                console.log("No such document!");
-            }
 
             setOpponentUserName(docSnap.data().username);
             setOpponentUserId(item.item.userID);
             setOpponentPlayerId(docSnap.data().playerID);
-            console.log("wins", docSnap.data().win, "losses", docSnap.data().loss);
             setOpponentWin(docSnap.data().win);
             setOpponentLoss(docSnap.data().loss);
-            
 
-
+            //Create a new document for the invitation to the opponent
+            //include all the information on current player needed by the opponent to join this game
             const DocRef = doc(userCollection, item.item.userID);
             const inviteCollection = collection(DocRef,'invites');
 
@@ -63,17 +52,18 @@ export default function PlayersItem({count ,item, index, playerId, userId, usern
                 requestWin: win,
                 requestLoss: loss,
             });
-            setRoom(startRoom);
-            console.log("Document written with ID: ", docRef.id);
-            setOpponentInviteId(docRef.id);
+
+            setRoom(startRoom);//set the room now that it has been created
+            setOpponentInviteId(docRef.id);//get the invite id for later ability to delete the invite
 
           } catch (e) {
-            console.error("Error adding document: ", e);
+            return
           }
     }
     
     useEffect(() =>{
-        
+        //alternate odd and even list item colors
+        //when less than 7 items are in a list then dont allow scroll
         if (Math.abs(index % 2) == 1){
             if (count <= 7){
                 setColorStyle("player-line odd-color");
@@ -93,8 +83,9 @@ export default function PlayersItem({count ,item, index, playerId, userId, usern
     },[count])
 
     useEffect(() =>{
+        //if there is no room then allow for a player to be invited
+        //only invite a player once the socket room has been created
         if (startRoom != ""){
-            console.log("invite player now");
             invitePlayer();
         }
     }, [startRoom])

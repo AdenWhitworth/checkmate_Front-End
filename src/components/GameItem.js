@@ -1,14 +1,14 @@
 
 import {useState, useEffect} from "react";
 
-
-
 export default function GamesItem({count, item, index}) {
     
-    const [colorStyle, setColorStyle] = useState("");
+    const [colorStyle, setColorStyle] = useState("");//CSS for list item odd or even color
     
     useEffect(() =>{
 
+        //alternate odd and even list item colors
+        //when less than 6 items are in a list then dont allow scroll
         if (Math.abs(index % 2) == 1){
             if (count <= 6){
                 setColorStyle("moves-line odd-color");

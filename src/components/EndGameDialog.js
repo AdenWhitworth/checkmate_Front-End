@@ -16,17 +16,6 @@ const FillButton = styled(Button)(({ theme }) => ({
     },
 }));
 
-const HollowButton = styled(Button)(({ theme }) => ({
-    color: '#FFCD05',
-    borderColor: '#FFCD05',
-    '&:hover': {
-      backgroundColor: '#FFF9CD',
-      color: '#B78B02',
-      borderColor: '#B78B02',
-    },
-}));
-
-
 const style = {
     position: 'absolute',
     top: '50%',
