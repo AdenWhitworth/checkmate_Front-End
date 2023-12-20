@@ -1,4 +1,3 @@
-import board_logo from "../Images/Chess Board Logo.svg";
 import pawn_logo from "../Images/Pawn Logo.svg";
 import LeaderItem from "./LeaderItem";
 
