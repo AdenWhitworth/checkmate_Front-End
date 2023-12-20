@@ -95,6 +95,10 @@ li {
 
 .welcome{
     grid-area: welcome;
+    background-image: url("./Images/Chess\ Board\ Logo.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .leaderboard{
@@ -108,16 +112,6 @@ li {
     color: #FFE769;
     font-size: 36px;
     
-}
-
-.board-logo{
-   width: 35%;
-   top:26vh;
-   margin-top: 0;
-   padding-top: 0;
-   height: 62vh;
-   object-fit: fill;
-   position: absolute;
 }
 
 .pawn-logo{
@@ -660,18 +654,8 @@ li {
         width: 80%;
     }
 
-    .board-logo{
-        width: 80%;
-        top: 20%;
-        margin-top: 0;
-        padding-top: 0;
-        height: 62vh;
-        object-fit: fill;
-        position: absolute;
-    }
-
     .content{
-        height: auto;
+        height: 100%;
         padding-bottom: 20%;
     }
 

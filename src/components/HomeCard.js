@@ -8,7 +8,6 @@ export default function HomeCard({leaders,handlePlayFriends}) {
             <div class="container">
 
             <div class="welcome">
-                <img class="board-logo" src={board_logo}></img>
                 <div class="play">
                 <img class="pawn-logo" src={pawn_logo}></img>
                 <a onClick={handlePlayFriends} class="pawn-btn-fill">Play Friends</a>
