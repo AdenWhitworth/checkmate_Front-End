@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# Online Chess With Friends
+> A real-time online competitive chess game where you are able to challenge your friends.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Create an account and invite your friends to play a game. View the global leader board to see where you stand. To demo the game without creating an account, please sign in with the below demo accounts. Using two separate browser windows, you can even play against yourself.
 
-## Available Scripts
+Emails: demo1@gmail.com & demo2@gmail.com
 
-In the project directory, you can run:
+Password: PortfolioDemo1!
 
-### `npm start`
+[See Live Demo](https://online-chess-with-friends.web.app/)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This repository is just for the front-end. Use the link below to access the back end repository for this game. 
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+[See Back-End](https://github.com/AdenWhitworth/online_chess_with_friends_server)
 
-### `npm test`
+## Features
+- Create unique account for each player
+- Returning players can log in
+- View and invite registered players
+- Manage all active game invites
+- Recieve notifications when invited to a game
+- Search player base and notifications
+- Play a live chess game
+- Real time statistics displayed in game
+- Ability to leave or forfeit
+- Responsive design for web and mobile
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Front-End Technology Stack
+- React.js
+- Node.js
+- HTML
+- CSS
+- JavaScript
+- Material UI
+- React-chessboard.js
+- Chess.js
+- Firebase Authentication
+- Firebase Cloud Firestore
+- Socket.io
+- uuid.js
+- Figma
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
