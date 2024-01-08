@@ -62,7 +62,7 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
 
     //active player CSS and img styling
     const [playerPawnStyle, setPlayerPawnStyle] = useState("");
-    const [playerPawnImg, setPlayerPawnImg] = useState();
+    const [playerPawnImg, setPlayerPawnImg] = useState("");
     const [playerKnightStyle, setPlayerKnightStyle] = useState("");
     const [playerKnightImg, setPlayerKnightImg] = useState("");
     const [playerBishopStyle, setPlayerBishopStyle] = useState("");
@@ -73,7 +73,7 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
     const [playerQueenImg, setPlayerQueenImg] = useState("");
     //opponent player CSS and img styling
     const [opponentPawnStyle, setOpponentPawnStyle] = useState("");
-    const [opponentPawnImg, setOpponentPawnImg] = useState();
+    const [opponentPawnImg, setOpponentPawnImg] = useState("");
     const [opponentKnightStyle, setOpponentKnightStyle] = useState("");
     const [opponentKnightImg, setOpponentKnightImg] = useState("");
     const [opponentBishopStyle, setOpponentBishopStyle] = useState("");
@@ -88,385 +88,145 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
 
     const updateCapturedPieces = () => {
 
+        const pawn_imgs_black = [pawn_black, pawn_black, pawn_black2, pawn_black3, pawn_black4, pawn_black5, pawn_black6, pawn_black7, pawn_black8];
+        const knight_imgs_black = [knight_black, knight_black, knight_black2];
+        const bishop_imgs_black = [bishop_black, bishop_black, bishop_black2];
+        const castle_imgs_black = [castle_black, castle_black, castle_black2];
+        const queen_imgs_black = [queen_black, queen_black];
+
+        const pawn_imgs_white = [pawn_white, pawn_white, pawn_white2, pawn_white3, pawn_white4, pawn_white5, pawn_white6, pawn_white7, pawn_white8];
+        const knight_imgs_white = [knight_white, knight_white, knight_white2];
+        const bishop_imgs_white = [bishop_white, bishop_white, bishop_white2];
+        const castle_imgs_white = [castle_white, castle_white, castle_white2];
+        const queen_imgs_white = [queen_white, queen_white];
+
+        const pieces_imgs = [
+            [
+                pawn_imgs_white,
+                knight_imgs_white,
+                bishop_imgs_white,
+                castle_imgs_white,
+                queen_imgs_white,
+            ],
+            [
+                pawn_imgs_black,
+                knight_imgs_black,
+                bishop_imgs_black,
+                castle_imgs_black,
+                queen_imgs_black,
+            ]
+        ];
+
+        const playerImgStates = [setPlayerPawnImg, setPlayerKnightImg, setPlayerBishopImg, setPlayerCastleImg, setPlayerQueenImg];
+        const playerStyleStates = [setPlayerPawnStyle, setPlayerKnightStyle, setPlayerBishopStyle, setPlayerCastleStyle, setPlayerQueenStyle];
+        const opponentImgStates = [setOpponentPawnImg, setOpponentKnightImg, setOpponentBishopImg, setOpponentCastleImg, setOpponentQueenImg];
+        const opponentStyleStates = [setOpponentPawnStyle, setOpponentKnightStyle, setOpponentBishopStyle, setOpponentCastleStyle, setOpponentQueenStyle];
+
         if (orientation[0] === "w"){
             //board orientation is white
             //player is white
             //opponent is black
 
-            //update Player
+            //capturedPieces[0] is white & capturedPieces[1] is black
+            //pieces_imgs[0] is white & pieces_imgs[1] is black
+
+            //update Player to show their captured pieces
             
-            if (capturedPieces[0].p === 0){
-                setPlayerPawnStyle("game-pieces-captured game-pieces-captured-hidden");
-                setPlayerPawnImg(pawn_black);
-
-            } else if (capturedPieces[0].p === 1){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_black);
-
-            } else if (capturedPieces[0].p === 2){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_black2);
-
-            } else if (capturedPieces[0].p === 3){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_black3);
-
-            } else if (capturedPieces[0].p === 4){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_black4);
-
-            } else if (capturedPieces[0].p === 5){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_black5);
+            //this index of the object is used to change the state img and style as it is formated to match the capturedPieces
+            var pieceIndexPlayer = 0;
+            
+            for (let piece in capturedPieces[0]){//iterate through the captured pieces object to return the number of each type of piece captured
                 
-            } else if (capturedPieces[0].p === 6){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_black6);
+                if (piece !== "player"){//skip past the player color as we need the pieces to line up with the img array
 
-            } else if (capturedPieces[0].p === 7){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_black7);
+                    if (capturedPieces[0][piece] === 0){//if number captured is 0 then hide the piece
+                        playerStyleStates[pieceIndexPlayer]("game-pieces-captured game-pieces-captured-hidden");
+                    } else {//show the piece
+                        playerStyleStates[pieceIndexPlayer]("game-pieces-captured");
+                    }
 
-            } else if (capturedPieces[0].p === 8){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_black8);
-            }
+                    //depending on the piece captured, the number captured is used to link to the image needed to show
+                    //As this player is white, they are capturing black pieces
+                    playerImgStates[pieceIndexPlayer](pieces_imgs[1][pieceIndexPlayer][capturedPieces[0][piece]]);
 
+                    ++pieceIndexPlayer;
+                }
+            };
+
+            //Update opponent to show their captured pieces
+            //this index of the object is used to change the state img and style as it is formated to match the capturedPieces
+            var pieceIndexOpponent = 0;
             
-            
-            if (capturedPieces[0].n === 0){
-                setPlayerKnightStyle("game-pieces-captured game-pieces-captured-hidden");
-                setPlayerKnightImg(knight_black);
-
-            } else if (capturedPieces[0].n === 1){
-                setPlayerKnightStyle("game-pieces-captured");
-                setPlayerKnightImg(knight_black);
-
-            } else if (capturedPieces[0].n === 2){
-                setPlayerKnightStyle("game-pieces-captured");
-                setPlayerKnightImg(knight_black2);
-
-            }
-
-
-            if (capturedPieces[0].b === 0){
-                setPlayerBishopStyle("game-pieces-captured game-pieces-captured-hidden");
-                setPlayerBishopImg(bishop_black);
+            for (let piece in capturedPieces[1]){//iterate through the captured pieces object to return the number of each type of piece captured
                 
-            } else if (capturedPieces[0].b === 1){
-                setPlayerBishopStyle("game-pieces-captured");
-                setPlayerBishopImg(bishop_black);
+                if (piece !== "player"){//skip past the player color as we need the pieces to line up with the img array
 
-            } else if (capturedPieces[0].b === 2){
-                setPlayerBishopStyle("game-pieces-captured");
-                setPlayerBishopImg(bishop_black2);
+                    if (capturedPieces[1][piece] === 0){//if number captured is 0 then hide the piece
+                        opponentStyleStates[pieceIndexOpponent]("game-pieces-captured game-pieces-captured-hidden");
+                    } else {//show the piece
+                        opponentStyleStates[pieceIndexOpponent]("game-pieces-captured");
+                    }
 
-            } 
-            
-            if (capturedPieces[0].r === 0){
-                setPlayerCastleStyle("game-pieces-captured game-pieces-captured-hidden");
-                setPlayerCastleImg(castle_black);
+                    //depending on the piece captured, the number captured is used to link to the image needed to show
+                    //As this player is black, they are capturing white pieces
+                    opponentImgStates[pieceIndexOpponent](pieces_imgs[0][pieceIndexOpponent][capturedPieces[1][piece]]);
 
-            } else if (capturedPieces[0].r === 1){
-                setPlayerCastleStyle("game-pieces-captured");
-                setPlayerCastleImg(castle_black);
+                    ++pieceIndexOpponent;
+                }
+            };
 
-            } else if (capturedPieces[0].r === 2){
-                setPlayerCastleStyle("game-pieces-captured");
-                setPlayerCastleImg(castle_black2);
-
-            } 
-            
-            if (capturedPieces[0].q === 0){
-                setPlayerQueenStyle("game-pieces-captured game-pieces-captured-hidden");
-                setPlayerQueenImg(queen_black);
-
-            } else if (capturedPieces[0].q === 1){
-                setPlayerQueenStyle("game-pieces-captured");
-                setPlayerQueenImg(queen_black);
-            } 
-
-            //Update opponent
-            if (capturedPieces[1].p === 0){
-                setOpponentPawnStyle("game-pieces-captured game-pieces-captured-hidden");
-                setOpponentPawnImg(pawn_white);
-
-            } else if (capturedPieces[1].p === 1){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_white);
-
-            } else if (capturedPieces[1].p === 2){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_white2);
-
-            } else if (capturedPieces[1].p === 3){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_white3);
-
-            } else if (capturedPieces[1].p === 4){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_white4);
-
-            } else if (capturedPieces[1].p === 5){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_white5);
-                
-            } else if (capturedPieces[1].p === 6){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_white6);
-
-            } else if (capturedPieces[1].p === 7){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_white7);
-
-            } else if (capturedPieces[1].p === 8){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_white8);
-
-            }
-            
-            if (capturedPieces[1].n === 0){
-                setOpponentKnightStyle("game-pieces-captured game-pieces-captured-hidden");
-                setOpponentKnightImg(knight_white);
-
-            } else if (capturedPieces[1].n === 1){
-                setOpponentKnightStyle("game-pieces-captured");
-                setOpponentKnightImg(knight_white);
-
-            } else if (capturedPieces[1].n === 2){
-                setOpponentKnightStyle("game-pieces-captured");
-                setOpponentKnightImg(knight_white2);
-
-            }
-
-
-            if (capturedPieces[1].b === 0){
-                setOpponentBishopStyle("game-pieces-captured game-pieces-captured-hidden");
-                setOpponentBishopImg(bishop_white);
-                
-            } else if (capturedPieces[1].b === 1){
-                setOpponentBishopStyle("game-pieces-captured");
-                setOpponentBishopImg(bishop_white);
-
-            } else if (capturedPieces[1].b === 2){
-                setOpponentBishopStyle("game-pieces-captured");
-                setOpponentBishopImg(bishop_white2);
-
-            } 
-            
-            if (capturedPieces[1].r === 0){
-                setOpponentCastleStyle("game-pieces-captured game-pieces-captured-hidden");
-                setOpponentCastleImg(castle_white);
-
-            } else if (capturedPieces[1].r === 1){
-                setOpponentCastleStyle("game-pieces-captured");
-                setOpponentCastleImg(castle_white);
-
-            } else if (capturedPieces[1].r === 2){
-                setOpponentCastleStyle("game-pieces-captured");
-                setOpponentCastleImg(castle_white2);
-
-            } 
-            
-            if (capturedPieces[1].q === 0){
-                setOpponentQueenStyle("game-pieces-captured game-pieces-captured-hidden");
-                setOpponentQueenImg(queen_white);
-
-            } else if (capturedPieces[1].q === 1){
-                setOpponentQueenStyle("game-pieces-captured");
-                setOpponentQueenImg(queen_white);
-            } 
-
-
-        }else {
+        } else {
             //board orientation is black
             //player is black
             //opponent is white
 
-            //update Player
-            if (capturedPieces[1].p === 0){
-                setPlayerPawnStyle("game-pieces-captured game-pieces-captured-hidden");
-                setPlayerPawnImg(pawn_white);
+            //capturedPieces[0] is white & capturedPieces[1] is black
+            //pieces_imgs[0] is white & pieces_imgs[1] is black
 
-            } else if (capturedPieces[1].p === 1){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_white);
-
-            } else if (capturedPieces[1].p === 2){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_white2);
-
-            } else if (capturedPieces[1].p === 3){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_white3);
-
-            } else if (capturedPieces[1].p === 4){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_white4);
-
-            } else if (capturedPieces[1].p === 5){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_white5);
+            //update Player to show their captured pieces
+            //this index of the object is used to change the state img and style as it is formated to match the capturedPieces
+            var pieceIndexPlayer = 0;
+            
+            for (let piece in capturedPieces[1]){//iterate through the captured pieces object to return the number of each type of piece captured
                 
-            } else if (capturedPieces[1].p === 6){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_white6);
+                if (piece !== "player"){
 
-            } else if (capturedPieces[1].p === 7){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_white7);
+                    if (capturedPieces[1][piece] === 0){//skip past the player color as we need the pieces to line up with the img array
+                        playerStyleStates[pieceIndexPlayer]("game-pieces-captured game-pieces-captured-hidden");
+                    } else {//show the piece
+                        playerStyleStates[pieceIndexPlayer]("game-pieces-captured");
+                    }
 
-            } else if (capturedPieces[1].p === 8){
-                setPlayerPawnStyle("game-pieces-captured");
-                setPlayerPawnImg(pawn_white8);
+                    //depending on the piece captured, the number captured is used to link to the image needed to show
+                    //As this player is black, they are capturing white pieces
+                    playerImgStates[pieceIndexPlayer](pieces_imgs[0][pieceIndexPlayer][capturedPieces[1][piece]]);
 
-            }
+                    ++pieceIndexPlayer;
+                }
+            } 
+
+            //Update opponent to show their captured pieces
+            //this index of the object is used to change the state img and style as it is formated to match the capturedPieces
+            var pieceIndexOpponent = 0;
             
-            if (capturedPieces[1].n === 0){
-                setPlayerKnightStyle("game-pieces-captured game-pieces-captured-hidden");
-                setPlayerKnightImg(knight_white);
-
-            } else if (capturedPieces[1].n === 1){
-                setPlayerKnightStyle("game-pieces-captured");
-                setPlayerKnightImg(knight_white);
-
-            } else if (capturedPieces[1].n === 2){
-                setPlayerKnightStyle("game-pieces-captured");
-                setPlayerKnightImg(knight_white2);
-
-            }
-
-
-            if (capturedPieces[1].b === 0){
-                setPlayerBishopStyle("game-pieces-captured game-pieces-captured-hidden");
-                setPlayerBishopImg(bishop_white);
+            for (let piece in capturedPieces[0]){//iterate through the captured pieces object to return the number of each type of piece captured
                 
-            } else if (capturedPieces[1].b === 1){
-                setPlayerBishopStyle("game-pieces-captured");
-                setPlayerBishopImg(bishop_white);
+                if (piece !== "player"){
 
-            } else if (capturedPieces[1].b === 2){
-                setPlayerBishopStyle("game-pieces-captured");
-                setPlayerBishopImg(bishop_white2);
+                    if (capturedPieces[0][piece] === 0){//skip past the player color as we need the pieces to line up with the img array
+                        opponentStyleStates[pieceIndexOpponent]("game-pieces-captured game-pieces-captured-hidden");
+                    } else {//show the piece
+                        opponentStyleStates[pieceIndexOpponent]("game-pieces-captured");
+                    }
 
-            } 
-            
-            if (capturedPieces[1].r === 0){
-                setPlayerCastleStyle("game-pieces-captured game-pieces-captured-hidden");
-                setPlayerCastleImg(castle_white);
+                    //depending on the piece captured, the number captured is used to link to the image needed to show
+                    //As this player is white, they are capturing black pieces
+                    opponentImgStates[pieceIndexOpponent](pieces_imgs[1][pieceIndexOpponent][capturedPieces[0][piece]]);
 
-            } else if (capturedPieces[1].r === 1){
-                setPlayerCastleStyle("game-pieces-captured");
-                setPlayerCastleImg(castle_white);
-
-            } else if (capturedPieces[1].r === 2){
-                setPlayerCastleStyle("game-pieces-captured");
-                setPlayerCastleImg(castle_white2);
-
-            } 
-            
-            if (capturedPieces[1].q === 0){
-                setPlayerQueenStyle("game-pieces-captured game-pieces-captured-hidden");
-                setPlayerQueenImg(queen_white);
-
-            } else if (capturedPieces[1].q === 1){
-                setPlayerQueenStyle("game-pieces-captured");
-                setPlayerQueenImg(queen_white);
-            } 
-
-            //Update opponent
-            if (capturedPieces[0].p === 0){
-                setOpponentPawnStyle("game-pieces-captured game-pieces-captured-hidden");
-                setOpponentPawnImg(pawn_black);
-
-            } else if (capturedPieces[0].p === 1){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_black);
-
-            } else if (capturedPieces[0].p === 2){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_black2);
-
-            } else if (capturedPieces[0].p === 3){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_black3);
-
-            } else if (capturedPieces[0].p === 4){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_black4);
-
-            } else if (capturedPieces[0].p === 5){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_black5);
-                
-            } else if (capturedPieces[0].p === 6){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_black6);
-
-            } else if (capturedPieces[0].p === 7){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_black7);
-
-            } else if (capturedPieces[0].p === 8){
-                setOpponentPawnStyle("game-pieces-captured");
-                setOpponentPawnImg(pawn_black8);
-
-            }
-            
-            if (capturedPieces[0].n === 0){
-                setOpponentKnightStyle("game-pieces-captured game-pieces-captured-hidden");
-                setOpponentKnightImg(knight_black);
-
-            } else if (capturedPieces[0].n === 1){
-                setOpponentKnightStyle("game-pieces-captured");
-                setOpponentKnightImg(knight_black);
-
-            } else if (capturedPieces[0].n === 2){
-                setOpponentKnightStyle("game-pieces-captured");
-                setOpponentKnightImg(knight_black2);
-
-            }
-
-
-            if (capturedPieces[0].b === 0){
-                setOpponentBishopStyle("game-pieces-captured game-pieces-captured-hidden");
-                setOpponentBishopImg(bishop_black);
-                
-            } else if (capturedPieces[0].b === 1){
-                setOpponentBishopStyle("game-pieces-captured");
-                setOpponentBishopImg(bishop_black);
-
-            } else if (capturedPieces[0].b === 2){
-                setOpponentBishopStyle("game-pieces-captured");
-                setOpponentBishopImg(bishop_black2);
-
-            } 
-            
-            if (capturedPieces[0].r === 0){
-                setOpponentCastleStyle("game-pieces-captured game-pieces-captured-hidden");
-                setOpponentCastleImg(castle_black);
-
-            } else if (capturedPieces[0].r === 1){
-                setOpponentCastleStyle("game-pieces-captured");
-                setOpponentCastleImg(castle_black);
-
-            } else if (capturedPieces[0].r === 2){
-                setOpponentCastleStyle("game-pieces-captured");
-                setOpponentCastleImg(castle_black2);
-
-            } 
-            
-            if (capturedPieces[0].q === 0){
-                setOpponentQueenStyle("game-pieces-captured game-pieces-captured-hidden");
-                setOpponentQueenImg(queen_black);
-
-            } else if (capturedPieces[0].q === 1){
-                setOpponentQueenStyle("game-pieces-captured");
-                setOpponentQueenImg(queen_black);
-            }
-
+                    ++pieceIndexOpponent;
+                }
+            }  
         }
-
     }
 
     //see whos turn it is change the player card to highlight that players turn
