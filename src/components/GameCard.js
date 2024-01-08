@@ -94,6 +94,7 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
             //opponent is black
 
             //update Player
+            
             if (capturedPieces[0].p === 0){
                 setPlayerPawnStyle("game-pieces-captured game-pieces-captured-hidden");
                 setPlayerPawnImg(pawn_black);
@@ -129,8 +130,9 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
             } else if (capturedPieces[0].p === 8){
                 setPlayerPawnStyle("game-pieces-captured");
                 setPlayerPawnImg(pawn_black8);
-
             }
+
+            
             
             if (capturedPieces[0].n === 0){
                 setPlayerKnightStyle("game-pieces-captured game-pieces-captured-hidden");

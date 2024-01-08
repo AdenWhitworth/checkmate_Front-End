@@ -75,7 +75,7 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
             setErrorCSS('error-message error-hide');
             const user = userCredential.user;
             setUID(user.uid);
-            SaveNewUser();
+            SaveNewUser(user.uid);
             handleSignUp();
         })
         .catch((error) => {
@@ -91,7 +91,7 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
     }
 
     //after new user is created save this users information in the database 
-    const SaveNewUser = async (e) => {
+    const SaveNewUser = async (UID) => {
         try {
 
             const docRef2 = doc(collection(db, "players"));
@@ -99,7 +99,7 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
             const docRef = await addDoc(collection(db, "users"), {
               username: username,
               email: email,  
-              uid: uid,
+              uid: UID,
               playerID: docRef2.id,
               loss: 0,
               win: 0,
