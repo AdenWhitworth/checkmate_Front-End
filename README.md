@@ -106,4 +106,5 @@ The second collection is a basic list of the players and looks like the followin
 ## Future Features
 - Add in game chat between players
 - Add custom A.I. bot to practice against
+- Add watch active game functionality
 
