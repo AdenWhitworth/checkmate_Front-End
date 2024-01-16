@@ -1,15 +1,14 @@
 import GameCard from "../components/GameCard";
 import InfoCard from "../components/InfoCard";
 import ActiveGame from "../ActiveGame";
-import { useState, useCallback, useEffect, createContext } from "react";
-import socket from "../socket";
+import { useState, useCallback, useEffect, createContext} from "react";
 import EndGameDialog from "../components/EndGameDialog";
 import { db } from '../firebase';
 import { collection, deleteDoc, doc} from "firebase/firestore";
 
 export const GameContext = createContext();
 
-export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, playerId, userId, username, invites, win, loss, inviteBadgeClick, setInviteBadgeClick, setFlagCSS, setForfeitOpen, forfeitOpen, setBadgeCSS, room, setRoom, triggerHome, setTriggerHome,SetPlayFrields}) {
+export default function DashboardCard({setNetworkError, setNetworkReason, socket, setTriggerExit, triggerExit, setExitCSS, playerId, userId, username, invites, win, loss, inviteBadgeClick, setInviteBadgeClick, setFlagCSS, setForfeitOpen, forfeitOpen, setBadgeCSS, room, setRoom, triggerHome, setTriggerHome,SetPlayFrields}) {
 
   const [playerTurn, setPlayerTurn] = useState("w"); //use for player turn
   const [history, setHistory] = useState([]);//object of game history
@@ -52,11 +51,36 @@ export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, 
     
   }, [room, gameplayers]);
 
-
   const handleSoccetOpponentJoinRoom = () => {
-    //attach socket for opponent joining room
-    socket.on("opponentJoined", (roomData) => {
-      setGamePlayers(roomData.players);
+    //attach socket for when the opponent joins the room
+    socket.on("opponentJoined", async (roomData, callback) => {//recieve the room data from the emit and set a callback
+      let error, message;
+      try{
+        //check for no errors and set game players 
+        //if there is an error, then it will be settled on opponent client
+        if (roomData.error === false){//no error passed from server due to other client
+          setGamePlayers(roomData.RoomUpdate.players);
+        } else {
+          //Let the backend know we didnt handle the opponent joining the room
+          error = true;
+          message = "Error Emitting Opponent Joining";
+          callback({error,message});//send callback for unsuccessfully handling the opponent joining
+          return
+        }
+
+        //let back-end know successfull emitted
+        error = false;
+        message = "Success Emitting Opponent Joining";
+
+        callback({error,message})//send callback for successfully handling the opponent joining
+
+      } catch(e){
+        //Let the backend know we didnt handle the opponent joining the room
+        error = true;
+        message = e;
+
+        callback({error,message})//send callback for unsuccessfully handling the opponent joining
+      }
     });
   }
 
@@ -114,6 +138,7 @@ export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, 
     setRoom("");
     setOrientation("");
     setGamePlayers("");
+    setHistory([]);
   }, []);
 
     return (
@@ -121,9 +146,9 @@ export default function DashboardCard({setTriggerExit, triggerExit, setExitCSS, 
         <section class="dashboard">
           <div class="dashboard-content">
 
-            <ActiveGame win={win} loss={loss} userId={userId} opponentUserName={opponentUserName} checkSendHome={checkSendHome} setBadgeCSS={setBadgeCSS} setFlagCSS={setFlagCSS} forfeitGame={forfeitGame} room={room} orientation={orientation} username={username} gameplayers={gameplayers} cleanup={cleanup}></ActiveGame>
+            <ActiveGame setNetworkError={setNetworkError} setNetworkReason={setNetworkReason} socket={socket} username={username} win={win} loss={loss} userId={userId} checkSendHome={checkSendHome} setBadgeCSS={setBadgeCSS} setFlagCSS={setFlagCSS} forfeitGame={forfeitGame} room={room} orientation={orientation} gameplayers={gameplayers} cleanup={cleanup}></ActiveGame>
             
-            {room? <GameCard win={win} loss={loss} orientation={orientation} username={username} gameplayers={gameplayers}></GameCard> : <InfoCard inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} win={win} loss={loss} playerId={playerId} userId={userId} username={username} invites={invites} setRoom={setRoom} setOrientation={setOrientation} setGamePlayers={setGamePlayers}></InfoCard>}
+            {room? <GameCard win={win} loss={loss} orientation={orientation} username={username} gameplayers={gameplayers}></GameCard> : <InfoCard setNetworkError={setNetworkError} setNetworkReason={setNetworkReason} socket={socket} inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} win={win} loss={loss} playerId={playerId} userId={userId} username={username} invites={invites} setRoom={setRoom} setOrientation={setOrientation} setGamePlayers={setGamePlayers}></InfoCard>}
             
             <EndGameDialog 
               open={forfeitOpen} 

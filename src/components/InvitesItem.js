@@ -3,11 +3,10 @@ import check from "../Images/Check.svg"
 import {useState, useEffect, useContext} from "react";
 import { db } from '../firebase';
 import { collection, doc, deleteDoc} from "firebase/firestore";
-import socket from "../socket";
 import {GameContext} from "../components/DashboardCard";
 
 
-export default function InvitesItem({count ,item, index, playerId, userId, username, setRoom, setGamePlayers, setOrientation}) {
+export default function InvitesItem({setNetworkError, setNetworkReason, socket, count ,item, index, playerId, userId, username, setRoom, setGamePlayers, setOrientation}) {
     
     const [colorStyle, setColorStyle] = useState("");//CSS for list item odd or even color
 
@@ -17,35 +16,41 @@ export default function InvitesItem({count ,item, index, playerId, userId, usern
     const joinPlayer = async (e) => {
         e.preventDefault();  
 
+        //set the opponent user information based on item being passed
         setOpponentUserName(item.item.requestUserName);
         setOpponentUserId(item.item.requestUserID);
         setOpponentPlayerId(item.item.requestPlayerID);
         setOpponentWin(item.item.requestWin);
         setOpponentLoss(item.item.requestLoss);
 
-        //allow for player to join room socket
+        //allow for the player to join room socket
         handleSoccetJoinRoom();
     }
 
-    //used to join the opponents game socket
+    //use to join the opponents game socket
     const handleSoccetJoinRoom = () => {
         //check to make sure valid room to join
         if (!item.item.requestRoom) return;
         //emit to other socket that player is joining the room
-        socket.emit("joinRoom", { roomId: item.item.requestRoom }, (response) => {
-        if (response.error) return
-        
-        //successfully joined room and set board to play
-        setRoom(response?.roomId);
-        setGamePlayers(response?.players);
-        setOrientation("black");
-        
-        //Delete the invitation as player has now joined the game
-        const userCollection = collection(db, 'users');
-        const DocRef = doc(userCollection, userId);
-        const inviteCollection = collection(DocRef,'invites');
-        const DocRef2 = doc(inviteCollection, item.id);
-        deleteDoc(DocRef2);
+        socket.emit("joinRoom", { roomId: item.item.requestRoom }, (response) => {//emit the joinRoom and establish a response callback
+            if (response.error) {//if there is an error joining, then prompt the user to try again
+                
+                setNetworkError(true);
+                setNetworkReason("Joining");
+
+                return //Dont allow the function to continue if there is an error
+            }
+            //successfully joined room and now set the board to play
+            setRoom(response.RoomUpdate.roomId);
+            setGamePlayers(response.RoomUpdate.players);
+            setOrientation("black");
+            
+            //Delete the invitation as player has now joined the game
+            const userCollection = collection(db, 'users');
+            const DocRef = doc(userCollection, userId);
+            const inviteCollection = collection(DocRef,'invites');
+            const DocRef2 = doc(inviteCollection, item.id);
+            deleteDoc(DocRef2);
         });
     }
     

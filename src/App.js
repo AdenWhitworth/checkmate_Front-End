@@ -15,11 +15,11 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Badge from '@mui/material/Badge';
-import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from './firebase';
-import { signOut } from "firebase/auth";
+import { signOut, onAuthStateChanged, getAuth } from "firebase/auth";
 import { query, onSnapshot, orderBy, getDocs, collection, where, doc, limit } from "firebase/firestore";  
-import socket from "./socket";
+import { io } from "socket.io-client";
+import ConnectionDialog from "./components/ConnectionDialog";
 
 
 const FillButton = styled(Button)(({ theme }) => ({
@@ -78,6 +78,10 @@ export default function App() {
   const [room, setRoom] = useState("");//use to store database & socket room name
   const [triggerHome, setTriggerHome] = useState(false);//use to direct player to home
   const [triggerExit, setTriggerExit] = useState(false);//use to prompt when player is exit game before opponent joins
+  const [token, setToken] = useState('');//use to track firebase auth token
+  const [socket, setSocket] = useState(null);//use to track socket instance 
+  const [networkError, setNetworkError] = useState(false);//use for tracking error state from back-end
+  const [networkReason, setNetworkReason] = useState('');// use for tracking error message from back-end
 
   //Function to check the top 10 leaders based on weighted rank stored in Firestore
   const fetchLeaderboard = async () => {
@@ -115,8 +119,10 @@ export default function App() {
         
         //get user info from database
         //change navigation to only show log out button
-        setUID(user.uid);
-        fetchUserInfo();
+
+        setToken(user.accessToken);//set firebase token 
+        setUID(user.uid);//set firebase auth uid
+        fetchUserInfo();//fetch user info from database
         SetActiveUser(true);
         setSignUpCSS('hideNavButton');
         setLogInCSS('hideNavButton');
@@ -134,10 +140,71 @@ export default function App() {
     
   },[activeUser])
 
+  //use this to get either an existing or new firebase token
+  const fetchAuthProfile = () => {
+    auth.currentUser.getIdToken().then(function(idToken){
+      setToken(idToken);//set firebase token
+    }). catch (function(error) {//if the token is not fetched then sign the user out to restart the process
+      setSocket(null);//reset the socket
+      handleLogout();//sign out the user
+    })
+
+  }
+
+  //function to set up initial socket connection 
+  //This allows for us to retry connection if their is an error
+  const setupSocket = () => {
+    if (token !== ''){//make sure there is a token
+      try{//try to setup a connection
+        const newSocket = io('https://online-chess-with-friends-server.glitch.me',{ //for local testing use localhost:8080
+          auth: {
+              token: token
+          }
+        });
+  
+        setSocket(newSocket); //set socket to be used by later methods 
+
+      } catch (error){//try issuing a new token to connect again. If this doesnt work then the user will be signed out
+        fetchAuthProfile();
+      }
+      
+    }
+  }
+
+  //This socket method is called if the authentication fails
+  useEffect(() => {
+    if (socket !== null){//need to ensure that a socket has been established even if not authenticated
+      
+      socket.on("connect_error", (err) => {//try issuing a new token to connect again. If this doesnt work then the user will be signed out
+        fetchAuthProfile();
+      });
+      
+    }
+  },[socket]);
+
+  //this allows for the initail socket to be created on first load and subsequent connections to be made if the token is changed
+  useEffect(() => {
+    setupSocket();
+  },[token]);
+
   const handleSoccetUser = () => {
     //emit the current player username so back end can keep track of players
-    socket.emit("username", username);
+    socket.emit("username", username, (response) => {//emit username and set a response callback
+      //if the username is not set in the server prompt the user to try connecting again 
+      if (response.error){
+        setNetworkError(true);
+        setNetworkReason("Username");
+      }
+    });
   }
+
+  useEffect(() => {
+    if (socket !== null && username !== ""){
+      //when a user is signed in and socket is established emit the username to socket 
+      handleSoccetUser();
+    }
+    
+  }, [socket,username]);
 
   const fetchUserInfo = async () => {
 
@@ -246,11 +313,6 @@ export default function App() {
       SetPlayFrields(false);
     }              
   }
-  
-  useEffect(() => {
-    //when a user is signed in emit the username to socket 
-    handleSoccetUser();
-  }, [username]);
 
   const showMenu = () => {
     //show the mobile navigation menue when clicked
@@ -301,7 +363,7 @@ export default function App() {
         </nav>
       </section>
       
-      {playFrields? <DashboardCard setTriggerExit={setTriggerExit} triggerExit={triggerExit} SetPlayFrields={SetPlayFrields} setTriggerHome={setTriggerHome} triggerHome={triggerHome} room={room} setRoom={setRoom} setBadgeCSS={setBadgeCSS} setFlagCSS={setFlagCSS} setExitCSS={setExitCSS} forfeitOpen={forfeitOpen} setForfeitOpen={setForfeitOpen} inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} username={username} userId={userId} playerId={playerId} invites={invites} win={win} loss={loss}></DashboardCard> : <HomeCard handlePlayFriends={() => {
+      {playFrields? <DashboardCard setNetworkError={setNetworkError} setNetworkReason={setNetworkReason} socket={socket} setTriggerExit={setTriggerExit} triggerExit={triggerExit} SetPlayFrields={SetPlayFrields} setTriggerHome={setTriggerHome} triggerHome={triggerHome} room={room} setRoom={setRoom} setBadgeCSS={setBadgeCSS} setFlagCSS={setFlagCSS} setExitCSS={setExitCSS} forfeitOpen={forfeitOpen} setForfeitOpen={setForfeitOpen} inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} username={username} userId={userId} playerId={playerId} invites={invites} win={win} loss={loss}></DashboardCard> : <HomeCard handlePlayFriends={() => {
           //if user is not signed in prompt them top
           //this is triggered on play friends button
           //re-fetch invites to see if any new ones came in
@@ -337,8 +399,34 @@ export default function App() {
         }}
       ></LogInModal>
 
+      
+
+      <ConnectionDialog 
+        open={networkError} 
+        networkReason={networkReason}
+        handleContinue={() => {
+          //close the modal
+          setNetworkError(false);
+
+          //depending on the error reason retry what failed
+          if (networkReason === "Username"){
+            handleSoccetUser();//retry setting the username 
+          } else if (networkReason === "End"){
+            socket.emit("closeRoom", {roomId: room}, (response) => {
+              if (response.error){//if there is an error closing the room, repeat the close action
+                setNetworkError(true);
+                setNetworkReason("End");
+                return
+              }
+            });
+          }
+
+        }}
+      ></ConnectionDialog>
+
       {alert ? <AlertDialog severity={alertSeverity} contentText={alertContent} handleClose={() => {setAlert(false)}}></AlertDialog> : <></>}
       
     </div>
   );
 }
+

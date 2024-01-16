@@ -9,7 +9,7 @@ import { query, onSnapshot, collection, where } from "firebase/firestore";
 import {useState, useEffect} from "react";
 
 
-export default function InfoCard({playerId, userId, username, invites, setRoom, setOrientation, setGamePlayers, room, win, loss, inviteBadgeClick, setInviteBadgeClick}) {
+export default function InfoCard({setNetworkError, setNetworkReason, socket, playerId, userId, username, invites, setRoom, setOrientation, setGamePlayers, room, win, loss, inviteBadgeClick, setInviteBadgeClick}) {
 
   const [selection, setSelection] = useState(false);//use to determine if user wants to see player list or invite list
   const [playerStyle, setPlayerStyle] = useState("players-option info-selection");//CSS to show player list
@@ -142,7 +142,7 @@ export default function InfoCard({playerId, userId, username, invites, setRoom, 
                 <div class="available-players">
                   <ul class="players-list">
                     
-                    {selection? searchInvites.map((item, index) => <InvitesItem setRoom={setRoom} setGamePlayers={setGamePlayers} setOrientation={setOrientation} key={item.id} count={Object.keys(searchInvites).length} item={item} index={index} playerId={playerId} userId={userId} username={username}/>) : searchPlayers.map((item, index) => <PlayersItem win={win} loss={loss} setRoom={setRoom} setOrientation={setOrientation} key={item.id} count={Object.keys(searchPlayers).length} item={item} index={index} playerId={playerId} userId={userId} username={username}/>)}
+                    {selection? searchInvites.map((item, index) => <InvitesItem setNetworkError={setNetworkError} setNetworkReason={setNetworkReason} socket={socket} setRoom={setRoom} setGamePlayers={setGamePlayers} setOrientation={setOrientation} key={item.id} count={Object.keys(searchInvites).length} item={item} index={index} playerId={playerId} userId={userId} username={username}/>) : searchPlayers.map((item, index) => <PlayersItem setNetworkError={setNetworkError} setNetworkReason={setNetworkReason} socket={socket} win={win} loss={loss} setRoom={setRoom} setOrientation={setOrientation} key={item.id} count={Object.keys(searchPlayers).length} item={item} index={index} playerId={playerId} userId={userId} username={username}/>)}
 
                   </ul>
                 </div>
