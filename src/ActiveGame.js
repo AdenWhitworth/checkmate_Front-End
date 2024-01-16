@@ -7,7 +7,7 @@ import { db } from './firebase';
 import { collection, doc, increment, updateDoc} from "firebase/firestore";
 
 export default function ActiveGame({ username, setNetworkError, setNetworkReason, socket, forfeitGame, gameplayers, room, orientation, cleanup, setBadgeCSS, setFlagCSS, checkSendHome, userId, win, loss}) {
-  const chess = useMemo(() => new Chess(), []);//have react memoize the new chess game instance only on first refresh. Each game does not require this to be updated. Only new games will trigger this to rememoize
+  const chess = useMemo(() => new Chess(), [room]);//have react memoize the new chess game instance only on first refresh. Each game does not require this to be updated. Only new games will trigger this to rememoize
   const [fen, setFen] = useState(chess.fen());//Forsyth-Edwards Notation used to describe chess piece locations as a string
   
   const [over, setOver] = useState("");//use to establish why the end game dialog was triggered
