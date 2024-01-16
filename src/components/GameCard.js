@@ -251,8 +251,6 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
     //take the history object created by chess.js api and format it for our UI
     const formatHistory = () => {
 
-        console.log(gameContext.history, gameContext.history.length);
-
         //only format history once the first move is made
         if (gameContext.history.length !== 0){
 
