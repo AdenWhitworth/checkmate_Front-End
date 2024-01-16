@@ -3,11 +3,9 @@ import plane from "../Images/Paper Plane.svg";
 import {useState, useEffect, useContext} from "react";
 import { db } from '../firebase';
 import { collection, addDoc, doc, getDoc} from "firebase/firestore";
-import socket from "../socket";
 import {GameContext} from "../components/DashboardCard";
 
-
-export default function PlayersItem({count ,item, index, playerId, userId, username, setRoom, setOrientation, win, loss}) {
+export default function PlayersItem({setNetworkError, setNetworkReason, socket, count ,item, index, playerId, userId, username, setRoom, setOrientation, win, loss}) {
     
     const [colorStyle, setColorStyle] = useState("");//CSS for list item odd or even color
     const [startRoom, setStartRoom] = useState("");//use to create room
@@ -18,9 +16,15 @@ export default function PlayersItem({count ,item, index, playerId, userId, usern
     //set the player creating the room to white
     const handleSoccetCreateRoom = (e) => {
         e.preventDefault();  
-        socket.emit("createRoom", (response) => {
-            setStartRoom(response);
-            setOrientation("white");
+        socket.emit("createRoom", (response) => {//emit createRoom and set a response callback
+            if (response.error){//if there is an error with the server creating the room, then prompt user to try again
+                setNetworkError(true);
+                setNetworkReason("Create");
+                return //dont allow for the function to continue
+            }
+
+            setStartRoom(response.roomId);//start the room for this player and prompt them to wait for other player to join
+            setOrientation("white");//player to create room is set to white who moves first
         });
     }
 
@@ -33,6 +37,7 @@ export default function PlayersItem({count ,item, index, playerId, userId, usern
             const DocRef2 = doc(userCollection, item.item.userID);
             const docSnap = await getDoc(DocRef2);
 
+            //for the user passed to this item pull the player info and set the opponent variables accordingly
             setOpponentUserName(docSnap.data().username);
             setOpponentUserId(item.item.userID);
             setOpponentPlayerId(docSnap.data().playerID);

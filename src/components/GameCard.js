@@ -83,6 +83,7 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
     const [opponentQueenStyle, setOpponentQueenStyle] = useState("");
     const [opponentQueenImg, setOpponentQueenImg] = useState("");
 
+    //useContext required to move the data laterally from the active game to the GameCard without triggering a rerender of the parent DashboardCard
     const gameContext = useContext(GameContext);//context to access game history and player turn
     const [gameMoves, setGameMoves] = useState([]);//object for game moves
 
@@ -249,6 +250,8 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
 
     //take the history object created by chess.js api and format it for our UI
     const formatHistory = () => {
+
+        console.log(gameContext.history, gameContext.history.length);
 
         //only format history once the first move is made
         if (gameContext.history.length !== 0){
