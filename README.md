@@ -48,7 +48,7 @@ To better understand what technology stack I planned on using for this project, 
 <img width="700" src="https://github.com/AdenWhitworth/online_chess_with_friends/raw/master/src/Images/Architecture.JPG" alt="Architecture">
 
 #### UI Design
-Before designing any UI components, I first created the list of features found above. Keeping this list of features in mind, I created the below ruff Figma wire frame of each possible screen based on each user interactions. I concluded that I needed a home screen to prompt users to sign up or log in and to display the global leader board, dashboard screen for players to join or invite other players, and active game screen to house the chess board and in game statistics. Using modals, I will prompt users to sign up or log in, and I will also use them for in game alerts. I played around with the colors and eventually landed on a yellow dark mode color pallet.
+Before designing any UI components, I first created the list of features found above. Keeping this list of features in mind, I created the below rough Figma wire frame of each possible screen based on each user's interactions. I concluded that I needed a home screen to prompt users to sign up or log in and to display the global leader board, dashboard screen for players to join or invite other players, and active game screen to house the chess board and in-game statistics. Using modals, I will prompt users to sign up or log in, and I will also use them for in-game alerts. I played around with the colors and eventually landed on a yellow dark mode color pallet.
 
 <img width="700" src="https://github.com/AdenWhitworth/online_chess_with_friends/raw/master/src/Images/Figma.JPG" alt="Figma">
 
