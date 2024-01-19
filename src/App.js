@@ -109,7 +109,7 @@ export default function App() {
   useEffect(() =>{
     //refresh invites on re-render
     fetchInvites();
-  },[invites])
+  },[])
 
   useEffect(() =>{
     //check for user being signed in or sign out

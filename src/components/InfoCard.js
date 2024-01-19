@@ -64,15 +64,15 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
   useEffect(() =>{
     //update the players list
     fetchPlayers();
-  },[players])
+  },[invites])
 
   useEffect(() =>{
-    //update players list based on search results
+    //update player list on initial load and on any change to players in the database
     setSearchPlayers(players);
   },[players])
 
   useEffect(() =>{
-    //update invites list based on search results
+    //update invites list on initial load and on any change to invites in the database
     setSearchInvites(invites);
   },[invites])
 
@@ -122,13 +122,17 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
                 <div class="player-selection">
                   
                   <div class={playerStyle} onClick={handleInfoSelection}>
-                    <img src={globe}></img>
-                    <h4>Players</h4>
+                    <div>
+                      <img src={globe}></img>
+                      <h4>Players</h4>
+                    </div>
                   </div>
 
                   <div class={inviteStyle} onClick={handleInfoSelection}>
-                    <img src={reply_arrow}></img>
-                    <h4>Invites</h4>
+                    <div>
+                      <img src={reply_arrow}></img>
+                      <h4>Invites</h4>
+                    </div>
                   </div>
                 </div>
                 

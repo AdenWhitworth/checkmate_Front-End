@@ -7,7 +7,7 @@ import {GameContext} from "../components/DashboardCard";
 
 export default function PlayersItem({setNetworkError, setNetworkReason, socket, count ,item, index, playerId, userId, username, setRoom, setOrientation, win, loss}) {
     
-    const [colorStyle, setColorStyle] = useState("");//CSS for list item odd or even color
+    const [colorStyle, setColorStyle] = useState("player-line");//CSS for list item odd or even color
     const [startRoom, setStartRoom] = useState("");//use to create room
 
     const {setOpponentInviteId, setOpponentUserName, setOpponentUserId, setOpponentPlayerId, setOpponentWin, setOpponentLoss} = useContext(GameContext);//get opponent data stored in context

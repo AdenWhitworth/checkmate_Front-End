@@ -285,6 +285,7 @@ li {
     grid-template-areas: 'playersOption inviteOption';
     width: 100%;
     height: 20%;
+    transition: 0.3s ease-in-out;
 }
 
 .board{
@@ -294,10 +295,12 @@ li {
 
 .info-selection{
     background-color: #181818;
+    transition: 0.3s ease-in-out;
 }
 
 .info-unselection{
     background-color: #3D3D3D;
+    transition: 0.3s ease-in-out;
 }
 
 .players-option{
@@ -305,8 +308,9 @@ li {
     color: #FFFFFF;
     text-align: center;
     border-radius: 20px 0 0 0;
-    padding-top: 15%;
     cursor: pointer;
+    display: grid;
+    place-items: center;
 }
 
 .players-option img{
@@ -315,7 +319,8 @@ li {
 
 .players-option h4{
     padding-top: 2%;
-    margin-top: 0;
+    margin: 0;
+    padding-bottom: 0;
 }
 
 
@@ -324,8 +329,9 @@ li {
     color: #FFFFFF;
     border-radius: 0 20px 0 0;
     text-align: center;
-    padding-top: 15%;
     cursor: pointer;
+    display: grid;
+    place-items: center;
 }
 
 .invite-option img{
@@ -334,7 +340,8 @@ li {
 
 .invite-option h4{
     padding-top: 2%;
-    margin-top: 0;
+    margin: 0;
+    padding-bottom: 0;
 }
 
 .search-bar{
@@ -665,6 +672,10 @@ li {
         
     }
 
+    .dashboard{
+        height: auto;
+    }
+
     .dashboard-content{
         
         margin-top: 20%;
@@ -678,6 +689,14 @@ li {
         margin-left: 10%;
         height: 60vh;
         margin-bottom: 20%;
+    }
+
+    .players-option img{
+        height: 30px;
+    }
+
+    .invite-option img{
+        height: 30px;
     }
 
     .search-img{
