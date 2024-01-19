@@ -5,7 +5,7 @@ import {useState, useEffect} from "react";
 
 export default function LeaderItem({item, index}) {
 
-    const [medalStyle, setMedalStyle] = useState("");//CSS for medal
+    const [medalStyle, setMedalStyle] = useState("medal-list");//CSS for medal
     const [medalImg, setMedalImg] = useState(gold_medal);//style for medal img
     const [colorStyle, setColorStyle] = useState("");//CSS for list item odd or even color
 
