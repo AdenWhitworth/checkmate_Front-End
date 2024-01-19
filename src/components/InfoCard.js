@@ -64,15 +64,15 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
   useEffect(() =>{
     //update the players list
     fetchPlayers();
-  },[players])
+  },[invites])
 
   useEffect(() =>{
-    //update players list based on search results
+    //update player list on initial load and on any change to players in the database
     setSearchPlayers(players);
   },[players])
 
   useEffect(() =>{
-    //update invites list based on search results
+    //update invites list on initial load and on any change to invites in the database
     setSearchInvites(invites);
   },[invites])
 
