@@ -122,13 +122,17 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
                 <div class="player-selection">
                   
                   <div class={playerStyle} onClick={handleInfoSelection}>
-                    <img src={globe}></img>
-                    <h4>Players</h4>
+                    <div>
+                      <img src={globe}></img>
+                      <h4>Players</h4>
+                    </div>
                   </div>
 
                   <div class={inviteStyle} onClick={handleInfoSelection}>
-                    <img src={reply_arrow}></img>
-                    <h4>Invites</h4>
+                    <div>
+                      <img src={reply_arrow}></img>
+                      <h4>Invites</h4>
+                    </div>
                   </div>
                 </div>
                 
