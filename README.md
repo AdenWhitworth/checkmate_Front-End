@@ -24,6 +24,8 @@ This repository is just for the front-end. Use the link below to access the back
 - Real time statistics displayed in game
 - Ability to leave or forfeit
 - Responsive design for web and mobile
+- Client Authentication middleware with server (feature/1)
+- In game chat between players (feature/2)
 
 ## Front-End Technology Stack
 - React.js
@@ -88,7 +90,7 @@ The second collection is a basic list of the players and looks like the followin
 
 ## Future Features
 - Handle client Authentication middleware with server :heavy_check_mark: (feature/1)
-- Add in game chat between players
+- Add in game chat between players :heavy_check_mark: (feature/2)
 - Add custom A.I. bot to practice against
 - Add watch active game functionality
 
