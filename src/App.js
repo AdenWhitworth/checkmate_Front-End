@@ -425,7 +425,7 @@ export default function App() {
       ></ConnectionDialog>
 
       {alert ? <AlertDialog severity={alertSeverity} contentText={alertContent} handleClose={() => {setAlert(false)}}></AlertDialog> : <></>}
-      
+   
     </div>
   );
 }

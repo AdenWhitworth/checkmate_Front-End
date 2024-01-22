@@ -213,7 +213,6 @@ li {
 }
 
 .input-text{
-   
     padding-bottom: 5%;
 }
 
@@ -360,12 +359,12 @@ li {
     border-radius: 15px;
 }
 
-::placeholder {
+.search-bar input::placeholder {
     color: #FFE769;
     opacity: 1;
 }
   
-::-ms-input-placeholder {
+.search-bar input::-ms-input-placeholder {
     color: #FFE769;
 }
 
@@ -597,6 +596,155 @@ li {
 
 .nav-close{
     display: none;
+}
+
+.message-container{
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+}
+
+.message-txt-container{
+    height: 300px;
+    overflow-y: auto;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+.message-txt-container li{
+    list-style: none;
+    text-decoration: none;
+    list-style-type: none;
+}
+
+.message-txt-container::-webkit-scrollbar { 
+    background: transparent; 
+    display: none;
+}
+
+.message-txt-container::-webkit-scrollbar-thumb { 
+    background-color: #FFFFFF; 
+    -webkit-border-radius: 1ex; 
+}
+
+.message-txt{
+    
+    border-radius: 10px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    width: 80%;
+    min-height: 30px;
+}
+
+.message-txt-container h5{
+    font-size: 12px;
+    margin: 0;
+}
+
+.txt-player{
+    text-align: end;
+    padding-right: 5%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.txt-opponent{
+    text-align: start;
+    padding-left: 5%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.message-error button{
+    background:none;
+    border:none;
+    margin:0;
+    padding:0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1em;
+    color: red;
+    font-weight: bold;
+    text-decoration-line: underline;
+}
+
+.message-error{
+    color: red;
+    padding-top: 0px !important;
+}
+
+.message-txt h4{
+    font-size: 14px;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.message-player{
+    background-color: #FFE769;
+    margin-left: 18%;
+}
+
+.message-opponent{
+    background-color: #CDCDCD;
+    margin-left: 2%;
+}
+
+.message-entry{
+    height: 30px;
+    display: flex;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    position: relative;
+}
+
+.message-entry input{
+    height: 30px;
+    border-radius: 15px;
+    border: 2px solid #000000;
+    color: #000000;
+    padding-left: 8px;
+    position: absolute;
+    width: 252px;
+    padding-right: 40px;
+}
+
+.message-entry img{
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    cursor: pointer;
+}
+
+.search-bar input::placeholder {
+    color: #000000;
+    opacity: 1;
+}
+  
+.search-bar input::-ms-input-placeholder {
+    color: #000000;
+}
+
+.message-icon-container{
+    justify-content: right;
+    display: flex;
+}
+
+.message-icon{
+    height: 50px;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.message-toggle{
+    transition: 0.3s ease-in-out;
 }
 
 /* This is for phone screens */
