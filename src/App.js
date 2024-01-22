@@ -156,7 +156,7 @@ export default function App() {
   const setupSocket = () => {
     if (token !== ''){//make sure there is a token
       try{//try to setup a connection
-        const newSocket = io('localhost:8080',{ //for local testing use https://online-chess-with-friends-server.glitch.me
+        const newSocket = io('https://online-chess-with-friends-server.glitch.me',{ //for local testing use localhost:8080
           auth: {
               token: token
           }
