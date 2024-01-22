@@ -6,7 +6,6 @@ import flag from "./Images/Flag.svg";
 import bars from "./Images/bars-solid.svg";
 import arrow_left from "./Images/Arrow Left.svg";
 import close_white from "./Images/close white.svg";
-import MessageDialog from "./components/MessageDialog";
 import SignUpModal from "./components/SignUpModal";
 import LogInModal from "./components/LogInModal";
 import DashboardCard from "./components/DashboardCard";
@@ -157,7 +156,7 @@ export default function App() {
   const setupSocket = () => {
     if (token !== ''){//make sure there is a token
       try{//try to setup a connection
-        const newSocket = io('https://online-chess-with-friends-server.glitch.me',{ //for local testing use localhost:8080
+        const newSocket = io('localhost:8080',{ //for local testing use https://online-chess-with-friends-server.glitch.me
           auth: {
               token: token
           }
@@ -426,9 +425,7 @@ export default function App() {
       ></ConnectionDialog>
 
       {alert ? <AlertDialog severity={alertSeverity} contentText={alertContent} handleClose={() => {setAlert(false)}}></AlertDialog> : <></>}
-      
-      <MessageDialog username={username}></MessageDialog>
-
+   
     </div>
   );
 }

@@ -5,6 +5,9 @@ import { useState, useCallback, useEffect, createContext} from "react";
 import EndGameDialog from "../components/EndGameDialog";
 import { db } from '../firebase';
 import { collection, deleteDoc, doc} from "firebase/firestore";
+import MessageDialog from "../components/MessageDialog";
+
+
 
 export const GameContext = createContext();
 
@@ -21,6 +24,8 @@ export default function DashboardCard({setNetworkError, setNetworkReason, socket
   const [orientation, setOrientation] = useState("");//use for board orientation for current player
   const [gameplayers, setGamePlayers] = useState([]);//array of players in active game
   const [forfeitGame, setForfeitGame] = useState(false);//use for when current player forfeits game
+  
+  
 
   useEffect(() => {
     //listen to join room socket for oppenent joining the game
@@ -150,6 +155,8 @@ export default function DashboardCard({setNetworkError, setNetworkReason, socket
             
             {room? <GameCard win={win} loss={loss} orientation={orientation} username={username} gameplayers={gameplayers}></GameCard> : <InfoCard setNetworkError={setNetworkError} setNetworkReason={setNetworkReason} socket={socket} inviteBadgeClick={inviteBadgeClick} setInviteBadgeClick={setInviteBadgeClick} win={win} loss={loss} playerId={playerId} userId={userId} username={username} invites={invites} setRoom={setRoom} setOrientation={setOrientation} setGamePlayers={setGamePlayers}></InfoCard>}
             
+            {room? <MessageDialog room={room} socket={socket} username={username}></MessageDialog> : <></>}
+
             <EndGameDialog 
               open={forfeitOpen} 
               opponentUserName={opponentUserName}
