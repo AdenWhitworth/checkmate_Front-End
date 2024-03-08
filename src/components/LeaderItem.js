@@ -5,17 +5,15 @@ import {useState, useEffect} from "react";
 
 export default function LeaderItem({item, index}) {
 
-    const [medalStyle, setMedalStyle] = useState("medal-list");//CSS for medal
-    const [medalImg, setMedalImg] = useState(gold_medal);//style for medal img
-    const [colorStyle, setColorStyle] = useState("");//CSS for list item odd or even color
+    const [medalStyle, setMedalStyle] = useState("medal-list");
+    const [medalImg, setMedalImg] = useState(gold_medal);
+    const [colorStyle, setColorStyle] = useState("");
 
-    useEffect(() =>{
-
-        //Index needs to be offset by 1 to reflect place
+    const rowListStyling = () => {
         const place = index + 1;
 
         //Set appropriate medal img and style based on place
-        //only 1st 2nd 3rd get medals rest of the leaderboard does not
+        //only 1st, 2nd, and 3rd place get medals rest of the leaderboard does not
         if (place == 1){
             setMedalStyle("medal-logo");
             setMedalImg(gold_medal)
@@ -36,8 +34,11 @@ export default function LeaderItem({item, index}) {
         } else{
             setColorStyle("medal-list even-color");
         }
+    }
 
-      },[])
+    useEffect(() =>{
+        rowListStyling();
+    },[index])
 
     return (
 

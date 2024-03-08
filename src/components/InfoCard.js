@@ -11,14 +11,13 @@ import {useState, useEffect} from "react";
 
 export default function InfoCard({setNetworkError, setNetworkReason, socket, playerId, userId, username, invites, setRoom, setOrientation, setGamePlayers, room, win, loss, inviteBadgeClick, setInviteBadgeClick}) {
 
-  const [selection, setSelection] = useState(false);//use to determine if user wants to see player list or invite list
-  const [playerStyle, setPlayerStyle] = useState("players-option info-selection");//CSS to show player list
-  const [inviteStyle, setInviteStyle] = useState("invite-option info-unselection");//CSS to show invite list
-  const [players, setPlayers] = useState([]);//object containing all players to invite for a game
-  const [searchPlayers, setSearchPlayers] = useState([]);//object filtering players based on search text
-  const [searchInvites, setSearchInvites] = useState([]);//object filtering invites based on search text
+  const [selection, setSelection] = useState(false);
+  const [playerStyle, setPlayerStyle] = useState("players-option info-selection");
+  const [inviteStyle, setInviteStyle] = useState("invite-option info-unselection");
+  const [players, setPlayers] = useState([]);
+  const [searchPlayers, setSearchPlayers] = useState([]);
+  const [searchInvites, setSearchInvites] = useState([]);
   
-  //toggle between player list and invite list based on selection
   const handleInfoSelection = () => {
     
     if (selection == false){
@@ -33,24 +32,21 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
     }
   }
 
-  //fetch all the player available to play a game against
   const fetchPlayers = async () => {
     
-    //get the user ids of all players who sent the currnet player an invite
     var invitesUserIDs = [];
     Object.keys(invites).forEach(key=>{
       invitesUserIDs.push(invites[key].item.requestUserID);
     })
 
-    invitesUserIDs.push(userId);//add current user to the list of invites
-    var playersCopy = [];//create a copy of the players 
+    invitesUserIDs.push(userId);
+    var playersCopy = [];
 
     //query the players database and find all player exception for those who sent current player invites
     const q = query(collection(db, "players"), where("userID", 'not-in', invitesUserIDs));
 
     onSnapshot(q, (snapshot) => {
 
-      //map the players for list UI
       playersCopy = snapshot.docs.map(doc => ({
         id: doc.id,
         item: doc.data()
@@ -61,36 +57,36 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
     })
   }
 
-  useEffect(() =>{
-    //update the players list
-    fetchPlayers();
-  },[invites])
-
-  useEffect(() =>{
-    //update player list on initial load and on any change to players in the database
-    setSearchPlayers(players);
-  },[players])
-
-  useEffect(() =>{
-    //update invites list on initial load and on any change to invites in the database
-    setSearchInvites(invites);
-  },[invites])
-
-  useEffect(() =>{
-    //when notification badge is clicked allow for invitation list to be shown to user
+  const handleNotificationBadgeClick = () => {
     if (inviteBadgeClick == true){
       handleInfoSelection();
       setInviteBadgeClick(false);
     }
+  }
+
+  useEffect(() =>{
+    fetchPlayers();
+  },[invites])
+
+  useEffect(() =>{
+    setSearchPlayers(players);
+  },[players])
+
+  useEffect(() =>{
+    setSearchInvites(invites);
+  },[invites])
+
+  useEffect(() =>{
+    handleNotificationBadgeClick();
   },[inviteBadgeClick])
 
-  //record typing in players search field and limit based on this search
   const filterPlayers = (e) => {
+    //Search through players list in O(n)
     const keyword = e.target.value;
 
-    const playersCopy = [...players];//copy the players list
+    const playersCopy = [...players];
     if (keyword !=''){
-      //filter the players list based on what is typed into the search field
+      
       const searchResults = playersCopy.filter((player) => {
         return player.item.username.toLowerCase().startsWith(keyword.toLowerCase());
       });
@@ -100,14 +96,14 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
     }
   }
 
-  //record typing in invites search field and limit based on this search
   const filterInvites = (e) => {
+    //Search through invites list in O(n)
     const keyword = e.target.value;
 
-    const invitesCopy = [...invites];//copy the invites list
+    const invitesCopy = [...invites];
 
     if (keyword !=''){
-      //filter the invites list based on what is typed into the search field
+
       const searchResults = invitesCopy.filter((player) => {
         return player.item.requestUserName.toLowerCase().startsWith(keyword.toLowerCase());
       });

@@ -2,29 +2,36 @@ import {useState, useEffect} from "react";
 
 export default function MessageItem({item, username, retrySendMessage, messages}) {
     
-    const [messageStyle, setMessageStyle] = useState("message-txt");//change the css of the message
-    const [fromStyle, setFromStyle] = useState("");//change the css of the sender
-    const [errorStyle, setErrorStyle] = useState("message-error txt-player error-hide")//change the css of the error messaage
+    const [messageStyle, setMessageStyle] = useState("message-txt");
+    const [fromStyle, setFromStyle] = useState("");
+    const [errorStyle, setErrorStyle] = useState("message-error txt-player error-hide");
 
-    useEffect(() => {
-        //check if the message is from the user signed in or from the opponent
-        if (item.item.username === username){//style message from user
+    const messageStyling = () => {
+        //Style based on if message from player or opponent
+        if (item.item.username === username){
             setMessageStyle("message-txt message-player");
             setFromStyle("txt-player");
-        }else {//style message from opponent 
+        }else {
             setMessageStyle("message-txt message-opponent");
             setFromStyle("txt-opponent");
         }
-        
-    },[])
+    }
 
-    useEffect(() => {
+    const errorStyling = () => {
         //if there is an error sending the message, then show the error text
         if (item.item.messageError === true){
             setErrorStyle("message-error txt-player");
         } else {
             setErrorStyle("message-error txt-player error-hide");
         }
+    }
+
+    useEffect(() => {
+        messageStyling();
+    },[])
+
+    useEffect(() => {
+        errorStyling();
     },[messages])
 
     return (

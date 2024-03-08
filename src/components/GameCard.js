@@ -39,9 +39,19 @@ import {v4 as uuidv4} from "uuid";
 
 export default function GameCard({gameplayers, username, orientation, win, loss}) {
 
-    const [opponentPlayerStyle, setOpponentPlayerStyle] = useState("game-info player-turn");//CSS for opponent player to show turn
-    const [activePlayerStyle, setActivePlayerStyle] = useState("game-info");//CSS for active player to show turn
+    const [opponentPlayerStyle, setOpponentPlayerStyle] = useState("game-info player-turn");
+    const [activePlayerStyle, setActivePlayerStyle] = useState("game-info");
     const [capturedPieces, setCapturedPieces] = useState([
+
+        /*
+        player: white or black
+        p: pawn
+        n: knight
+        b: bishop
+        r: rook
+        q: queen
+        */
+
         {
             player: "w",
             p: 0,
@@ -58,9 +68,7 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
             r: 0,
             q: 0,
         }
-    ]);//object to record number of each pieces captured for white and black
-
-    //active player CSS and img styling
+    ]);
     const [playerPawnStyle, setPlayerPawnStyle] = useState("");
     const [playerPawnImg, setPlayerPawnImg] = useState("");
     const [playerKnightStyle, setPlayerKnightStyle] = useState("");
@@ -71,7 +79,6 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
     const [playerCastleImg, setPlayerCastleImg] = useState("");
     const [playerQueenStyle, setPlayerQueenStyle] = useState("");
     const [playerQueenImg, setPlayerQueenImg] = useState("");
-    //opponent player CSS and img styling
     const [opponentPawnStyle, setOpponentPawnStyle] = useState("");
     const [opponentPawnImg, setOpponentPawnImg] = useState("");
     const [opponentKnightStyle, setOpponentKnightStyle] = useState("");
@@ -82,10 +89,8 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
     const [opponentCastleImg, setOpponentCastleImg] = useState("");
     const [opponentQueenStyle, setOpponentQueenStyle] = useState("");
     const [opponentQueenImg, setOpponentQueenImg] = useState("");
-
-    //useContext required to move the data laterally from the active game to the GameCard without triggering a rerender of the parent DashboardCard
-    const gameContext = useContext(GameContext);//context to access game history and player turn
-    const [gameMoves, setGameMoves] = useState([]);//object for game moves
+    const gameContext = useContext(GameContext);
+    const [gameMoves, setGameMoves] = useState([]);
 
     const updateCapturedPieces = () => {
 
@@ -123,31 +128,23 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
         const opponentImgStates = [setOpponentPawnImg, setOpponentKnightImg, setOpponentBishopImg, setOpponentCastleImg, setOpponentQueenImg];
         const opponentStyleStates = [setOpponentPawnStyle, setOpponentKnightStyle, setOpponentBishopStyle, setOpponentCastleStyle, setOpponentQueenStyle];
 
+        //capturedPieces[0] is white & capturedPieces[1] is black
+        //pieces_imgs[0] is white & pieces_imgs[1] is black
         if (orientation[0] === "w"){
-            //board orientation is white
-            //player is white
-            //opponent is black
 
-            //capturedPieces[0] is white & capturedPieces[1] is black
-            //pieces_imgs[0] is white & pieces_imgs[1] is black
-
-            //update Player to show their captured pieces
-            
-            //this index of the object is used to change the state img and style as it is formated to match the capturedPieces
+            //Update player to show their captured pieces
             var pieceIndexPlayer = 0;
             
-            for (let piece in capturedPieces[0]){//iterate through the captured pieces object to return the number of each type of piece captured
+            for (let piece in capturedPieces[0]){
                 
-                if (piece !== "player"){//skip past the player color as we need the pieces to line up with the img array
+                if (piece !== "player"){
 
-                    if (capturedPieces[0][piece] === 0){//if number captured is 0 then hide the piece
+                    if (capturedPieces[0][piece] === 0){
                         playerStyleStates[pieceIndexPlayer]("game-pieces-captured game-pieces-captured-hidden");
-                    } else {//show the piece
+                    } else {
                         playerStyleStates[pieceIndexPlayer]("game-pieces-captured");
                     }
 
-                    //depending on the piece captured, the number captured is used to link to the image needed to show
-                    //As this player is white, they are capturing black pieces
                     playerImgStates[pieceIndexPlayer](pieces_imgs[1][pieceIndexPlayer][capturedPieces[0][piece]]);
 
                     ++pieceIndexPlayer;
@@ -155,21 +152,18 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
             };
 
             //Update opponent to show their captured pieces
-            //this index of the object is used to change the state img and style as it is formated to match the capturedPieces
             var pieceIndexOpponent = 0;
             
-            for (let piece in capturedPieces[1]){//iterate through the captured pieces object to return the number of each type of piece captured
+            for (let piece in capturedPieces[1]){
                 
-                if (piece !== "player"){//skip past the player color as we need the pieces to line up with the img array
+                if (piece !== "player"){
 
-                    if (capturedPieces[1][piece] === 0){//if number captured is 0 then hide the piece
+                    if (capturedPieces[1][piece] === 0){
                         opponentStyleStates[pieceIndexOpponent]("game-pieces-captured game-pieces-captured-hidden");
-                    } else {//show the piece
+                    } else {
                         opponentStyleStates[pieceIndexOpponent]("game-pieces-captured");
                     }
 
-                    //depending on the piece captured, the number captured is used to link to the image needed to show
-                    //As this player is black, they are capturing white pieces
                     opponentImgStates[pieceIndexOpponent](pieces_imgs[0][pieceIndexOpponent][capturedPieces[1][piece]]);
 
                     ++pieceIndexOpponent;
@@ -177,29 +171,19 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
             };
 
         } else {
-            //board orientation is black
-            //player is black
-            //opponent is white
-
-            //capturedPieces[0] is white & capturedPieces[1] is black
-            //pieces_imgs[0] is white & pieces_imgs[1] is black
-
             //update Player to show their captured pieces
-            //this index of the object is used to change the state img and style as it is formated to match the capturedPieces
             var pieceIndexPlayer = 0;
             
-            for (let piece in capturedPieces[1]){//iterate through the captured pieces object to return the number of each type of piece captured
+            for (let piece in capturedPieces[1]){
                 
                 if (piece !== "player"){
 
-                    if (capturedPieces[1][piece] === 0){//skip past the player color as we need the pieces to line up with the img array
+                    if (capturedPieces[1][piece] === 0){
                         playerStyleStates[pieceIndexPlayer]("game-pieces-captured game-pieces-captured-hidden");
-                    } else {//show the piece
+                    } else {
                         playerStyleStates[pieceIndexPlayer]("game-pieces-captured");
                     }
 
-                    //depending on the piece captured, the number captured is used to link to the image needed to show
-                    //As this player is black, they are capturing white pieces
                     playerImgStates[pieceIndexPlayer](pieces_imgs[0][pieceIndexPlayer][capturedPieces[1][piece]]);
 
                     ++pieceIndexPlayer;
@@ -207,21 +191,18 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
             } 
 
             //Update opponent to show their captured pieces
-            //this index of the object is used to change the state img and style as it is formated to match the capturedPieces
             var pieceIndexOpponent = 0;
             
-            for (let piece in capturedPieces[0]){//iterate through the captured pieces object to return the number of each type of piece captured
+            for (let piece in capturedPieces[0]){
                 
                 if (piece !== "player"){
 
-                    if (capturedPieces[0][piece] === 0){//skip past the player color as we need the pieces to line up with the img array
+                    if (capturedPieces[0][piece] === 0){
                         opponentStyleStates[pieceIndexOpponent]("game-pieces-captured game-pieces-captured-hidden");
-                    } else {//show the piece
+                    } else {
                         opponentStyleStates[pieceIndexOpponent]("game-pieces-captured");
                     }
 
-                    //depending on the piece captured, the number captured is used to link to the image needed to show
-                    //As this player is white, they are capturing black pieces
                     opponentImgStates[pieceIndexOpponent](pieces_imgs[1][pieceIndexOpponent][capturedPieces[0][piece]]);
 
                     ++pieceIndexOpponent;
@@ -230,9 +211,7 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
         }
     }
 
-    //see whos turn it is change the player card to highlight that players turn
     const activeTurn = () => {
-        //compare player turn to orientation of the board in order to see who the active and opponent players are
         if (orientation[0] === "w" && gameContext.playerTurn === "w"){
             setOpponentPlayerStyle("game-info");
             setActivePlayerStyle("game-info player-turn");
@@ -248,29 +227,23 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
         }
     }
 
-    //take the history object created by chess.js api and format it for our UI
     const formatHistory = () => {
 
-        //only format history once the first move is made
         if (gameContext.history.length !== 0){
 
-            //for the game moves ovject format where each index has one white and black move
             const historyLength = gameContext.history.length;
-            const gameMovesCopy = [...gameMoves];//make a copy of game moves
+            const gameMovesCopy = [...gameMoves];
             const gameMovesCopyLength = gameMovesCopy.length
-            const id = uuidv4();//create a unique id for the map
+            const id = uuidv4();
             
             if (Math.abs(historyLength % 2) === 1){
                 //odd occurance
-                //create a new index of the object
-                //Move made by white and then a blank move for black
                 const item = [gameContext.history[historyLength-1].to,""]
                 gameMovesCopy.push({id: id, item: item});
                 setGameMoves(gameMovesCopy);
                 
             } else {
                 //even occurance
-                //replace the blank move made by black in the odd occurance with the actual move now made by black
                 gameMovesCopy[gameMovesCopyLength-1].item[1] = gameContext.history[historyLength-1].to;
                 setGameMoves(gameMovesCopy);
 
@@ -278,20 +251,15 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
         }
     }
 
-    //check to see which pieces in the game history were just captured
-    //this will be used to update the UI of the captured pieces
     const checkCaptured = () => {
-        //only check once the first move has been made
         if (gameContext.history.length !== 0){
 
             const historyLength = gameContext.history.length;
 
-            const capturedPiecesCopy = [...capturedPieces];//copy the captured pieces object
+            const capturedPiecesCopy = [...capturedPieces];
 
-            const capturedPiece = gameContext.history[historyLength-1].captured; //get the last captured piece from the history
+            const capturedPiece = gameContext.history[historyLength-1].captured;
             
-            //check to see whos turn it was when the piece was captured
-            //update the captured pieces object based on the turn and the piece captured
             if (gameContext.history[historyLength-1].color === "w"){
 
                 if (capturedPiece === "p"){
@@ -321,23 +289,20 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
 
             }
 
-            setCapturedPieces(capturedPiecesCopy);//trigger a re-render based on the new captured pieces
+            setCapturedPieces(capturedPiecesCopy);
 
         }
     }
 
     useEffect(() => {
-        //update the captured pieces
         updateCapturedPieces();
     }, [capturedPieces]);
 
     useEffect(() => {
-        //update UI to show which players turn it is
         activeTurn();
     }, [gameContext.playerTurn]);
 
     useEffect(() => {
-        //Format the history so that we can check for captured peices
         formatHistory();
         checkCaptured();
     }, [gameContext.history]);

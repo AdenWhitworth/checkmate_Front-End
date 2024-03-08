@@ -45,28 +45,50 @@ export default function CustomDialog({ open, networkReason, handleContinue }) {
   const [reason, setReason] = useState("");
   const [reasonBtn, setReasonBtn] = useState("");
 
+  const determineNetworkError = () => {
+
+    const networkReasons = {
+      "Username" : {
+        "reasonText": "Unable to set username. Please try again.",
+        "reasonBtn": "Refresh"
+      },
+
+      "Move" : {
+        "reasonText": "Your last move was not made. Please try again.",
+        "reasonBtn": "Continue"
+      },
+
+      "Forfeit" : {
+        "reasonText": "Unable to leave the game. Please try again.",
+        "reasonBtn": "Continue"
+      },
+
+      "End" : {
+        "reasonText": "Unable to close the game. Please try again.",
+        "reasonBtn": "Retry"
+      },
+
+      "Joining" : {
+        "reasonText": "Unable to join the game. Please try again.",
+        "reasonBtn": "Continue"
+      },
+
+      "Create" : {
+        "reasonText": "Unable to invite other player to the game. Please try again.",
+        "reasonBtn": "Continue"
+      }
+    }
+
+    if (networkReasons[networkReason]){
+      setReason(networkReasons[networkReason]["reasonText"]);
+      setReasonBtn(networkReasons[networkReason]["reasonBtn"]);
+    }
+
+  }
+
 
   useEffect(() => {
-    //depending on the error reason send display custom message
-    if (networkReason === "Username"){
-      setReason("Unable to set username. Please try again.");
-      setReasonBtn("Refresh");
-    } else if (networkReason === "Move"){
-      setReason("Your last move was not made. Please try again.");
-      setReasonBtn("Continue");
-    } else if (networkReason === "Forfeit"){
-      setReason("Unable to leave the game. Please try again.");
-      setReasonBtn("Continue");
-    } else if (networkReason === "End"){
-      setReason("Unable to close the game. Please try again.");
-      setReasonBtn("Retry");
-    } else if (networkReason === "Joining"){
-      setReason("Unable to join the game. Please try again.");
-      setReasonBtn("Continue");
-    } else if (networkReason === "Create"){
-      setReason("Unable to invite other player to the game. Please try again.");
-      setReasonBtn("Continue");
-    }
+    determineNetworkError();
   },[networkReason]);
 
   
