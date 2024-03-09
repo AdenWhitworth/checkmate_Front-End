@@ -78,18 +78,19 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
 
   useEffect(() =>{
     handleNotificationBadgeClick();
-  },[inviteBadgeClick])
+  },[inviteBadgeClick])  
 
   const filterPlayers = (e) => {
-    //Search through players list in O(n)
+    
     const keyword = e.target.value;
 
     const playersCopy = [...players];
     if (keyword !=''){
-      
+      //Search through players list in O(n) time complexity
       const searchResults = playersCopy.filter((player) => {
         return player.item.username.toLowerCase().startsWith(keyword.toLowerCase());
       });
+
       setSearchPlayers(searchResults);
     } else {
       setSearchPlayers(playersCopy);
@@ -97,13 +98,13 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
   }
 
   const filterInvites = (e) => {
-    //Search through invites list in O(n)
+    
     const keyword = e.target.value;
 
     const invitesCopy = [...invites];
 
     if (keyword !=''){
-
+      //Search through invites list in O(n) time complexity
       const searchResults = invitesCopy.filter((player) => {
         return player.item.requestUserName.toLowerCase().startsWith(keyword.toLowerCase());
       });
