@@ -51,18 +51,15 @@ const style = {
 
 export default function LogInModal({ open, handleLogIn, openSignUp}) {
 
-    const [email, setEmail] = useState('');//use to set email
-    const [password, setPassword] = useState('');//use to set password
-    const [error, setError] = useState('');//use to set error message
-    const [errorCSS, setErrorCSS] = useState('error-message error-hide');//use to show/hide error message
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [errorCSS, setErrorCSS] = useState('error-message error-hide');
     
-    //log in the user based on email and password
-    //only show error message when there is an issue signing in
     const onLogin = (e) => {
         e.preventDefault();
         signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            // Signed in
             const user = userCredential.user;
             setErrorCSS('error-message error-hide');
             handleLogIn();

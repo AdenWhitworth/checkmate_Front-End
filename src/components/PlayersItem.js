@@ -7,37 +7,33 @@ import {GameContext} from "../components/DashboardCard";
 
 export default function PlayersItem({setNetworkError, setNetworkReason, socket, count ,item, index, playerId, userId, username, setRoom, setOrientation, win, loss}) {
     
-    const [colorStyle, setColorStyle] = useState("player-line");//CSS for list item odd or even color
-    const [startRoom, setStartRoom] = useState("");//use to create room
+    const [colorStyle, setColorStyle] = useState("player-line");
+    const [startRoom, setStartRoom] = useState("");
 
     const {setOpponentInviteId, setOpponentUserName, setOpponentUserId, setOpponentPlayerId, setOpponentWin, setOpponentLoss} = useContext(GameContext);//get opponent data stored in context
-    
-    //create a new room for the new game 
+
     //set the player creating the room to white
     const handleSoccetCreateRoom = (e) => {
         e.preventDefault();  
-        socket.emit("createRoom", (response) => {//emit createRoom and set a response callback
-            if (response.error){//if there is an error with the server creating the room, then prompt user to try again
+        socket.emit("createRoom", (response) => {
+            if (response.error){
                 setNetworkError(true);
                 setNetworkReason("Create");
-                return //dont allow for the function to continue
+                return
             }
 
-            setStartRoom(response.roomId);//start the room for this player and prompt them to wait for other player to join
-            setOrientation("white");//player to create room is set to white who moves first
+            setStartRoom(response.roomId);
+            setOrientation("white");
         });
     }
 
-    //invite opponent to game based on the selection from the list
     const invitePlayer = async (e) => { 
        
         try {
-            //use the user id given in this item to get all the other opponent data for this player
             const userCollection = collection(db, 'users');
             const DocRef2 = doc(userCollection, item.item.userID);
             const docSnap = await getDoc(DocRef2);
 
-            //for the user passed to this item pull the player info and set the opponent variables accordingly
             setOpponentUserName(docSnap.data().username);
             setOpponentUserId(item.item.userID);
             setOpponentPlayerId(docSnap.data().playerID);
@@ -58,15 +54,15 @@ export default function PlayersItem({setNetworkError, setNetworkReason, socket, 
                 requestLoss: loss,
             });
 
-            setRoom(startRoom);//set the room now that it has been created
-            setOpponentInviteId(docRef.id);//get the invite id for later ability to delete the invite
+            setRoom(startRoom);
+            setOpponentInviteId(docRef.id);
 
           } catch (e) {
             return
           }
     }
-    
-    useEffect(() =>{
+
+    const rowListStyling = () => {
         //alternate odd and even list item colors
         //when less than 7 items are in a list then dont allow scroll
         if (Math.abs(index % 2) == 1){
@@ -84,7 +80,10 @@ export default function PlayersItem({setNetworkError, setNetworkReason, socket, 
                 setColorStyle("player-line player-line-scroll even-color");
             }
         }
-
+    }
+    
+    useEffect(() =>{
+        rowListStyling();
     },[count])
 
     useEffect(() =>{
@@ -94,8 +93,6 @@ export default function PlayersItem({setNetworkError, setNetworkReason, socket, 
             invitePlayer();
         }
     }, [startRoom])
-    
-      
 
     return (
 

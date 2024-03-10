@@ -51,15 +51,12 @@ const style = {
 };
 
 export default function SignUpModal({ open, handleSignUp, openLogIn }) {
-    const [email, setEmail] = useState('');//use to set email
-    const [password, setPassword] = useState('');//use to set password
-    const [username, setUserName] = useState('');//use to set username
-    const [uid, setUID] = useState('');//use to set auth uid
-    const [error, setError] = useState('');//use to set error message
-    const [errorCSS, setErrorCSS] = useState('error-message error-hide');//use to show/hide error message
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [username, setUserName] = useState('');
+    const [error, setError] = useState('');
+    const [errorCSS, setErrorCSS] = useState('error-message error-hide');
 
-    //sign up the new user based on username, email, and password
-    //only show error message when there is an issue signing up
     const onSubmit = async (e) => {
       e.preventDefault()
 
@@ -71,10 +68,8 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
         
         await createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            // Signed in
             setErrorCSS('error-message error-hide');
             const user = userCredential.user;
-            setUID(user.uid);
             SaveNewUser(user.uid);
             handleSignUp();
         })
@@ -90,8 +85,7 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
 
     }
 
-    //after new user is created save this users information in the database 
-    const SaveNewUser = async (UID) => {
+    const SaveNewUser = async (uid) => {
         try {
 
             const docRef2 = doc(collection(db, "players"));
@@ -99,7 +93,7 @@ export default function SignUpModal({ open, handleSignUp, openLogIn }) {
             const docRef = await addDoc(collection(db, "users"), {
               username: username,
               email: email,  
-              uid: UID,
+              uid: uid,
               playerID: docRef2.id,
               loss: 0,
               win: 0,

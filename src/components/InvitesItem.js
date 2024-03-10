@@ -8,44 +8,37 @@ import {GameContext} from "../components/DashboardCard";
 
 export default function InvitesItem({setNetworkError, setNetworkReason, socket, count ,item, index, playerId, userId, username, setRoom, setGamePlayers, setOrientation}) {
     
-    const [colorStyle, setColorStyle] = useState("player-line");//CSS for list item odd or even color
+    const [colorStyle, setColorStyle] = useState("player-line");
 
-    const {setOpponentUserName, setOpponentUserId, setOpponentPlayerId, setOpponentWin, setOpponentLoss} = useContext(GameContext);//get opponent data stored in context
+    const {setOpponentUserName, setOpponentUserId, setOpponentPlayerId, setOpponentWin, setOpponentLoss} = useContext(GameContext);
 
-    //from the invitation pull the data needed to join the game
     const joinPlayer = async (e) => {
         e.preventDefault();  
 
-        //set the opponent user information based on item being passed
         setOpponentUserName(item.item.requestUserName);
         setOpponentUserId(item.item.requestUserID);
         setOpponentPlayerId(item.item.requestPlayerID);
         setOpponentWin(item.item.requestWin);
         setOpponentLoss(item.item.requestLoss);
 
-        //allow for the player to join room socket
         handleSoccetJoinRoom();
     }
 
-    //use to join the opponents game socket
     const handleSoccetJoinRoom = () => {
-        //check to make sure valid room to join
+        
         if (!item.item.requestRoom) return;
-        //emit to other socket that player is joining the room
-        socket.emit("joinRoom", { roomId: item.item.requestRoom }, (response) => {//emit the joinRoom and establish a response callback
-            if (response.error) {//if there is an error joining, then prompt the user to try again
-                
+        
+        socket.emit("joinRoom", { roomId: item.item.requestRoom }, (response) => {
+            if (response.error) {
                 setNetworkError(true);
                 setNetworkReason("Joining");
-
-                return //Dont allow the function to continue if there is an error
+                return
             }
-            //successfully joined room and now set the board to play
+            
             setRoom(response.RoomUpdate.roomId);
             setGamePlayers(response.RoomUpdate.players);
             setOrientation("black");
             
-            //Delete the invitation as player has now joined the game
             const userCollection = collection(db, 'users');
             const DocRef = doc(userCollection, userId);
             const inviteCollection = collection(DocRef,'invites');
@@ -53,8 +46,8 @@ export default function InvitesItem({setNetworkError, setNetworkReason, socket, 
             deleteDoc(DocRef2);
         });
     }
-    
-    useEffect(() =>{
+
+    const rowListStyling = () => {
         //alternate odd and even list item colors
         //when less than 7 items are in a list then dont allow scroll
         if (Math.abs(index % 2) == 1){
@@ -72,8 +65,11 @@ export default function InvitesItem({setNetworkError, setNetworkReason, socket, 
                 setColorStyle("player-line player-line-scroll even-color");
             }
         }
-
-      },[count])
+    }
+    
+    useEffect(() =>{
+        rowListStyling();
+    },[count])
       
 
     return (
