@@ -5,7 +5,7 @@ import Search from "../Images/Search.svg";
 import PlayersItem from "./PlayersItem";
 import InvitesItem from "./InvitesItem";
 import { db } from '../firebase';
-import { query, onSnapshot, collection, where } from "firebase/firestore";  
+import { query, onSnapshot, collection, where, orderBy } from "firebase/firestore";  
 import {useState, useEffect} from "react";
 
 
