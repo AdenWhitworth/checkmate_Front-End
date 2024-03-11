@@ -129,7 +129,7 @@ export default function DashboardCard({setNetworkError, setNetworkReason, socket
 
     return (
       <GameContext.Provider value={{setOpponentInviteId, playerTurn, setPlayerTurn, history, setHistory, opponentUserName, setOpponentUserName, opponentUserId, setOpponentUserId, opponentPlayerId, setOpponentPlayerId, opponentWin, setOpponentWin, opponentLoss, setOpponentLoss}}>
-        <section class="dashboard">
+        <section data-testid="DashboardCard-section" class="dashboard">
           <div class="dashboard-content">
 
             <ActiveGame setNetworkError={setNetworkError} setNetworkReason={setNetworkReason} socket={socket} username={username} win={win} loss={loss} userId={userId} checkSendHome={checkSendHome} setBadgeCSS={setBadgeCSS} setFlagCSS={setFlagCSS} forfeitGame={forfeitGame} room={room} orientation={orientation} gameplayers={gameplayers} cleanup={cleanup}></ActiveGame>

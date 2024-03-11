@@ -76,7 +76,7 @@ export default function LogInModal({ open, handleLogIn, openSignUp}) {
     }, [open]);
 
     return (
-    <Modal open={open}>
+    <Modal data-testid="logInModal" open={open}>
         <Box sx={style}>
             <div class="modal-content">
                 <img onClick={handleLogIn} class="modal-close" src={closeX}></img>
@@ -86,19 +86,19 @@ export default function LogInModal({ open, handleLogIn, openSignUp}) {
                     <div class="input-text input-text-padding">
                     
                         <img class="input-img" src={mail}></img>
-                        <input onChange={(e) => setEmail(e.target.value)} required spellCheck="false" type="email" placeholder="Email"></input>
+                        <input data-testid="logInModal-email-input" onChange={(e) => setEmail(e.target.value)} required spellCheck="false" type="email" placeholder="Email"></input>
                     
                     </div>
 
                     <div class="input-text">
                     
                         <img class="input-img" src={key}></img>
-                        <input onChange={(e) => setPassword(e.target.value)} required spellCheck="false" type="password" placeholder="Password"></input>
+                        <input data-testid="logInModal-password-input" onChange={(e) => setPassword(e.target.value)} required spellCheck="false" type="password" placeholder="Password"></input>
                     
                     </div>
 
                     <div>
-                        <FillButton type="submit" variant="contained">Log In</FillButton>
+                        <FillButton data-testid="logInModal-submit" type="submit" variant="contained">Log In</FillButton>
                     </div>
 
                     <h4 class={errorCSS} >{error}</h4>

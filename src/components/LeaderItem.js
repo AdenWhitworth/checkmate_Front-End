@@ -42,11 +42,11 @@ export default function LeaderItem({item, index}) {
 
     return (
 
-        <li>
+        <li data-testid={"leaderboard-item-" + index}>
             <div class={colorStyle}>
             <img class={medalStyle} src={medalImg}></img>
             <h3 class="medal-place">{index + 1}.</h3>
-            <h3 class="medal-user">{item.item.username}</h3>
+            <h3 data-testid={"leaderboard-item-" + index + "-username"} class="medal-user">{item.item.username}</h3>
             <h3 class="medal-wins">Win: {item.item.win}</h3>
             <h3 class="medal-lost">Loss: {item.item.loss}</h3>
             </div>
