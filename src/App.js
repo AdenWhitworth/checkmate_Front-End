@@ -308,7 +308,7 @@ export default function App() {
         <nav>
           <div class="nav-image">
             
-            <img class="king-logo" onClick={handleHome} src={king_logo_white}></img>
+            <img data-testid="homeBtn" class="king-logo" onClick={handleHome} src={king_logo_white}></img>
 
           </div>
 

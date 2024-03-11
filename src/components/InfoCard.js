@@ -115,17 +115,17 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
   }
 
     return (
-            <div class="info-card">
+            <div data-testid="InfoCard-section" class="info-card">
                 <div class="player-selection">
                   
-                  <div class={playerStyle} onClick={handleInfoSelection}>
+                  <div data-testid="playersBtn" class={playerStyle} onClick={handleInfoSelection}>
                     <div>
                       <img src={globe}></img>
                       <h4>Players</h4>
                     </div>
                   </div>
 
-                  <div class={inviteStyle} onClick={handleInfoSelection}>
+                  <div data-testid="invitesBtn" class={inviteStyle} onClick={handleInfoSelection}>
                     <div>
                       <img src={reply_arrow}></img>
                       <h4>Invites</h4>
@@ -141,7 +141,7 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
                 </div>
 
                 <div class="available-players">
-                  <ul class="players-list">
+                  <ul data-testid="players-list" class="players-list">
                     
                     {selection? searchInvites.map((item, index) => <InvitesItem setNetworkError={setNetworkError} setNetworkReason={setNetworkReason} socket={socket} setRoom={setRoom} setGamePlayers={setGamePlayers} setOrientation={setOrientation} key={item.id} count={Object.keys(searchInvites).length} item={item} index={index} playerId={playerId} userId={userId} username={username}/>) : searchPlayers.map((item, index) => <PlayersItem setNetworkError={setNetworkError} setNetworkReason={setNetworkReason} socket={socket} win={win} loss={loss} setRoom={setRoom} setOrientation={setOrientation} key={item.id} count={Object.keys(searchPlayers).length} item={item} index={index} playerId={playerId} userId={userId} username={username}/>)}
 

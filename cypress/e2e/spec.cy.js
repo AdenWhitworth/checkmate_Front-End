@@ -19,7 +19,7 @@ describe('HomeCard Interactions', () => {
     }
   })
 
-  it('Play Friends only when logged in', () => {
+  it('Play Friends & notifications only when logged in', () => {
     cy.visit('/');
 
     //Ensure HomeCard is shown 
@@ -29,9 +29,16 @@ describe('HomeCard Interactions', () => {
     cy.get('[data-testid="signUpBtn"]').should("be.visible");
     cy.get('[data-testid="logInBtn"]').should("be.visible");
     cy.get('[data-testid="logOutBtn"]').should("be.hidden");
-    cy.get('[data-testid="notificationBtn"]').should("be.hidden");
+    cy.get('[data-testid="notificationBtn"]').should("be.visable");
+
+    //Try clicking notification which should prompt user to sign in
+    cy.get('[data-testid="notificationBtn"]').click();
+    cy.get('[data-testid="logInModal"]').should("be.visible");
+    cy.get('[data-testid="logInModal-close"]').should("be.visible");
+    cy.get('[data-testid="logInModal-close"]').click();
+    cy.get('[data-testid="logInModal"]').should("be.hidden");
     
-    //Click play friends button and log into modal
+    //Try clicking play friends button and now log into modal
     cy.get('[data-testid="playFriendsBtn"]').click();
     cy.get('[data-testid="logInModal"]').should("be.visible");
     cy.get('[data-testid="logInModal-email-input"]').type("demo1@gmail.com");
@@ -48,7 +55,16 @@ describe('HomeCard Interactions', () => {
     //Clicking Play Friends Button navigates to DashboardCard screen
     cy.get('[data-testid="playFriendsBtn"]').click();
     cy.get('[data-testid="HomeCard-section"]').should("be.hidden");
-    cy.get('[data-testid="HomeCard-section"]').should("be.visible");
+    cy.get('[data-testid="DashboardCard-section"]').should("be.visible");
 
+    //Return user to home screen and try notifications button now
+    cy.get('[data-testid="homeBtn"]').click();
+    cy.get('[data-testid="DashboardCard-section"]').should("be.hidden");
+    cy.get('[data-testid="HomeCard-section"]').should("be.visible");
+    cy.get('[data-testid="notificationBtn"]').click();
+    cy.get('[data-testid="InfoCard-section"]').should("be.visible");
+    cy.get('[data-testid="players-list"]').should("be.visible");
+    cy.get('[data-testid="playersBtn"]').should("have.class","info-unselection");
+    cy.get('[data-testid="invitesBtn"]').should("have.class","info-selection");
   })
 })

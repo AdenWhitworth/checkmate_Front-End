@@ -79,7 +79,7 @@ export default function LogInModal({ open, handleLogIn, openSignUp}) {
     <Modal data-testid="logInModal" open={open}>
         <Box sx={style}>
             <div class="modal-content">
-                <img onClick={handleLogIn} class="modal-close" src={closeX}></img>
+                <img data-testid="logInModal-close" onClick={handleLogIn} class="modal-close" src={closeX}></img>
                 <img class="modal-logo" src={king_logo_black}></img>
                 <form onSubmit={onLogin}>
 
