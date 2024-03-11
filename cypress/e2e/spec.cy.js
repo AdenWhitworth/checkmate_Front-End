@@ -1,4 +1,4 @@
-describe('HomeCard Interactions', () => {
+describe('HomeCard Interaction Tests', () => {
   it('Home Card displays navigation buttons and player leaderboard', () => {
     cy.visit('/');
 
@@ -29,28 +29,23 @@ describe('HomeCard Interactions', () => {
     cy.get('[data-testid="signUpBtn"]').should("be.visible");
     cy.get('[data-testid="logInBtn"]').should("be.visible");
     cy.get('[data-testid="logOutBtn"]').should("be.hidden");
-    cy.get('[data-testid="notificationBtn"]').should("be.visable");
-
+   
     //Try clicking notification which should prompt user to sign in
     cy.get('[data-testid="notificationBtn"]').click();
     cy.get('[data-testid="logInModal"]').should("be.visible");
     cy.get('[data-testid="logInModal-close"]').should("be.visible");
     cy.get('[data-testid="logInModal-close"]').click();
     cy.get('[data-testid="logInModal"]').should("be.hidden");
-    
-    //Try clicking play friends button and now log into modal
+
+    //Try clicking play friends button which should prompt user to sign in
     cy.get('[data-testid="playFriendsBtn"]').click();
     cy.get('[data-testid="logInModal"]').should("be.visible");
-    cy.get('[data-testid="logInModal-email-input"]').type("demo1@gmail.com");
-    cy.get('[data-testid="logInModal-password-input"]').type("PortfolioDemo1!");
-    cy.get('[data-testid="logInModal-submit"]').click();
+    cy.get('[data-testid="logInModal-close"]').should("be.visible");
+    cy.get('[data-testid="logInModal-close"]').click();
     cy.get('[data-testid="logInModal"]').should("be.hidden");
-
-    //Ensure user is now signed in
-    cy.get('[data-testid="signUpBtn"]').should("be.hidden");
-    cy.get('[data-testid="logInBtn"]').should("be.hidden");
-    cy.get('[data-testid="logOutBtn"]').should("be.visible");
-    cy.get('[data-testid="notificationBtn"]').should("be.visible");
+    
+    //Log the user in
+    login('demo1@gmail.com','PortfolioDemo1!');
     
     //Clicking Play Friends Button navigates to DashboardCard screen
     cy.get('[data-testid="playFriendsBtn"]').click();

@@ -101,7 +101,7 @@ export default function LogInModal({ open, handleLogIn, openSignUp}) {
                         <FillButton data-testid="logInModal-submit" type="submit" variant="contained">Log In</FillButton>
                     </div>
 
-                    <h4 class={errorCSS} >{error}</h4>
+                    <h4 data-testid="logInModal-error" class={errorCSS} >{error}</h4>
 
                     <h4>or</h4>
                     <h3>New Player?</h3>
