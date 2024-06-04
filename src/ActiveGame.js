@@ -244,6 +244,7 @@ export default function ActiveGame({ username, setNetworkError, setNetworkReason
             
             <div className="board">
             <Chessboard
+            data-testid="chessboard"
             position={fen}
             onPieceDrop={onDrop}
             boardOrientation={orientation}

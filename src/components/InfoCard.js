@@ -136,7 +136,7 @@ export default function InfoCard({setNetworkError, setNetworkReason, socket, pla
                 <div class="search-bar">
                   
                   <img class="search-img" src={Search}></img>
-                  {selection? <input spellCheck="false" onChange={filterInvites} type="text" placeholder="Search"></input> : <input spellCheck="false" onChange={filterPlayers} type="text" placeholder="Search"></input>}
+                  {selection? <input  data-testid="search-invites-input" spellCheck="false" onChange={filterInvites} type="text" placeholder="Search"></input> : <input data-testid="search-players-input" spellCheck="false" onChange={filterPlayers} type="text" placeholder="Search"></input>}
                   
                 </div>
 

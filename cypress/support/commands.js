@@ -1,29 +1,3 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-
 Cypress.Commands.add("login", (email, password) => {
     cy.session([email, password], () => {
         cy.visit('/');
@@ -47,4 +21,33 @@ Cypress.Commands.add("login", (email, password) => {
             },
         }
     )
+});
+
+Cypress.Commands.add("playFriends", () => {
+
+    //ensure player is signed in and click play friends button
+    cy.get('[data-testid="logOutBtn"]', { timeout: 3000 }).should("be.visible");
+    cy.get('[data-testid="playFriendsBtn"]').click();
+    cy.get('[data-testid="HomeCard-section"]').should("not.exist");
+    cy.get('[data-testid="DashboardCard-section"]').should("be.visible");
+    cy.get('[data-testid="InfoCard-section"]').should("be.visible");
+});
+
+Cypress.Commands.add("invite", (username) => {
+    //Type opponent username in search and make sure its filtered
+    
+
+    cy.get('[data-testid="search-players-input"]').type(username);
+    cy.get('[class*="player-username"]').contains(username);
+
+    //Invite Demo2 to a game and chech new game loads
+    cy.get('[data-testid="player-list-request-' + username + '"]').click();
+    
+
+    cy.get('[data-testid="GameCard-section"]').should("be.visible");
+    
+    cy.get('[class*="game-username"]').contains("Waiting on " + username + "...");
+    cy.get('[data-testid="exitBtn"]',{ timeout: 1000 }).should("be.visible");
+    cy.get('[data-testid="notificationBtn"]').should("be.hidden");
+    
 });

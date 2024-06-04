@@ -308,7 +308,7 @@ export default function GameCard({gameplayers, username, orientation, win, loss}
     }, [gameContext.history]);
 
   return (
-    <div class="game-card">
+    <div data-testid="GameCard-section" class="game-card">
         <div class={opponentPlayerStyle}>
         <div class="game-stats">
             <div class="game-row-1">

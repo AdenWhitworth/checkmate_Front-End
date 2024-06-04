@@ -100,7 +100,7 @@ export default function PlayersItem({setNetworkError, setNetworkReason, socket, 
             <div class={colorStyle}>
                 <img class="player-icon" src={user_white}></img>
                 <h3 class="player-username">{item.item.username}</h3>
-                <div class="player-request" onClick={handleSoccetCreateRoom}>
+                <div data-testid={"player-list-request-" + item.item.username} class="player-request" onClick={handleSoccetCreateRoom}>
                     <img class="request-icon" src={plane}></img>
                     <h3 class="request-text">Invite</h3>
                 </div>

@@ -319,8 +319,8 @@ export default function App() {
               <li data-testid="logInBtn" class={LogInCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton sx={{width:{xs: '85%',md: '15vw'}}} onClick={() => {setLogInOpen(true)}} variant="outlined">Log In</HollowButton></Box></li>
               <li data-testid="logOutBtn" class={LogOutCSS}><Box display="flex" sx={{ height: '52px' }}><HollowButton sx={{width:{xs: '85%',md: '15vw'}}} onClick={handleLogout} variant="outlined">Log Out</HollowButton></Box></li>
               <li><Badge data-testid="notificationBtn" onClick={handleBadge} badgeContent={inviteBadge} color="primary"><img class={BadgeCSS} src={bell}></img></Badge></li>
-              <li><img onClick={handleExit} class={ExitCSS} src={arrow_left}></img></li>
-              <li><img onClick={handleFlag} class={FlagCSS} src={flag}></img></li>
+              <li><img data-testid="exitBtn" onClick={handleExit} class={ExitCSS} src={arrow_left}></img></li>
+              <li><img data-testid="flagnBtn" onClick={handleFlag} class={FlagCSS} src={flag}></img></li>
             </div>
           </ul>
 
