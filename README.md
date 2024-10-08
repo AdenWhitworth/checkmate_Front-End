@@ -1,96 +1,190 @@
-# Online Chess With Friends
-> A real-time online competitive chess game where you are able to challenge your friends.
+<img width="80" src="https://github.com/AdenWhitworth/online_chess_with_friends_Front-End/raw/master/src/Images/King%20Logo%20Black.svg" alt="Online Chess With Friends Logo">
 
-Create an account and invite your friends to play a game. View the global leader board to see where you stand. To demo the game without creating an account, please sign in with the below demo accounts. Using two separate browser windows, you can even play against yourself.
+# Online Chess With Friends Front-End
 
-Emails: demo1@gmail.com & demo2@gmail.com
+Welcome to the **Online Chess With Friends Front-End**! This repository contains the code for the web-based user interface, allowing players to challenge friends to chess matches, chat during the game, and track their rankings. The project integrates seamlessly with the back-end to provide real-time multiplayer chess gameplay.
 
-Password: PortfolioDemo1!
+## Table of Contents
+- [Overview](#overview)
+- [Online Chess With Friends Live Demo](#online-chess-with-friends-live-demo)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Environment Variables](#environment-variables)
+  - [Firebase Setup Guide](#firebase-setup-guide)
+  - [Running the Application](#running-the-application)
+- [Database Structure](#database-structure)
+- [Future Features](#future-features)
+- [Contributing](#contributing)
+- [License](#license)
 
-[See Live Demo](https://online-chess-with-friends.web.app/)
+## Overview
 
-This repository is just for the front-end. Use the link below to access the back end repository for this game. 
+The Online Chess With Friends Front-End is built using React and provides a responsive, real-time chess-playing experience. Users can create and join chess games, communicate through in-game chat, and track their performance using the integrated ranking system.
 
-[See Back-End](https://github.com/AdenWhitworth/online_chess_with_friends_server)
+## Online Chess With Friends Live Demo
+
+The Online Chess With Friends application is live and can be accessed here: [Online Chess With Friends Demo](https://online-chess-with-friends.web.app/). You can explore all features of the game, including real-time gameplay, chat, and rankings.
+
+### Test User Credentials
+
+Try out the app using the following demo accounts:
+
+- **Emails:** demo1@gmail.com & demo2@gmail.com
+- **Password:** PortfolioDemo1!
+
+>**Note**: You can even play against yourself by opening the application in two separate browser windows.
 
 ## Features
-- Create unique account for each player
-- Returning players can log in
-- View and invite registered players
-- Manage all active game invites
-- Recieve notifications when invited to a game
-- Search player base and notifications
-- Play a live chess game
-- Real time statistics displayed in game
-- Ability to leave or forfeit
-- Responsive design for web and mobile
-- Client Authentication middleware with server (feature/1)
-- In game chat between players (feature/2)
 
-## Front-End Technology Stack
-- React.js
-- Node.js
-- HTML
-- CSS
-- JavaScript
-- Material UI
-- React-chessboard.js
-- Chess.js
-- Firebase Authentication
-- Firebase Cloud Firestore
-- Socket.io
-- uuid.js
-- Figma
+- **Real-Time Gameplay**: Challenge your friends in a multiplayer chess game with real-time move updates.
+- **In-Game Chat**: Communicate with your opponent during the game with the built-in chat feature.
+- **Ranking System**: Track your performance and compare rankings with friends.
+- **In-Game Statistics**: Monitor game statistics as you play.
+- **Responsive Design**: Optimized for desktop and mobile devices, ensuring a great user experience on any screen size.
 
-## Design Process & Considerations
+## Technologies Used
 
-#### Architecture
-To better understand what technology stack I planned on using for this project, I created the below architecture diagram. The front-end will be hosted with Firebase Hosting and will utilize React.js. The back-end will be hosted in Glitch and will utilize Node.js and Express. The front-end will interact with the back-end through Socket.io. I decided to use Firebase to both store my data and authenticate users. To do this, I will use Firebase Cloud Function to store player metadata and I will authenticate player credentials with Firebase Authentication. The front-end will communicate to the Firebase backend as a service through https protocols.  
+- **React**: A powerful JavaScript library for building user interfaces, enabling the development of dynamic and responsive web applications.
+- **HTML/JSX**: The foundational markup language used for structuring the components of the React application, ensuring semantic and accessible content.
+- **CSS**: Styles the application with a modern aesthetic, allowing for flexible and maintainable design.
+- **React Router**: A library that enables dynamic routing in the application, providing a seamless navigation experience for users.
+- **MUI (Material-UI)**: A popular React component library that implements Google's Material Design, providing pre-designed components for charts, gauges, and more, enhancing visual consistency.
+- **Socket.IO**: A library that facilitates real-time, bidirectional communication between clients and servers, crucial for features like live updates and notifications.
+- **React-chessboard.js**: A lightweight and flexible chessboard library designed for React, providing an intuitive interface for displaying and interacting with chess positions in your React applications.
+- **Chess.js**: A JavaScript library that implements chess mechanics, enabling the creation of legal move generation, validation, and game state management in a chess application.
+- **uuid.js**: A library used to generate unique identifiers (UUIDs), essential for creating distinct and secure references for users, games, and various entities in web applications.
+- **Firebase**:
+  - **Authentication**: Provides secure sign-in via various methods, including email/password, Google, etc.
+  - **Firestore**: A NoSQL database optimized for real-time data storage and synchronization.
 
-<img width="700" src="https://github.com/AdenWhitworth/online_chess_with_friends/raw/master/src/Images/Architecture.JPG" alt="Architecture">
+## Getting Started
 
-#### UI Design
-Before designing any UI components, I first created the list of features found above. Keeping this list of features in mind, I created the below rough Figma wire frame of each possible screen based on each user's interactions. I concluded that I needed a home screen to prompt users to sign up or log in and to display the global leader board, dashboard screen for players to join or invite other players, and active game screen to house the chess board and in-game statistics. Using modals, I will prompt users to sign up or log in, and I will also use them for in-game alerts. I played around with the colors and eventually landed on a yellow dark mode color pallet.
+Follow the instructions below to set up the project on your local machine.
 
-<img width="700" src="https://github.com/AdenWhitworth/online_chess_with_friends/raw/master/src/Images/Figma.JPG" alt="Figma">
+### Prerequisites
 
-#### Firebase Cloud Firestore Data Structure
-I decided that I needed two separate Firestore collections for the best performance. The first collection is the main set of data and is structured per the below. For each user that is created, I store all metadata here including the unique identifier playerID which is referenced in the second collection. Firebase Authentication creates a uuid which is also stored here in order to link the Firestore to the signed in user. When an invite is sent to a player, a child collection called invites is created for the player who has received the invite. The invitation metadata includes all the necessary information needed for the invited player to join the other players room. 
+Make sure you have the following installed:
 
-{users: {
-<br>&emsp;($userID): {
-<br>&emsp;&emsp;email: ($email),
-<br>&emsp;&emsp;loss: ($loss),
-<br>&emsp;&emsp;playerID: ($playerID),
-<br>&emsp;&emsp;rank: ($rank),
-<br>&emsp;&emsp;uuid: ($uuid),
-<br>&emsp;&emsp;username: ($username),
-<br>&emsp;&emsp;win: ($win),
-<br>&emsp;&emsp;invites: {
-<br>&emsp;&emsp;&emsp;($inviteID): {
-<br>&emsp;&emsp;&emsp;&emsp;requestLoss: ($requestLoss),
-<br>&emsp;&emsp;&emsp;&emsp;requestPlayerID: ($requestPlayerID),
-<br>&emsp;&emsp;&emsp;&emsp;requestRoom: ($requestRoom),
-<br>&emsp;&emsp;&emsp;&emsp;requestUserID: ($requestUserID),
-<br>&emsp;&emsp;&emsp;&emsp;requestUserName: ($requestUserName),
-<br>&emsp;&emsp;&emsp;&emsp;requestWin:($requestWin),
-<br>&emsp;&emsp;&emsp;}
-<br>&emsp;&emsp;}
-<br>&emsp;}
-<br>}
+- **Node.js** (v16 or higher)
+- **npm** (v7 or higher)
 
-The second collection is a basic list of the players and looks like the following. This is a copy of the users collection, but it only houses the username and userID metadata. The purpose of this collection is to speed up the querying needed to display all of the players you can invite to a game. Having the userID be in this collection allows for the users collection to be referenced only when necessary. 
+### Installation
 
-{players: { 
-<br>&emsp;($playerID): {
-<br>&emsp;&emsp;userID: ($userID), 
-<br>&emsp;&emsp;username: ($username),
-<br>&emsp;}
-<br>}
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/AdenWhitworth/online_chess_with_friends_Front-End.git
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Environment Variables
+Create a `.env` file in the root directory and define the following variables:
+
+  ```plain text
+  # Application Configuration
+  REACT_APP_BASE_URL=your_back-end_url  # url for the server application
+  ```
+
+### Firebase Setup Guide
+
+1. Create a Firebase Project:
+  - Go to Firebase Console and sign in with your Google account.
+  - Follow the steps to create a new Firebase project.
+2. Install Firebase in Your Project:
+  - In your project folder, install the Firebase SDK via npm:
+ ```bash
+   npm install firebase
+   ```
+3. Se up Firebase in Your React App:
+```javascript
+import { initializeApp } from "firebase/app";
+import { getFirestore } from 'firebase/firestore';
+import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
+
+const firebaseConfig = {
+    apiKey: "your_firebase_api_key",
+    authDomain: "your_firebase_auth_domain",
+    projectId: "online-chess-with-friends",
+    storageBucket: "your_firebase_storage_bucket",
+    messagingSenderId: "your_firebase_messaging_sender_id",
+    appId: "your_firebase_app_id",
+    measurementId: "your_firebase_measurement_id"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const analytics = getAnalytics(app);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
+export default app;
+  ```
+4. Set Up Firebase Authentication
+  - In the Firebase Console, navigate to Firestore Database and create your database. Add collections for users, games, etc.
+5. Set Up Firestore Database:
+  -  In the Firebase Console, navigate to Firestore Database and create your database. Add collections for users, games, etc.
+
+### Running the Application
+
+Once the environment variables are configured and dependencies are installed, you can start the application with:
+```bash
+npm start
+```
+
+## Database Structure
+
+The application uses Firebase Firestore to store user data and game information. Below is the structure of the **users** and **players** collections:
+
+```json
+{
+  "users": {
+    "$userID": {
+      "email": "$email",             // User's email
+      "loss": "$loss",               // Number of losses
+      "playerID": "$playerID",       // Player's unique ID
+      "rank": "$rank",               // Player's rank
+      "uuid": "$uuid",               // Universally Unique Identifier
+      "username": "$username",       // User's display name
+      "win": "$win",                 // Number of wins
+      "invites": {
+        "$inviteID": {
+          "requestLoss": "$requestLoss",           // Requester's loss count
+          "requestPlayerID": "$requestPlayerID",   // Requester's player ID
+          "requestRoom": "$requestRoom",           // Room associated with the request
+          "requestUserID": "$requestUserID",       // Requester's user ID
+          "requestUserName": "$requestUserName",   // Requester's username
+          "requestWin": "$requestWin"              // Requester's win count
+        }
+      }
+    }
+  },
+  "players": {
+    "$playerID": {
+      "userID": "$userID",             // User ID of the player
+      "username": "$username"          // Username of the player
+    }
+  }
+}
+```
 
 ## Future Features
-- Handle client Authentication middleware with server :heavy_check_mark: (feature/1)
-- Add in game chat between players :heavy_check_mark: (feature/2)
-- Add custom A.I. bot to practice against
-- Add watch active game functionality
 
+Here are a few exciting features that we are planning to add:
+
+1. **Solo Practice**: Implement AI opponents for solo play.
+2. **Competition Timing**: Add a timer feature for each game to enhance competitive gameplay.
+3. **Live Stream**: Enable real-time streaming of friends' games so you can watch matches live.
+
+## Contributing
+
+If you want to contribute to this project, feel free to open an issue or submit a pull request. Any contributions, from bug fixes to new features, are welcome!
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for more details.
+![image](https://github.com/user-attachments/assets/2c7bbb97-35f2-44b4-ae71-4cce44390acb)
