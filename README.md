@@ -187,4 +187,3 @@ If you want to contribute to this project, feel free to open an issue or submit 
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for more details.
-![image](https://github.com/user-attachments/assets/2c7bbb97-35f2-44b4-ae71-4cce44390acb)
