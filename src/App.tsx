@@ -1,3 +1,4 @@
+/*
 import "./App.css";
 import {useState, useEffect} from "react";
 import king_logo_white from "./Images/King Logo White.svg";
@@ -380,3 +381,23 @@ export default function App() {
   );
 }
 
+*/
+
+
+import './App.css';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import Landing from './components/Landing/Landing';
+
+function App(): JSX.Element {
+  
+  return (
+    <div className="App">  
+      <Routes>
+        <Route path='/' element={<Landing></Landing>}></Route>
+      </Routes>
+    </div>
+  );
+}
+
+export default App;

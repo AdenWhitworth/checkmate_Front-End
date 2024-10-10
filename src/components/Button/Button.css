@@ -1,0 +1,41 @@
+.button-fill {
+    border: 2px solid #FFCD05;
+    border-radius: 26px;
+    background: #FFCD05;
+    cursor: pointer;
+    color: #000000;
+    height: 52px;
+    width: 150px;
+    text-align: center;
+    font-size: 18px;
+    font-family: inherit;
+    transition: background 0.3s ease, border 0.3s ease;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.button-fill:hover {
+    background: #B78B02;
+    border: 2px solid #B78B02;
+}
+
+.button-hollow {
+    border: 4px solid #FFCD05;
+    border-radius: 26px;
+    background: transparent;
+    cursor: pointer;
+    color: #FFCD05;
+    height: 52px;
+    width: 150px;
+    text-align: center;
+    font-size: 18px;
+    font-family: inherit;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    transition: color 0.3s ease, border 0.3s ease;
+}
+
+.button-hollow:hover {
+    border: 4px solid #B78B02;
+    color: #B78B02;
+}
+
+
