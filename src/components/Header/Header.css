@@ -1,0 +1,65 @@
+.header{ 
+    height: 12vh;
+    width: 94%;
+    background: #080609;
+    border-radius: 20px;
+    margin-top: 2vh;
+    margin-left: 3%;
+    
+}
+
+.menu{
+    width: 90%;
+    margin-left: 5%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+li {
+    list-style: none;
+    text-decoration: none;
+}
+
+.nav-links{
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 2em;
+}
+
+.notification{
+    height: 52px;
+    cursor: pointer;
+}
+
+.end-game-flag{
+    height: 52px;
+    cursor: pointer;
+}
+
+.exit-arrow{
+    height: 52px;
+    cursor: pointer;
+}
+
+.king-logo{
+    height: 52px;
+    cursor: pointer;
+}
+
+.nav-img img, .nav-links img {
+    transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+}
+
+.nav-img img:hover, .nav-links img:hover {
+    transform: scale(1.1) rotate(5deg);
+    filter: brightness(1.2);
+}
+
+.nav-links .exit-arrow:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+}

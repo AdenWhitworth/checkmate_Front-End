@@ -21,62 +21,6 @@ html,body {
     position: absolute;
 }
 
-.header{ 
-    height: 12vh;
-    width: 94%;
-    background: #080609;
-    border-radius: 20px;
-    margin-top: 2vh;
-    margin-left: 3%;
-}
-
-nav{
-    width: 90%;
-    padding-left: 5%;
-    height: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-a {
-    text-decoration: none;
-}
-  
-li {
-    list-style: none;
-}
-
-.menu {
-  display: flex;
-  gap: 1em;
-}
-
-.nav-links{
-    justify-content: center;
-    align-items: center;
-}
-
-.notification{
-    height: 52px;
-    cursor: pointer;
-}
-
-.end-game-flag{
-    height: 52px;
-    cursor: pointer;
-}
-
-.exit-arrow{
-    height: 52px;
-    cursor: pointer;
-}
-
-.king-logo{
-    height: 52px;
-    cursor: pointer;
-}
-
 .content{
     padding-top: 12vh;
     width: 100%;
