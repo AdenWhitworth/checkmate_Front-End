@@ -390,7 +390,7 @@ import { Route, Routes } from 'react-router-dom';
 import Landing from './components/Landing/Landing';
 
 function App(): JSX.Element {
-  
+
   return (
     <div className="App">  
       <Routes>

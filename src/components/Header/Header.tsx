@@ -19,9 +19,9 @@ export default function Header({
                     <img className="king-logo" src={king_logo_white} alt='King main logo'></img>
                 </div>
                 <nav className="nav-links">
-                    <li><Button styleType='primary'>Sign Up</Button></li>
-                    <li><Button styleType='secondary'>Log In</Button></li>
-                    <li><Button styleType='secondary'>Log Out</Button></li>
+                    <li><Button className='fixed-width-button' styleType='primary'>Sign Up</Button></li>
+                    <li><Button className='fixed-width-button' styleType='secondary'>Log In</Button></li>
+                    <li><Button className='fixed-width-button' styleType='secondary'>Log Out</Button></li>
                     <li><Badge className='notification' badgeContent={1} color="primary"><img src={bell}></img></Badge></li>
                     <li><img className='exit-arrow' src={arrow_left}></img></li>
                     <li><img className='end-game-flag' src={flag}></img></li>

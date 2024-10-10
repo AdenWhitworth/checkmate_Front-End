@@ -1,0 +1,39 @@
+
+.leader-list li{
+    list-style: none;
+    text-decoration: none;
+    list-style-type: none;
+}
+
+.medal-list{
+    color: #FFFFFF;
+    display: grid;
+    grid-template-columns: 0.5fr 1fr 1.5fr 1fr 1fr;
+    width: 80%;
+    height: 4.5vh;
+    margin-left: 10%;
+}
+
+.medal-list h3{
+    font-size: 14px;
+}
+
+.medal-list img{
+    height: 3vh;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-60%);
+}
+
+.odd-color{
+    background-color: #3D3D3D;
+}
+
+.even-color{
+    background-color: #212121;
+}
+
+.no-medal{
+    visibility: hidden;
+}

@@ -8,4 +8,8 @@ export interface ButtonProps {
     className?: string;
     disabled?: boolean;
     testId?: string;
+    imgSrc?: string;
+    imgAlt?: string; 
+    id?: string;
+    name?: string;
 }

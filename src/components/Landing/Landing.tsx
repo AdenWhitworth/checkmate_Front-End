@@ -1,10 +1,15 @@
 import React from 'react';
-import Button from '../Button/Button';
 import Header from '../Header/Header';
+import LandingSelections from './LandingSelections/LandingSelections';
+import { LandingProps } from './LandingTypes';
 
-export default function Landing(): JSX.Element {
+export default function Landing({
+}: LandingProps): JSX.Element {
 
     return (
-        <Header></Header>
+        <>
+            <Header></Header>
+            <LandingSelections></LandingSelections>
+        </>
     );
 }

@@ -10,11 +10,15 @@ export default function Button({
     className = '', 
     disabled = false,
     testId,
+    imgSrc,
+    imgAlt,
+    id,
+    name,
 }: ButtonProps) {
 
     const classType = { 
-        primary: "button-fill", 
-        secondary: "button-hollow",
+        primary: imgSrc? "button-primary-icon" : "button-primary", 
+        secondary: imgSrc? "button-secondary-icon" : "button-secondary",
     };
 
     const combinedClassName = `${classType[styleType]}${className ? ` ${className}` : ''}`;
@@ -26,6 +30,11 @@ export default function Button({
             type={type}
             data-testid={testId} 
             disabled={disabled}
-        >{children}</button>
+            id={id}
+            name={name}
+        >
+            {imgSrc && <img src={imgSrc} alt={imgAlt} className="button-icon" />}
+            {children}
+        </button>
     );
 }
