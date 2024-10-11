@@ -388,14 +388,20 @@ import './App.css';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Landing from './components/Landing/Landing';
+import { AuthProvider } from './Providers/AuthProvider/AuthProvider';
+import PrivateRoute from './Routes/PrivateRoute';
 
 function App(): JSX.Element {
 
   return (
     <div className="App">  
-      <Routes>
-        <Route path='/' element={<Landing></Landing>}></Route>
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path='/' element={<Landing></Landing>}></Route>
+          <Route path='/auth' element={<></>}></Route>
+          <Route path='/home' element={<PrivateRoute><h1>Home</h1></PrivateRoute>}></Route>
+        </Routes>
+      </AuthProvider>
     </div>
   );
 }
