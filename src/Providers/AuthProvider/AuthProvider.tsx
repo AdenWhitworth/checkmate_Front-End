@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      console.log("Logged in");
     } catch (error: any) {
       setError("Incorrect username or password.");
     } finally {
@@ -72,7 +71,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setError(null);
     try {
       await signOut(auth);
-      console.log("Signed out");
     } catch (error: any) {
       setError(error.message);
     } finally {

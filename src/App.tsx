@@ -389,6 +389,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Landing from './components/Landing/Landing';
 import { AuthProvider } from './Providers/AuthProvider/AuthProvider';
+import { PlayerProvider } from './Providers/PlayerProvider/PlayerProvider';
 import PrivateRoute from './Routes/PrivateRoute';
 import Authentication from './components/Authentication/Authentication';
 import Home from './components/Home/Home';
@@ -398,11 +399,13 @@ function App(): JSX.Element {
   return (
     <div className="App">  
       <AuthProvider>
-        <Routes>
-          <Route path='/' element={<Landing></Landing>}></Route>
-          <Route path='/auth' element={<Authentication></Authentication>}></Route>
-          <Route path='/home' element={<PrivateRoute><Home></Home></PrivateRoute>}></Route>
-        </Routes>
+        <PlayerProvider>
+          <Routes>
+            <Route path='/' element={<Landing></Landing>}></Route>
+            <Route path='/auth' element={<Authentication></Authentication>}></Route>
+            <Route path='/home' element={<PrivateRoute><Home></Home></PrivateRoute>}></Route>
+          </Routes>
+        </PlayerProvider>
       </AuthProvider>
     </div>
   );

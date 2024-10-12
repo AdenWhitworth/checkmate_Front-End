@@ -5,3 +5,9 @@ export interface Player {
     win: number;
     loss: number;
 }
+
+export interface PlayerContextType {
+    player: Player | null;
+    loadingPlayer: boolean;
+    error: string | null;
+}
