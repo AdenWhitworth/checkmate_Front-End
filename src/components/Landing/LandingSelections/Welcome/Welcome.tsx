@@ -3,13 +3,23 @@ import './Welcome.css';
 import Button from '../../../Button/Button';
 import pawn_logo from "../../../../Images/Pawn Logo.svg";
 import play_logo from '../../../../Images/play-black.svg';
+import { useNavigate } from "react-router-dom";
 
 export default function LandingSelections(): JSX.Element {
+    
+    const navigate = useNavigate();
+
+    const HandleHomeClick = () => {
+        navigate('/home', {
+            replace: true,
+        });
+    }
+    
     return (
         <div className="welcome">
             <div className="play">
                 <img className="pawn-logo" src={pawn_logo}></img>
-                <Button className='fixed-width-icon-button' styleType='primary' imgSrc={play_logo} imgAlt='Play Logo'>Play Friends</Button>
+                <Button onClick={HandleHomeClick} className='fixed-width-icon-button' styleType='primary' imgSrc={play_logo} imgAlt='Play Logo'>Play Friends</Button>
             </div>
         </div>          
     );

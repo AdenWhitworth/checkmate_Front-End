@@ -12,7 +12,7 @@ html,body {
 ::-webkit-scrollbar { background: #181818; }
 ::-webkit-scrollbar-thumb { background-color: #3D3D3D; -webkit-border-radius: 1ex; }
 
-.Body{
+.App{
     height: 100vh;
     width: 100%;
     margin: 0;

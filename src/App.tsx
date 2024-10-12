@@ -390,6 +390,8 @@ import { Route, Routes } from 'react-router-dom';
 import Landing from './components/Landing/Landing';
 import { AuthProvider } from './Providers/AuthProvider/AuthProvider';
 import PrivateRoute from './Routes/PrivateRoute';
+import Authentication from './components/Authentication/Authentication';
+import Home from './components/Home/Home';
 
 function App(): JSX.Element {
 
@@ -398,8 +400,8 @@ function App(): JSX.Element {
       <AuthProvider>
         <Routes>
           <Route path='/' element={<Landing></Landing>}></Route>
-          <Route path='/auth' element={<></>}></Route>
-          <Route path='/home' element={<PrivateRoute><h1>Home</h1></PrivateRoute>}></Route>
+          <Route path='/auth' element={<Authentication></Authentication>}></Route>
+          <Route path='/home' element={<PrivateRoute><Home></Home></PrivateRoute>}></Route>
         </Routes>
       </AuthProvider>
     </div>
