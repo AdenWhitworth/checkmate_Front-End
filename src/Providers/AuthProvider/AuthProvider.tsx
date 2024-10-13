@@ -8,14 +8,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loadingAuth, setLoadingAuth] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoginSelected, setIsLoginSelected] = useState<boolean>(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoadingAuth(false);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user){
+        setCurrentUser(user);
+        if (user) {
+          const token = await user.getIdToken();
+          setAccessToken(token);
+        }
+        setLoadingAuth(false);
+      } else {
+        setCurrentUser(null);
+        setAccessToken(null);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -99,6 +109,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     } catch (e) {
       setCurrentUser(null);
+      setAccessToken(null);
       throw new Error("Unable to save new player");
     }
   }
@@ -108,7 +119,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, loadingAuth, logout, login, signup, error, resetError, isLoginSelected, setIsLoginSelected }}>
+    <AuthContext.Provider value={{ currentUser, loadingAuth, logout, login, signup, error, resetError, isLoginSelected, setIsLoginSelected, accessToken }}>
       {children}
     </AuthContext.Provider>
   );

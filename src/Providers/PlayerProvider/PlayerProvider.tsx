@@ -32,9 +32,9 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
             });
         });
         } catch (err) {
-        setError("Error fetching player data");
+            setError("Error fetching player data");
         } finally {
-        setLoadingPlayer(false);
+            setLoadingPlayer(false);
         }
     }, [currentUser]);
     
@@ -44,7 +44,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <PlayerContext.Provider value={{ player, loadingPlayer, error }}>
-        {children}
+            {children}
         </PlayerContext.Provider>
     );
 };

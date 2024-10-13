@@ -390,9 +390,10 @@ import { Route, Routes } from 'react-router-dom';
 import Landing from './components/Landing/Landing';
 import { AuthProvider } from './Providers/AuthProvider/AuthProvider';
 import { PlayerProvider } from './Providers/PlayerProvider/PlayerProvider';
+import { SocketProvider } from './Providers/SocketProvider/SocketProvider';
 import PrivateRoute from './Routes/PrivateRoute';
 import Authentication from './components/Authentication/Authentication';
-import Home from './components/Home/Home';
+import Dashboard from './components/Dashboard/Dashboard';
 
 function App(): JSX.Element {
 
@@ -400,11 +401,13 @@ function App(): JSX.Element {
     <div className="App">  
       <AuthProvider>
         <PlayerProvider>
-          <Routes>
-            <Route path='/' element={<Landing></Landing>}></Route>
-            <Route path='/auth' element={<Authentication></Authentication>}></Route>
-            <Route path='/home' element={<PrivateRoute><Home></Home></PrivateRoute>}></Route>
-          </Routes>
+          <SocketProvider url={process.env.REACT_APP_BASE_URL as string}>
+            <Routes>
+              <Route path='/' element={<Landing></Landing>}></Route>
+              <Route path='/auth' element={<Authentication></Authentication>}></Route>
+              <Route path='/dashboard' element={<PrivateRoute><Dashboard></Dashboard></PrivateRoute>}></Route>
+            </Routes>
+          </SocketProvider>
         </PlayerProvider>
       </AuthProvider>
     </div>

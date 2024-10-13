@@ -51,7 +51,7 @@ export default function Authentication() {
 
     useEffect(() => {
         if(currentUser){
-            navigate('/home', { replace: true });
+            navigate('/dashboard', { replace: true });
             hasNavigated.current = true;
         }
     }, [currentUser, navigate]);

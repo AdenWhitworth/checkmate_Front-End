@@ -9,8 +9,8 @@ export default function LandingSelections(): JSX.Element {
     
     const navigate = useNavigate();
 
-    const HandleHomeClick = () => {
-        navigate('/home', {
+    const HandleDashboardClick = () => {
+        navigate('/dashboard', {
             replace: true,
         });
     }
@@ -19,7 +19,7 @@ export default function LandingSelections(): JSX.Element {
         <div className="welcome">
             <div className="play">
                 <img className="pawn-logo" src={pawn_logo}></img>
-                <Button onClick={HandleHomeClick} className='fixed-width-icon-button' styleType='primary' imgSrc={play_logo} imgAlt='Play Logo'>Play Friends</Button>
+                <Button onClick={HandleDashboardClick} className='fixed-width-icon-button' styleType='primary' imgSrc={play_logo} imgAlt='Play Logo'>Play Friends</Button>
             </div>
         </div>          
     );

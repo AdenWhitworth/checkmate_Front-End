@@ -10,5 +10,5 @@ export interface AuthContextType {
     resetError: () => void;
     isLoginSelected: boolean;
     setIsLoginSelected: (value: boolean) => void;
-
+    accessToken: string | null;
 }
