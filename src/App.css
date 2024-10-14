@@ -45,7 +45,7 @@ p{
     font-size: 18px;
     font-weight: normal;
 }
-
+/*
 .modal-content{
     text-align: center;
     align-items: center;
@@ -606,7 +606,6 @@ p{
     transition: 0.3s ease-in-out;
 }
 
-/* This is for phone screens */
 @media(max-width: 900px){
     
     html, body{
@@ -731,3 +730,4 @@ p{
         margin-left: 3%;
     }
 }
+*/

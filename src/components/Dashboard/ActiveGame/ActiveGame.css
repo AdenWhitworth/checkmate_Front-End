@@ -1,0 +1,11 @@
+.active-game{
+    grid-area: activeGame;
+    display: flex;
+    align-items: center;
+    margin-left: 10vw;
+}
+
+.board{
+    width: 40vw;
+    margin: auto;
+}

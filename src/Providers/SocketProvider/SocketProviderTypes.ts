@@ -1,4 +1,7 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, MutableRefObject } from 'react';
+import { Move } from "chess.js";
+import { SocketPlayer, Room } from '../GameProvider/GameProviderTypes';
+import { Socket } from 'socket.io-client';
 
 export interface SocketContextType {
     isConnected: boolean;
@@ -7,18 +10,19 @@ export interface SocketContextType {
     errorReconnect: boolean;
     setErrorReconnect: React.Dispatch<React.SetStateAction<boolean>>;
     setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
-    sendAddUser: (addUserArgs: AddUserArgs) => void;
+    sendAddUser: (addUserArgs: AddUserArgs) => Promise<boolean>;
     //sendRemoveUser: (user_id: string) => void;
     //sendCheckSocket: (user_id: string) => void;
     connectSocket: (accessToken: string) => void;
     disconnectSocket: () => void;
-    sendCreateRoom: () => void;
-    sendJoinRoom: (joinRoomArgs: JoinRoomArgs) => void;
-    sendCloseRoom: (closeRoomArgs: CloseRoomArgs) => void;
-    sendInGameMessage: (inGameMessageArgs: InGameMessageArgs) => void;
-    sendMove: (moveArgs: MoveArgs) => void;
-    sendForfeit: (forfeitArgs: ForfeitArgs) => void;
+    sendCreateRoom: () => Promise<boolean>;
+    sendJoinRoom: (joinRoomArgs: JoinRoomArgs) => Promise<boolean>;
+    sendCloseRoom: (closeRoomArgs: CloseRoomArgs) => Promise<boolean>;
+    sendInGameMessage: (inGameMessageArgs: InGameMessageArgs) => Promise<boolean>;
+    sendMove: (moveArgs: MoveArgs) => Promise<boolean>;
+    sendForfeit: (forfeitArgs: ForfeitArgs) => Promise<boolean>;
     responseMessage: string | null;
+    socketRef: MutableRefObject<Socket | null>;
 }
 
 export interface SocketProviderProps {
@@ -28,6 +32,7 @@ export interface SocketProviderProps {
 
 export interface CallbackResponse {
     message: string;
+    error: boolean;
 }
 
 export interface CallbackResponseCreateRoom extends CallbackResponse {
@@ -39,27 +44,12 @@ export interface CallbackResponseJoinRoom extends CallbackResponse {
 }
 
 export interface CallbackResponseMove extends CallbackResponse {
-    move: string;
+    move: Move;
 }
 
 export interface CallbackResponseCloseRoom extends CallbackResponse {
     room: Room;
 }
-
-export interface ErrorResponse {
-    error: boolean;
-    message: string;
-}
-
-export interface Player {
-    id: string;
-    username: string;
-};
-
-export interface Room {
-    roomId: string;
-    players: Player[];
-};
 
 export interface Message {
     message: string;
@@ -87,7 +77,7 @@ export interface InGameMessageArgs {
 
 export interface MoveArgs {
     room: Room, 
-    move: string
+    move: Move
 };
 
 export interface ForfeitArgs {
@@ -96,5 +86,5 @@ export interface ForfeitArgs {
 };
 
 export interface DisconnectArgs {
-    player: Player
+    player: SocketPlayer
 };

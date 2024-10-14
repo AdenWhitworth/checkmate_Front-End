@@ -1,6 +1,6 @@
 import GameCard from "../components/GameCard";
 import InfoCard from "../components/InfoCard";
-import ActiveGame from "../ActiveGame";
+import ActiveGame from "./Dashboard/ActiveGame/ActiveGame";
 import { useState, useCallback, useEffect, createContext} from "react";
 import EndGameDialog from "../components/EndGameDialog";
 import { db } from '../firebase';
