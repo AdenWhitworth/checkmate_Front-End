@@ -139,7 +139,7 @@ export const useChessGame = () => {
   const calculateRank = (win: number, loss: number) => (win * win) / (win + loss);
 
   const handleWinLossChange = async (winner: "player" | "opponent" | null): Promise<void> => {
-    if (!player || !opponent) return;
+    if (!player || !player.win || !player.loss || !opponent) return;
 
     const userCollection = collection(db, 'users');
     const playerDoc = doc(userCollection, player.playerId);

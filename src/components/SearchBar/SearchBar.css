@@ -1,0 +1,32 @@
+.search-bar{
+    padding-top: 5%;
+}
+
+.search-bar input{
+    width: 65%;
+    margin-left: 10%;
+    height: 4.5vh;
+    border: 2px solid #FFE769;
+    background: transparent;
+    padding-left: 15%;
+    color: #FFE769;
+    
+    border-radius: 15px;
+}
+
+.search-bar input::placeholder {
+    color: #FFE769;
+    opacity: 1;
+}
+  
+.search-bar input::-ms-input-placeholder {
+    color: #FFE769;
+}
+
+.search-img{
+    position: absolute;
+    pointer-events: none;
+    height: 2.5vh;
+    margin-top: 1.5vh;
+    margin-left: 4.5%;
+}

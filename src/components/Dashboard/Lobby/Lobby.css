@@ -1,0 +1,70 @@
+
+.lobby{
+    grid-area: infoCard;
+    background-color: hsl(0, 0%, 9%);
+    border-radius: 20px;
+    height: 100%;
+    width: 30vw;
+    margin-left: 10vw;
+}
+
+.players-list{
+    text-align: left;
+    padding-left: 10%;
+    max-height: 36vh;
+    overflow: auto;
+}
+
+.players-list li{
+    list-style: none;
+    text-decoration: none;
+    list-style-type: none;
+    
+}
+
+.player-line{
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 90%;
+    height: 4.5vh;
+}
+
+.player-line-scroll{
+    width: 95% !important;
+}
+
+.player-username{
+    font-size: 14px;
+    flex: 1;
+}
+
+.player-icon{
+    height: 2vh;
+    flex: 1;
+}
+
+.player-request{
+    display:flex;
+    flex-direction: row;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    background-color: #FFCD05;
+    height: 3vh;
+    color: #000000;
+    flex: 1;
+    gap: 5%;
+    border-radius: 26px;
+    margin-right: 10%;
+    cursor: pointer;
+}
+
+.request-icon{
+    height: 2vh;
+}
+
+.request-text{
+    font-size: 14px;
+}
