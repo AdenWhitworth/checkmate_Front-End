@@ -5,10 +5,11 @@ import { GameProvider } from '../../Providers/GameProvider/GameProvider';
 import ActiveGame from './ActiveGame/ActiveGame';
 import Lobby from './Lobby/Lobby';
 import { useGame } from '../../Providers/GameProvider/GameProvider';
+import InGameStats from './InGameStats/InGameStats';
 
 export default function Dashboard(): JSX.Element {
 
-    const { room } = useGame();
+    //const { room } = useGame();
 
     return (
         <>  
@@ -19,11 +20,14 @@ export default function Dashboard(): JSX.Element {
                     <div className="dashboard-content">
                         <ActiveGame></ActiveGame>
                         
+                        <InGameStats></InGameStats>
+                        {/*
                         {room? (
-                            <></>
+                            <InGameStats></InGameStats>
                         ):(
                             <Lobby></Lobby> 
                         )}
+                        */}
                     </div>
                 </section>
             </GameProvider>
