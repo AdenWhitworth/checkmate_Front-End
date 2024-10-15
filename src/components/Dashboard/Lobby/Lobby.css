@@ -1,25 +1,12 @@
 
 .lobby{
-    grid-area: infoCard;
     background-color: hsl(0, 0%, 9%);
     border-radius: 20px;
     height: 100%;
     width: 30vw;
     margin-left: 10vw;
-}
-
-.players-list{
-    text-align: left;
-    padding-left: 10%;
-    max-height: 36vh;
-    overflow: auto;
-}
-
-.players-list li{
-    list-style: none;
-    text-decoration: none;
-    list-style-type: none;
-    
+    display: flex;
+    flex-direction: column;
 }
 
 .player-line{
@@ -27,12 +14,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 90%;
+    width: 100%;
     height: 4.5vh;
-}
-
-.player-line-scroll{
-    width: 95% !important;
 }
 
 .player-username{
@@ -67,4 +50,12 @@
 
 .request-text{
     font-size: 14px;
+}
+
+.odd-color{
+    background-color: #3D3D3D;
+}
+
+.even-color{
+    background-color: #212121;
 }

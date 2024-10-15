@@ -15,7 +15,7 @@ export interface SocketContextType {
     //sendCheckSocket: (user_id: string) => void;
     connectSocket: (accessToken: string) => void;
     disconnectSocket: () => void;
-    sendCreateRoom: () => Promise<boolean>;
+    sendCreateRoom: () => Promise<{ room: Room } | null>;
     sendJoinRoom: (joinRoomArgs: JoinRoomArgs) => Promise<boolean>;
     sendCloseRoom: (closeRoomArgs: CloseRoomArgs) => Promise<boolean>;
     sendInGameMessage: (inGameMessageArgs: InGameMessageArgs) => Promise<boolean>;

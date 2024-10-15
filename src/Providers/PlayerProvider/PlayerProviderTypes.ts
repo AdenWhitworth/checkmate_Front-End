@@ -1,3 +1,5 @@
+import { Room } from "../GameProvider/GameProviderTypes";
+
 export interface Player {
     playerId: string;
     userId: string;
@@ -24,7 +26,7 @@ export interface PlayerContextType {
 export interface Invite {
     requestLoss: number;
     requestPlayerId: string;
-    requestRoomId: string;
+    requestRoom: Room;
     requestUserId: string;
     requestUsername: string;
     requestWin: number;

@@ -16,7 +16,7 @@ export interface Opponent {
     opponentPlayerId: string;
     opponentWin: number;
     opponentLoss: number;
-    opponentInviteId: string;
+    opponentInviteId?: string;
 }
 
 export interface GameContextType {

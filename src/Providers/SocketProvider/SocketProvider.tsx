@@ -16,8 +16,9 @@ import {
     ForfeitArgs,
     DisconnectArgs
 } from './SocketProviderTypes';
-
+import { usePlayer } from '../PlayerProvider/PlayerProvider';
 import { CallbackResponse } from './SocketProviderTypes';
+import { Room } from '../GameProvider/GameProviderTypes';
 
 const SocketContext: React.Context<SocketContextType | undefined> = createContext<SocketContextType | undefined>(undefined);
 
@@ -34,152 +35,150 @@ export const handleCallback = (callback: Function, message: string, data?: any) 
 };
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }: SocketProviderProps): JSX.Element => {
-    const [isConnected, setIsConnected] = useState(false);
-    const [errorSocket, setErrorSocket] = useState<string | null>(null);
-    const [refresh, setRefresh] = useState(false);
-    const [errorReconnect, setErrorReconnect] = useState(false);
-    const socketRef = useRef<Socket | null>(null);
-    const [responseMessage, setResponseMessage] = useState<string | null>(null);
-    const {currentUser, accessToken} = useAuth();
+  const [isConnected, setIsConnected] = useState(false);
+  const [errorSocket, setErrorSocket] = useState<string | null>(null);
+  const [refresh, setRefresh] = useState(false);
+  const [errorReconnect, setErrorReconnect] = useState(false);
+  const socketRef = useRef<Socket | null>(null);
+  const [responseMessage, setResponseMessage] = useState<string | null>(null);
+  const {currentUser, accessToken} = useAuth();
+  const { player } = usePlayer();
 
-    const sendAddUser = useCallback((addUserArgs: AddUserArgs): Promise<boolean> => {
-        return new Promise((resolve, reject) => {
-            if (socketRef.current && isConnected) {
-                socketRef.current.emit('addUser', addUserArgs, (response: CallbackResponse) => {
-                    if (response.error) {
-                        setResponseMessage(response.message);
-                        reject(false);
-                    } else {
-                        setResponseMessage(response.message);
-                        resolve(true);
-                    }
-                });
-            } else {
-                setErrorSocket('Socket is not connected');
-                reject(false);
-            }
+  const sendAddUser = useCallback((addUserArgs: AddUserArgs): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current) {
+        socketRef.current.emit('addUser', addUserArgs, (response: CallbackResponse) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(false);
+          } else {
+            setResponseMessage(response.message);
+            resolve(true);
+          }
         });
-    }, [isConnected]);
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, []);
 
-    const sendCreateRoom = useCallback((): Promise<boolean> => {
-        return new Promise((resolve, reject) => {
-            if (socketRef.current && isConnected) {
-                socketRef.current.emit("createRoom", (response: CallbackResponseCreateRoom) => {
-                    if (response.error) {
-                        setResponseMessage(response.message);
-                        reject(false);
-                    } else {
-                        setResponseMessage(response.message);
-                        console.log(response.room);
-                        resolve(true);
-                    }
-                });
-            } else {
-                setErrorSocket('Socket is not connected');
-                reject(false);
-            }
+  const sendCreateRoom = useCallback((): Promise<{ room: Room } | null> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("createRoom", (response: CallbackResponseCreateRoom) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(new Error(response.message));
+          } else {
+            setResponseMessage(response.message);
+            resolve({ room: response.room });
+          }
         });
-    }, [isConnected]);
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(new Error('Socket is not connected'));
+      }
+    });
+  }, [isConnected]);
 
-    const sendJoinRoom = useCallback((joinRoomArgs: JoinRoomArgs): Promise<boolean> => {
-        return new Promise((resolve, reject) => {
-            if (socketRef.current && isConnected) {
-                socketRef.current.emit("joinRoom", joinRoomArgs, (response: CallbackResponseJoinRoom) => {
-                    if (response.error) {
-                        setResponseMessage(response.message);
-                        reject(false);
-                    } else {
-                        setResponseMessage(response.message);
-                        console.log(response.room);
-                        resolve(true);
-                    }
-                });
-            } else {
-                setErrorSocket('Socket is not connected');
-                reject(false);
-            }
+  const sendJoinRoom = useCallback((joinRoomArgs: JoinRoomArgs): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("joinRoom", joinRoomArgs, (response: CallbackResponseJoinRoom) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(false);
+          } else {
+            setResponseMessage(response.message);
+            resolve(true);
+          }
         });
-    }, [isConnected]);
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
 
-    const sendCloseRoom = useCallback((closeRoomArgs: CloseRoomArgs): Promise<boolean> => {
-        return new Promise((resolve, reject) => {
-            if (socketRef.current && isConnected) {
-                socketRef.current.emit("closeRoom", closeRoomArgs, (response: CallbackResponseCloseRoom) => {
-                    if (response.error) {
-                        setResponseMessage(response.message);
-                        reject(false);
-                    } else {
-                        setResponseMessage(response.message);
-                        console.log(response.room);
-                        resolve(true);
-                    }
-                });
-            } else {
-                setErrorSocket('Socket is not connected');
-                reject(false);
-            }
+  const sendCloseRoom = useCallback((closeRoomArgs: CloseRoomArgs): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("closeRoom", closeRoomArgs, (response: CallbackResponseCloseRoom) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(false);
+          } else {
+            setResponseMessage(response.message);
+            resolve(true);
+          }
         });
-    }, [isConnected]);
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
 
-    const sendInGameMessage = useCallback((inGameMessageArgs: InGameMessageArgs): Promise<boolean> => {
-        return new Promise((resolve, reject) => {
-            if (socketRef.current && isConnected) {
-                socketRef.current.emit("inGameMessage", inGameMessageArgs, (response: CallbackResponse) => {
-                    if (response.error) {
-                        setResponseMessage(response.message);
-                        reject(false);
-                    } else {
-                        setResponseMessage(response.message);
-                        resolve(true);
-                    }
-                });
-            } else {
-                setErrorSocket('Socket is not connected');
-                reject(false);
-            }
+  const sendInGameMessage = useCallback((inGameMessageArgs: InGameMessageArgs): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("inGameMessage", inGameMessageArgs, (response: CallbackResponse) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(false);
+          } else {
+            setResponseMessage(response.message);
+            resolve(true);
+          }
         });
-    }, [isConnected]);
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
 
-    const sendMove = useCallback((moveArgs: MoveArgs): Promise<boolean> => {
-        return new Promise((resolve, reject) => {
-            if (socketRef.current && isConnected) {
-                socketRef.current.emit("move", moveArgs, (response: CallbackResponseMove) => {
-                    if (response.error) {
-                        setResponseMessage(response.message);
-                        reject(false);
-                    } else {
-                        setResponseMessage(response.message);
-                        resolve(true);
-                    }
-                });
-            } else {
-                setErrorSocket('Socket is not connected');
-                reject(false);
-            }
+  const sendMove = useCallback((moveArgs: MoveArgs): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("move", moveArgs, (response: CallbackResponseMove) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(false);
+          } else {
+            setResponseMessage(response.message);
+            resolve(true);
+          }
         });
-    }, [isConnected]);
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
       
-    const sendForfeit = useCallback((forfeitArgs: ForfeitArgs): Promise<boolean> => {
-        return new Promise((resolve, reject) => {
-            if (socketRef.current && isConnected) {
-                socketRef.current.emit("playerForfeited", forfeitArgs, (response: CallbackResponse) => {
-                    if (response.error) {
-                        setResponseMessage(response.message);
-                        reject(false);
-                    } else {
-                        setResponseMessage(response.message);
-                        resolve(true);
-                    }
-                });
+  const sendForfeit = useCallback((forfeitArgs: ForfeitArgs): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+          socketRef.current.emit("playerForfeited", forfeitArgs, (response: CallbackResponse) => {
+            if (response.error) {
+              setResponseMessage(response.message);
+              reject(false);
             } else {
-                setErrorSocket('Socket is not connected');
-                reject(false);
+              setResponseMessage(response.message);
+              resolve(true);
             }
-        });
-    }, [isConnected]);
+          });
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
 
   const connectSocket = useCallback((accessToken: string) => {
-    if (socketRef.current) return;
+    if (socketRef.current || !player) return;
 
     const socketInstance = io(url, {
       auth: { token: accessToken },
@@ -191,10 +190,16 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
 
     socketRef.current = socketInstance;
 
-    socketInstance.on('connect', () => {
-      setIsConnected(true);
-      setErrorSocket(null);
-      //if (user) sendAddUser(user.user_id);
+    socketInstance.on('connect', async () => {
+      try {
+        if (!player) throw Error("Player required for adding username") 
+        await sendAddUser({ username: player.username});
+        setIsConnected(true);
+        setErrorSocket(null);
+      } catch (error) {
+        setIsConnected(false);
+        setErrorSocket("Add username error");
+      }
     });
 
     socketInstance.on('disconnect', () => {
@@ -224,31 +229,17 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
       console.error('Reconnection failed');
       setErrorReconnect(true);
     });
-
+    
     socketInstance.on('opponentJoined', (joinRoomArgs: JoinRoomArgs, callback) => {
         handleCallback(callback, 'Opponent join received');
         console.log(joinRoomArgs);
     });
     
-    socketInstance.on('playerDisconnected', (disconnectArgs: DisconnectArgs) => {
-        console.log(disconnectArgs);
-    });
-
     socketInstance.on('inGameMessage', (inGameMessageArgs: InGameMessageArgs, callback) => {
         handleCallback(callback, 'Message recieved by opponent');
         console.log(inGameMessageArgs);
     });
-
-    socketInstance.on('move', (moveArgs: MoveArgs, callback) => {
-        handleCallback(callback, 'Move recieved by opponent');
-        console.log(moveArgs);
-    });
-
-    socketInstance.on('playerForfeited', (forfeitArgs: ForfeitArgs, callback) => {
-        handleCallback(callback, 'Player forfeit received');
-        console.log(forfeitArgs);
-    });
-  }, [url]);
+  }, [url, player]);
 
   const disconnectSocket = useCallback(() => {
     if (socketRef.current) {
@@ -260,7 +251,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
   }, []);
 
   useEffect(() => {
-    if (currentUser && accessToken) {
+    if (currentUser && accessToken && player) {
       disconnectSocket();
       connectSocket(accessToken);
     }
@@ -268,7 +259,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     return () => {
       disconnectSocket();
     };
-  }, [connectSocket, disconnectSocket, currentUser]);
+  }, [connectSocket, disconnectSocket, currentUser, player]);
 
   /*
   const sendRemoveUser = useCallback((user_id: string) => {

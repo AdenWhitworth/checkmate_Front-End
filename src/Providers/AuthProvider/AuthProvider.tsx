@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         setLoadingAuth(false);
       } else {
+        setLoadingAuth(false);
         setCurrentUser(null);
         setAccessToken(null);
       }

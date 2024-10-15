@@ -1,0 +1,22 @@
+.lobby-menu{
+    text-align: left;
+    height: 100%;
+    width: 90%;
+    overflow: auto;
+    box-sizing: border-box;
+    margin-left: 5%;
+    margin-bottom: 5%;
+}
+
+.lobby-menu ul{
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.players-list li{
+    list-style: none;
+    text-decoration: none;
+    list-style-type: none;
+}
