@@ -1,6 +1,7 @@
 
 import React from "react";
 import { HistoryItemProps } from "./HistoryItemTypes";
+import './HistoryItem.css';
 
 export default function HistoryItem({rowMoves, index}: HistoryItemProps) {
     const rowNumber = index + 1;

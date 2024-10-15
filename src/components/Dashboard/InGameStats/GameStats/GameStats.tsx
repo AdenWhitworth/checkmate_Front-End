@@ -3,6 +3,7 @@ import { GameStatsProps } from './GameStatsTypes';
 import user_circle from "../../../../Images/User Circle.svg";
 import { PieceType } from '../InGameStatsTypes';
 import LoadingDots from '../../../LoadingDots/LoadingDots';
+import './GameStats.css';
 
 export default function GameStats({ 
     username, 

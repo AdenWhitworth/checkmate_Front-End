@@ -1,0 +1,77 @@
+
+.game-info{
+    background-color: #3D3D3D;
+    border-radius: 20px;
+    margin-left: 5%;
+    height: 20%;
+    width: 90%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    display: flex;
+    flex-direction: row;
+}
+
+.game-stats{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    padding-left: 5%;
+    justify-content: center;
+    gap: 10%;
+    
+}
+
+.game-info h3{
+    font-size: 18px;
+    padding: 0;
+    margin: 0;
+}
+
+.game-row-1{
+    display: flex;
+    flex-direction: row;
+    color: #FFFFFF;
+    text-align: left;
+    justify-content: left;
+    align-items: center;
+    gap: 2%;
+    
+}
+
+.game-row-2{
+    display: flex;
+    flex-direction: row;
+    color: #FFFFFF;
+    text-align: left;
+    justify-content: left;
+    align-items: center;
+    gap: 5%;
+    
+}
+
+.game-icon{
+    height: 30px;
+    color: #FFCD05;
+}
+
+.game-pieces-captured{
+    height: 15px;
+    flex: 1;
+}
+
+.game-pieces-captured-hidden{
+    visibility: hidden;
+}
+
+.game-row-3{
+    display: flex;
+    flex-direction: row;
+    text-align: left;
+    justify-content: left;
+    align-items: center;
+    gap: 5%;   
+}
+
+.player-turn{
+    background-color: #FFCD05;
+}
