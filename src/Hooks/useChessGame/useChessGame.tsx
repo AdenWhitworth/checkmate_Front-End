@@ -13,9 +13,7 @@ export const useChessGame = () => {
     setHistory, 
     setPlayerTurn, 
     orientation, 
-    forfeitGame, 
-    chess,
-    fen, 
+    chess, 
     setFen,
     gameOver, 
     setGameOver, 
@@ -109,19 +107,6 @@ export const useChessGame = () => {
     }
   }, [setGameOver, socketRef]);
 
-  const handleForfeit = useCallback(async () => {
-    if (socketRef.current && forfeitGame && room && player) {
-      try {
-        const username = player.username;
-        await sendForfeit({ room, username });
-        cleanup();
-        /********* Send Home **********/
-      } catch (error) {
-        console.log("Please try again.");
-      }
-    }
-  }, [forfeitGame, room, player, sendForfeit, cleanup, socketRef]);
-
   const findWinner = (): "player" | "opponent" | null => {
     if (!gameOver) return null;
 
@@ -178,8 +163,7 @@ export const useChessGame = () => {
     handleMove();
     handleDisconnect();
     handlePlayerForfeited();
-    handleForfeit();
-  }, [handleMove, handleDisconnect, handlePlayerForfeited, handleForfeit]);
+  }, [handleMove, handleDisconnect, handlePlayerForfeited]);
 
   return {
     onDrop,

@@ -403,11 +403,13 @@ function App(): JSX.Element {
       <AuthProvider>
         <PlayerProvider>
           <SocketProvider url={process.env.REACT_APP_BASE_URL as string}>
-            <Routes>
-              <Route path='/' element={<Landing></Landing>}></Route>
-              <Route path='/auth' element={<Authentication></Authentication>}></Route>
-              <Route path='/dashboard' element={<PrivateRoute><GameProvider><Dashboard></Dashboard></GameProvider></PrivateRoute>}></Route>
-            </Routes>
+            <GameProvider>
+              <Routes>
+                <Route path='/' element={<Landing></Landing>}></Route>
+                <Route path='/auth' element={<Authentication></Authentication>}></Route>
+                <Route path='/dashboard' element={<PrivateRoute><Dashboard></Dashboard></PrivateRoute>}></Route>
+              </Routes>
+            </GameProvider>
           </SocketProvider>
         </PlayerProvider>
       </AuthProvider>

@@ -23,7 +23,6 @@ export default function Dashboard(): JSX.Element {
                     ):(
                         <Lobby></Lobby> 
                     )}
-
                 </div>
             </section>
         </>
