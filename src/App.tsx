@@ -394,6 +394,7 @@ import { SocketProvider } from './Providers/SocketProvider/SocketProvider';
 import PrivateRoute from './Routes/PrivateRoute';
 import Authentication from './components/Authentication/Authentication';
 import Dashboard from './components/Dashboard/Dashboard';
+import { GameProvider } from './Providers/GameProvider/GameProvider';
 
 function App(): JSX.Element {
 
@@ -405,7 +406,7 @@ function App(): JSX.Element {
             <Routes>
               <Route path='/' element={<Landing></Landing>}></Route>
               <Route path='/auth' element={<Authentication></Authentication>}></Route>
-              <Route path='/dashboard' element={<PrivateRoute><Dashboard></Dashboard></PrivateRoute>}></Route>
+              <Route path='/dashboard' element={<PrivateRoute><GameProvider><Dashboard></Dashboard></GameProvider></PrivateRoute>}></Route>
             </Routes>
           </SocketProvider>
         </PlayerProvider>
