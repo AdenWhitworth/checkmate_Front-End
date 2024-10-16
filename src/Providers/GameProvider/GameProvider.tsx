@@ -23,7 +23,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { player } = usePlayer();
     const { socketRef, sendForfeit, sendCreateRoom, sendJoinRoom, sendCloseRoom } = useSocket();
-    const { onDrop, handleWinLossChange, findWinner } = useChessGame();
 
     const [playerTurn, setPlayerTurn] = useState<"w" | "b">("w");
     const [history, setHistory] = useState<Move[]>([]);
@@ -53,6 +52,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [loadingJoinGameOpponentUserId, setLoadingJoinGameOpponentUserId] = useState<string | null>(null);
     const [errorJoinGame, setErrorJoinGame] = useState<string | null>(null);
     const [successJoinGame, setSuccessJoinGame] = useState<string | null>(null);
+
+    const { onDrop, handleWinLossChange, findWinner } = useChessGame({
+        room, 
+        setHistory, 
+        setPlayerTurn, 
+        orientation, 
+        chess, 
+        setFen,
+        gameOver, 
+        setGameOver,
+        opponent 
+    });
 
     const cleanup = useCallback(() => {
         setFen("start");

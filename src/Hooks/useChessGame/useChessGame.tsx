@@ -1,24 +1,23 @@
 import { useCallback, useEffect, useState } from "react";
-import { Chess, Move, Square } from "chess.js";
-import { useGame } from "../../Providers/GameProvider/GameProvider";
+import { Move, Square } from "chess.js";
 import { usePlayer } from "../../Providers/PlayerProvider/PlayerProvider";
 import { useSocket, handleCallback } from "../../Providers/SocketProvider/SocketProvider";
 import { MoveArgs, ForfeitArgs, DisconnectArgs } from "../../Providers/SocketProvider/SocketProviderTypes";
 import { db } from '../../firebase';
 import { collection, doc, increment, updateDoc} from "firebase/firestore";
+import { UseChessGameProps } from "./useChessGameTypes";
 
-export const useChessGame = () => {
-  const { 
-    room, 
-    setHistory, 
-    setPlayerTurn, 
-    orientation, 
-    chess, 
-    setFen,
-    gameOver, 
-    setGameOver,
-    opponent 
-  } = useGame();
+export const useChessGame = ({ 
+  room, 
+  setHistory, 
+  setPlayerTurn, 
+  orientation, 
+  chess, 
+  setFen,
+  gameOver, 
+  setGameOver,
+  opponent 
+}: UseChessGameProps) => {
   const { player } = usePlayer();
   const { sendMove, socketRef } = useSocket();
   
