@@ -3,6 +3,7 @@ import x_circle from '../../Images/x-circle-black.svg';
 import Button from '../Button/Button';
 import './Modal.css';
 import { ModalProps } from './ModalTypes';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 export default function Modal({
     handleCloseClick, 
@@ -14,34 +15,43 @@ export default function Modal({
     styleType = 'primary',
     logoSrc,
     title,
+    error,
+    loading,
 }: ModalProps) {
 
     return (
         <div className="modal">
             <div className='modal-content'>
-                
-                {addClose?
-                    <div className='modal-close'>
-                        <img className='grow' src={x_circle} alt='Close Icon' onClick={handleCloseClick}></img>
-                    </div>
-                    :
-                    <></>
-                }
+                {loading? (
+                    <LoadingSpinner></LoadingSpinner>
+                ):(
+                    <>
+                        {addClose?
+                            <div className='modal-close'>
+                                <img className='grow' src={x_circle} alt='Close Icon' onClick={handleCloseClick}></img>
+                            </div>
+                            :
+                            <></>
+                        }
 
-                {logoSrc && <img className="modal-logo" src={logoSrc} alt='Modal Logo'></img>}
-                {title && <h3 className='modal-title'>{title}</h3>}
-                {body && <p>{body}</p>}
-                
-                {addButton?
+                        {logoSrc && <img className="modal-logo" src={logoSrc} alt='Modal Logo'></img>}
+                        {title && <h3 className='modal-title'>{title}</h3>}
+                        {body && <p>{body}</p>}
 
-                    <div className='modal-btns'>
-                        <Button styleType={styleType} onClick={handleButtonClick}>{buttonLabel}</Button>
-                    </div>
-                    :
-                    <div className='modal-btns hidden'>
-                        <Button styleType={styleType} >Hidden</Button>
-                    </div>
-                }
+                        {addButton?
+
+                            <div className='modal-btns'>
+                                <Button styleType={styleType} onClick={handleButtonClick}>{buttonLabel}</Button>
+                            </div>
+                            :
+                            <div className='modal-btns hidden'>
+                                <Button styleType={styleType} >Hidden</Button>
+                            </div>
+                        }
+
+                        {error && <p className="error-message">{error}</p>}
+                    </>
+                )}
             </div>
         </div>
     );

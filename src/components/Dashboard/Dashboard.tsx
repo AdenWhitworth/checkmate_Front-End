@@ -5,6 +5,8 @@ import ActiveGame from './ActiveGame/ActiveGame';
 import Lobby from './Lobby/Lobby';
 import { useGame } from '../../Providers/GameProvider/GameProvider';
 import InGameStats from './InGameStats/InGameStats';
+import ForfeitModal from '../Modal/ForfeitModal/ForfeitModal';
+import ExitModal from '../Modal/ExitModal/ExitModal';
 
 export default function Dashboard(): JSX.Element {
 
@@ -25,6 +27,11 @@ export default function Dashboard(): JSX.Element {
                     )}
                 </div>
             </section>
+
+            <ForfeitModal></ForfeitModal>
+
+            <ExitModal></ExitModal>
+            
         </>
     );
 }

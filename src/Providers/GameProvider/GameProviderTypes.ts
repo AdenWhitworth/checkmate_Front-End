@@ -30,12 +30,20 @@ export interface GameContextType {
     setOrientation: (value: "w" | "b") => void;
     room: Room | null;
     setRoom: (value: Room | null) => void;
-    forfeitGame: boolean
-    setForfeitGame: (value: boolean) => void;
     fen: string;
     setFen: (value: string) => void;
     gameOver: string | null;
     setGameOver: (value: string | null) => void;
     cleanup: () => void;
     chess: Chess;
+    forfeitGame: boolean;
+    setForfeitGame: (value: boolean) => void;
+    loadingForfeit: boolean;
+    errorForfeit: string | null;
+    handleForfeit: () => void;
+    exitGame: boolean
+    setExitGame: (value: boolean) => void;
+    loadingExit: boolean;
+    errorExit: string | null;
+    handleExit: () => void;
 }

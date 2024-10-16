@@ -71,6 +71,14 @@
     object-fit: contain;
 }
 
+.hidden{
+    visibility: hidden;
+}
+
+.error-message{
+    color: #FF4C4C !important;
+}
+
 @media (max-width: 768px) {
     .modal-content{
         width: 60%;

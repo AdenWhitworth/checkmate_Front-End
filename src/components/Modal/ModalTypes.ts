@@ -8,4 +8,6 @@ export interface ModalProps {
     handleCloseClick?: () => void;
     logoSrc?: string;
     title?: string;
+    error?: string | null;
+    loading?: boolean;
 }
