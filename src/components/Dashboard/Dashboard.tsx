@@ -9,6 +9,7 @@ import ForfeitModal from '../Modal/ForfeitModal/ForfeitModal';
 import ExitModal from '../Modal/ExitModal/ExitModal';
 import CreateRoomAlertBadge from '../AlertBadge/CreateRoomAlertBadge/CreateRoomAlertBadge';
 import JoinRoomAlertBadge from '../AlertBadge/JoinRoomAlertBadge/JoinRoomAlertBadge';
+import GameOverModal from '../Modal/GameOverModal/GameOverModal';
 
 export default function Dashboard(): JSX.Element {
     const { room } = useGame();
@@ -24,6 +25,7 @@ export default function Dashboard(): JSX.Element {
             </section>
             <ForfeitModal />
             <ExitModal />
+            <GameOverModal />
             <CreateRoomAlertBadge />
             <JoinRoomAlertBadge />
         </>

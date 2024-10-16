@@ -1,20 +1,15 @@
 import React from "react";
 import { Chessboard } from "react-chessboard";
 import { useGame } from "../../../Providers/GameProvider/GameProvider";
-import Modal from "../../Modal/Modal";
-import king_logo_black from "../../../Images/King Logo Black.svg";
 import "./ActiveGame.css";
-import { useChessGame } from "../../../Hooks/useChessGame/useChessGame";
 
 export default function ActiveGame() {
 
   const { 
     orientation, 
     fen,
-    gameOver,
+    onDrop,
   } = useGame();
-
-  const { onDrop, handleSoccetCloseRoom } = useChessGame();
 
   return (
       <div className="active-game">
@@ -31,16 +26,6 @@ export default function ActiveGame() {
             customLightSquareStyle={{backgroundColor: '#FFFFFF'}}
           />
         </div>
-        
-        {gameOver && <Modal 
-          addButton={true} 
-          buttonLabel={"Continue"} 
-          styleType={"primary"} 
-          addClose={false} 
-          handleButtonClick={handleSoccetCloseRoom} 
-          logoSrc={king_logo_black} 
-          title={gameOver}
-        ></Modal>}
       </div>
   );
 }

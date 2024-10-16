@@ -16,12 +16,11 @@ export const useChessGame = () => {
     chess, 
     setFen,
     gameOver, 
-    setGameOver, 
-    cleanup,
+    setGameOver,
     opponent 
   } = useGame();
   const { player } = usePlayer();
-  const { sendMove, socketRef, sendForfeit, sendCloseRoom } = useSocket();
+  const { sendMove, socketRef } = useSocket();
   
   const makeAMove = useCallback((move: Move) => {
     try {
@@ -146,19 +145,6 @@ export const useChessGame = () => {
     }
   };
 
-  const handleSoccetCloseRoom = useCallback(async () => {
-    const winner = findWinner();
-    if (winner === "player" && room) {
-      try {
-        await handleWinLossChange(winner);
-        await sendCloseRoom({ room });
-      } catch (error) {
-        console.log("Network error");
-      }
-    }
-    cleanup();
-  }, [findWinner, handleWinLossChange, sendCloseRoom, room, cleanup]);
-
   useEffect(() => {
     handleMove();
     handleDisconnect();
@@ -167,6 +153,7 @@ export const useChessGame = () => {
 
   return {
     onDrop,
-    handleSoccetCloseRoom,
+    handleWinLossChange,
+    findWinner,
   };
 };

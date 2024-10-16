@@ -1,4 +1,4 @@
-import { Move, Chess } from "chess.js";
+import { Move, Chess, Square } from "chess.js";
 import { Invite, Player } from "../PlayerProvider/PlayerProviderTypes";
 
 export interface SocketPlayer {
@@ -34,6 +34,8 @@ export interface GameContextType {
     fen: string;
     setFen: (value: string) => void;
     gameOver: string | null;
+    loadingOver: boolean;
+    errorOver: string | null;
     setGameOver: (value: string | null) => void;
     cleanup: () => void;
     chess: Chess;
@@ -55,4 +57,6 @@ export interface GameContextType {
     errorJoinGame: string | null;
     successJoinGame: string | null;
     handleJoinRoom: (value: Invite) => void;
+    onDrop:(sourceSquare: Square, targetSquare: Square) => boolean;
+    handleCloseRoom: () => void;
 }

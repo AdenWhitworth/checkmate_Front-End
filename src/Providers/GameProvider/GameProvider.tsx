@@ -7,6 +7,7 @@ import { useSocket } from '../SocketProvider/SocketProvider';
 import { db } from "../../firebase";
 import { collection, deleteDoc, doc, addDoc, getDoc } from "firebase/firestore";
 import { Invite, Player } from '../PlayerProvider/PlayerProviderTypes';
+import { useChessGame } from '../../Hooks/useChessGame/useChessGame';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -21,7 +22,8 @@ export const useGame = (): GameContextType => {
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     const { player } = usePlayer();
-    const { socketRef, sendForfeit, sendCreateRoom, sendJoinRoom } = useSocket();
+    const { socketRef, sendForfeit, sendCreateRoom, sendJoinRoom, sendCloseRoom } = useSocket();
+    const { onDrop, handleWinLossChange, findWinner } = useChessGame();
 
     const [playerTurn, setPlayerTurn] = useState<"w" | "b">("w");
     const [history, setHistory] = useState<Move[]>([]);
@@ -31,7 +33,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const chess = useMemo<Chess>(() => new Chess(), [room]);
     const [fen, setFen] = useState<string>("start");
+    
     const [gameOver, setGameOver] = useState<string | null>(null);
+    const [loadingOver, setLoadingOver] = useState<boolean>(false);
+    const [errorOver, setErrorOver] = useState<string | null>(null);
 
     const [forfeitGame, setForfeitGame] = useState<boolean>(false);
     const [loadingForfeit, setLoadingForfeit] = useState<boolean>(false);
@@ -196,6 +201,27 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
+    const handleCloseRoom = async () => {
+        setErrorOver(null);
+        setLoadingOver(true);
+
+        const winner = findWinner();
+        
+        try {
+            if (winner !== "player" || !room) throw Error("Only winner closes the room.");
+            
+            await handleWinLossChange(winner);
+            await sendCloseRoom({ room });
+            
+            cleanup();
+
+        } catch (error) {
+            setErrorOver("Enable to close game. Please try again.")
+        } finally {
+            setLoadingOver(false);
+        }
+    };
+
     return (
         <GameContext.Provider value={{
             playerTurn,
@@ -211,6 +237,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             fen,
             setFen,
             gameOver,
+            loadingOver,
+            errorOver,
             setGameOver,
             cleanup,
             chess,
@@ -231,7 +259,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             loadingJoinGameOpponentUserId,
             errorJoinGame,
             successJoinGame,
-            handleJoinRoom
+            handleJoinRoom,
+            onDrop,
+            handleCloseRoom
         }}>
             {children}
         </GameContext.Provider>
