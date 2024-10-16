@@ -28,7 +28,7 @@ export default function Header(): JSX.Element {
                     <nav className="nav-links">
                         {!currentUser && <li><Button className='fixed-width-button' styleType='primary' onClick={handleSignupClick}>Sign Up</Button></li>}
                         {!currentUser && <li><Button className='fixed-width-button' styleType='secondary' onClick={handleLoginClick}>Log In</Button></li>}
-                        {currentUser && 
+                        {currentUser && !room && 
                             <li>
                                 <Button className='fixed-width-button' disabled={loadingAuth} styleType='secondary' onClick={handleLogoutClick}>
                                     {loadingAuth ? 'Logging out...' : 'Log out'}

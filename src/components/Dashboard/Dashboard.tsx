@@ -9,35 +9,33 @@ import ForfeitModal from '../Modal/ForfeitModal/ForfeitModal';
 import ExitModal from '../Modal/ExitModal/ExitModal';
 import CreateRoomAlertBadge from '../AlertBadge/CreateRoomAlertBadge/CreateRoomAlertBadge';
 import JoinRoomAlertBadge from '../AlertBadge/JoinRoomAlertBadge/JoinRoomAlertBadge';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
+import { usePlayer } from '../../Providers/PlayerProvider/PlayerProvider';
 
 export default function Dashboard(): JSX.Element {
 
+    const { loadingPlayer, loadingInvites, loadingPlayers} = usePlayer();
     const { room } = useGame();
 
     return (
-        <>  
-            <Header></Header>
-            
-            <section className="dashboard">
-                <div className="dashboard-content">
-                    <ActiveGame></ActiveGame>
-                    
-                    {room? (
-                        <InGameStats></InGameStats>
-                    ):(
-                        <Lobby></Lobby> 
-                    )}
-                </div>
-            </section>
-
-            <ForfeitModal></ForfeitModal>
-
-            <ExitModal></ExitModal>
-
-            <CreateRoomAlertBadge></CreateRoomAlertBadge>
-
-            <JoinRoomAlertBadge></JoinRoomAlertBadge>
-            
+        <>
+            {(loadingPlayer || loadingInvites || loadingPlayers) ? (
+                <LoadingSpinner />
+            ) : (
+                <>
+                    <Header />
+                    <section className="dashboard">
+                        <div className="dashboard-content">
+                            <ActiveGame />
+                            {room ? <InGameStats /> : <Lobby />}
+                        </div>
+                    </section>
+                    <ForfeitModal />
+                    <ExitModal />
+                    <CreateRoomAlertBadge />
+                    <JoinRoomAlertBadge />
+                </>
+            )}
         </>
     );
 }
