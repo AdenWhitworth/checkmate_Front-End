@@ -20,7 +20,7 @@ export default function PlayersItem({ potentialOpponent, index }: PlayersItemPro
                 <img className="player-icon" src={user_white} alt="player icon" />
                 <h3 className="player-username">{potentialOpponent.username}</h3>
                 <div className="player-request" onClick={handleOppentClick}>
-                    {loadingCreateGameOpponentUserId === potentialOpponent.playerId ? (
+                    {loadingCreateGameOpponentUserId === potentialOpponent.userId ? (
                         <LoadingDots position={'center'} color={'black'} size={'small'} />
                     ) : (
                         <>

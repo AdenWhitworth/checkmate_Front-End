@@ -1,5 +1,5 @@
 import { Move, Chess } from "chess.js";
-import { Player } from "../PlayerProvider/PlayerProviderTypes";
+import { Invite, Player } from "../PlayerProvider/PlayerProviderTypes";
 
 export interface SocketPlayer {
     id: string;
@@ -51,4 +51,8 @@ export interface GameContextType {
     errorCreateGame: string | null;
     successCreateGame: string | null;
     handleCreateRoom: (value: Player) => void;
+    loadingJoinGameOpponentUserId: string | null;
+    errorJoinGame: string | null;
+    successJoinGame: string | null;
+    handleJoinRoom: (value: Invite) => void;
 }

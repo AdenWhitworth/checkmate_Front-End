@@ -6,7 +6,7 @@ import { usePlayer } from '../PlayerProvider/PlayerProvider';
 import { useSocket } from '../SocketProvider/SocketProvider';
 import { db } from "../../firebase";
 import { collection, deleteDoc, doc, addDoc, getDoc } from "firebase/firestore";
-import { Player } from '../PlayerProvider/PlayerProviderTypes';
+import { Invite, Player } from '../PlayerProvider/PlayerProviderTypes';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -21,7 +21,7 @@ export const useGame = (): GameContextType => {
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     const { player } = usePlayer();
-    const { socketRef, sendForfeit, sendCreateRoom } = useSocket();
+    const { socketRef, sendForfeit, sendCreateRoom, sendJoinRoom } = useSocket();
 
     const [playerTurn, setPlayerTurn] = useState<"w" | "b">("w");
     const [history, setHistory] = useState<Move[]>([]);
@@ -44,6 +44,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [loadingCreateGameOpponentUserId, setLoadingCreateGameOpponentUserId] = useState<string | null>(null);
     const [errorCreateGame, setErrorCreateGame] = useState<string | null>(null);
     const [successCreateGame, setSuccessCreateGame] = useState<string | null>(null);
+
+    const [loadingJoinGameOpponentUserId, setLoadingJoinGameOpponentUserId] = useState<string | null>(null);
+    const [errorJoinGame, setErrorJoinGame] = useState<string | null>(null);
+    const [successJoinGame, setSuccessJoinGame] = useState<string | null>(null);
 
     const cleanup = useCallback(() => {
         setFen("start");
@@ -157,6 +161,41 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
+    const handleJoinRoom = async (invite: Invite) => {
+        setLoadingJoinGameOpponentUserId(invite.requestUserId);
+        setErrorJoinGame(null);
+        setSuccessJoinGame(null);
+        
+        try {
+            if (!socketRef.current || !player) throw Error("Unable to join room");
+
+            await sendJoinRoom({ room: invite.requestRoom});
+            
+            const userCollection = collection(db, 'users');
+            const DocRef = doc(userCollection, player.userId);
+            const inviteCollection = collection(DocRef,'invites');
+            const DocRef2 = doc(inviteCollection, invite.inviteId);
+            deleteDoc(DocRef2);
+            
+            const newOpponent: Opponent = {
+                opponentUsername: invite.requestUsername,
+                opponentUserId: invite.requestUserId,
+                opponentPlayerId: invite.requestPlayerId,
+                opponentWin: invite.requestWin,
+                opponentLoss: invite.requestLoss
+            };
+
+            setOpponent(newOpponent);
+            setOrientation("b");
+            setRoom(invite.requestRoom);
+            setSuccessCreateGame("Game joined successfully! You are playing against: " + invite.requestUsername);
+        } catch (error) {
+            setErrorJoinGame("Enable to join game. Please try again.");
+        } finally {
+            setLoadingJoinGameOpponentUserId(null);
+        }
+    };
+
     return (
         <GameContext.Provider value={{
             playerTurn,
@@ -188,7 +227,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             loadingCreateGameOpponentUserId,
             errorCreateGame,
             successCreateGame,
-            handleCreateRoom
+            handleCreateRoom,
+            loadingJoinGameOpponentUserId,
+            errorJoinGame,
+            successJoinGame,
+            handleJoinRoom
         }}>
             {children}
         </GameContext.Provider>
