@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from '../Modal';
 import { useGame } from '../../../Providers/GameProvider/GameProvider';
+import king_logo_black from '../../../Images/King Logo Black.svg';
 
 export default function ExitModal() {
     const { exitGame, setExitGame, handleExit, opponent, errorExit, loadingExit } = useGame();
@@ -14,7 +15,7 @@ export default function ExitModal() {
             styleType="primary"
             addClose={true}
             handleCloseClick={() => setExitGame(false)}
-            logoSrc="king_logo_black"
+            logoSrc={king_logo_black}
             title="Exit the game!"
             body={`Are you sure you want to exit the game against ${opponent?.opponentUsername || 'Opponent'} while waiting for them to join?`}
             error={errorExit}

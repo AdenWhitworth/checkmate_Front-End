@@ -1,4 +1,5 @@
 import { Move, Chess } from "chess.js";
+import { Player } from "../PlayerProvider/PlayerProviderTypes";
 
 export interface SocketPlayer {
     id: string;
@@ -46,4 +47,8 @@ export interface GameContextType {
     loadingExit: boolean;
     errorExit: string | null;
     handleExit: () => void;
+    loadingCreateGameOpponentUserId: string | null;
+    errorCreateGame: string | null;
+    successCreateGame: string | null;
+    handleCreateRoom: (value: Player) => void;
 }

@@ -28,7 +28,7 @@ export default function GameStats({
 
             <div className="game-row-3">
                 {isLoading? (
-                    <LoadingDots></LoadingDots>
+                    <LoadingDots position={'left'} color={'grey'} size={'medium'}></LoadingDots>
                 ) : (
                     Object.keys(pieces).map((piece) => {
                         const pieceKey = piece as PieceType;

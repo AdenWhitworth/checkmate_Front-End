@@ -1,18 +1,26 @@
 .loading-dots {
     display: flex;
-    justify-content: left;
     align-items: center;
     grid-area: loading;
     height: 100%;
     width: 100%;
 }
 
+.position-left{
+    justify-content: left;
+}
+
+.position-center{
+    justify-content: center;
+}
+
+.position-right{
+    justify-content: right;
+}
+
 .loading-dots div {
     display: inline-block;
-    width: 15px;
-    height: 15px;
     margin: 0 2px;
-    background-color: #C0C0C0;
     border-radius: 50%;
     animation: loadingDots 1.2s infinite ease-in-out both;
 }
@@ -27,6 +35,29 @@
 
 .loading-dots div:nth-child(3) {
     animation-delay: 0;
+}
+
+.color-black{
+    background-color: #000000;
+}
+
+.color-grey{
+    background-color: #C0C0C0;
+}
+
+.size-small{
+    width: 10px;
+    height: 10px;
+}
+
+.size-medium{
+    width: 15px;
+    height: 15px;
+}
+
+.size-large{
+    width: 30px;
+    height: 30px;
 }
 
 @keyframes loadingDots {

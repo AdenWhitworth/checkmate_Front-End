@@ -5,7 +5,8 @@ import { Chess, Move } from "chess.js";
 import { usePlayer } from '../PlayerProvider/PlayerProvider';
 import { useSocket } from '../SocketProvider/SocketProvider';
 import { db } from "../../firebase";
-import { collection, deleteDoc, doc } from "firebase/firestore";
+import { collection, deleteDoc, doc, addDoc, getDoc } from "firebase/firestore";
+import { Player } from '../PlayerProvider/PlayerProviderTypes';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -20,7 +21,7 @@ export const useGame = (): GameContextType => {
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
     const { player } = usePlayer();
-    const { socketRef, sendForfeit } = useSocket();
+    const { socketRef, sendForfeit, sendCreateRoom } = useSocket();
 
     const [playerTurn, setPlayerTurn] = useState<"w" | "b">("w");
     const [history, setHistory] = useState<Move[]>([]);
@@ -40,6 +41,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [loadingExit, setLoadingExit] = useState<boolean>(false);
     const [errorExit, setErrorExit] = useState<string | null>(null);
 
+    const [loadingCreateGameOpponentUserId, setLoadingCreateGameOpponentUserId] = useState<string | null>(null);
+    const [errorCreateGame, setErrorCreateGame] = useState<string | null>(null);
+    const [successCreateGame, setSuccessCreateGame] = useState<string | null>(null);
+
     const cleanup = useCallback(() => {
         setFen("start");
         setRoom(null);
@@ -49,19 +54,19 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, []);
 
     const handleForfeit = useCallback(async () => {
-        if (socketRef.current && room && player) {
-            setLoadingForfeit(true);
-            setErrorForfeit(null);
-            try {
-                const username = player.username;
-                await sendForfeit({ room, username });
-                cleanup();
-            } catch (error) {
-                setErrorForfeit("Unable to forfeit. Please try again.");
-            } finally {
-                setForfeitGame(false);
-                setLoadingForfeit(false);
-            }
+        setLoadingForfeit(true);
+        setErrorForfeit(null);
+        try {
+            if (!socketRef.current || !room || !player) throw new Error("Socket, room, and player required");
+
+            const username = player.username;
+            await sendForfeit({ room, username });
+            cleanup();
+        } catch (error) {
+            setErrorForfeit("Unable to forfeit. Please try again.");
+        } finally {
+            setForfeitGame(false);
+            setLoadingForfeit(false);
         }
     }, [room, player, socketRef, sendForfeit, cleanup]);
 
@@ -86,6 +91,71 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setLoadingExit(false);
         }
     }, [opponent, cleanup]);
+
+    const handleCreateRoom = async (potentialOpponent: Player) => {
+        setLoadingCreateGameOpponentUserId(potentialOpponent.userId);
+        setErrorCreateGame(null);
+        setSuccessCreateGame(null);
+
+        try {
+            if (!socketRef.current) throw new Error("No room created.");
+
+            const newRoom = await sendCreateRoom();
+            if (!newRoom) throw new Error("No room created.");
+            setOrientation("w");
+            await invitePlayer(newRoom.room, potentialOpponent);
+            setSuccessCreateGame("Game created successfully! Waiting on opponent: " + potentialOpponent.username);
+        } catch (error) {
+            setErrorCreateGame("Unable to create game. Please try again.")
+        } finally {
+            setLoadingCreateGameOpponentUserId(null);
+        }
+    };
+
+    const invitePlayer = async (room: Room, potentialOpponent: Player) => {
+        try {
+            if (!player) throw new Error("Player not found");
+
+            const userCollection = collection(db, 'users');
+            const docRefPlayer = doc(userCollection, potentialOpponent.userId);
+            const docSnap = await getDoc(docRefPlayer);
+            
+            if (!docSnap.exists()) throw new Error("Player not found");
+
+            const inviteCollection = collection(docRefPlayer, 'invites');
+
+            const roomData = {
+                roomId: room.roomId,
+                players: room.players.map(player => ({
+                    id: player.id,
+                    username: player.username
+                }))
+            };
+
+            const inviteDocRef = await addDoc(inviteCollection, {
+                requestUserID: player.userId,
+                requestUserName: player.username,
+                requestPlayerID: player.playerId,
+                requestRoom: roomData,
+                requestWin: player.win,
+                requestLoss: player.loss,
+            });
+
+            const newOpponent: Opponent = {
+                opponentUsername: docSnap.data()?.username,
+                opponentUserId: docSnap.id,
+                opponentPlayerId: docSnap.data()?.playerID,
+                opponentWin: docSnap.data()?.win,
+                opponentLoss: docSnap.data()?.loss,
+                opponentInviteId: inviteDocRef.id,
+            };
+
+            setOpponent(newOpponent);
+            setRoom(room);
+        } catch (error) {
+            throw new Error("Invitation failed")
+        }
+    };
 
     return (
         <GameContext.Provider value={{
@@ -115,6 +185,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             loadingExit,
             errorExit,
             handleExit,
+            loadingCreateGameOpponentUserId,
+            errorCreateGame,
+            successCreateGame,
+            handleCreateRoom
         }}>
             {children}
         </GameContext.Provider>

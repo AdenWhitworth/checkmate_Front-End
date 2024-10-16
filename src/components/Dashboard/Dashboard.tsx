@@ -7,6 +7,7 @@ import { useGame } from '../../Providers/GameProvider/GameProvider';
 import InGameStats from './InGameStats/InGameStats';
 import ForfeitModal from '../Modal/ForfeitModal/ForfeitModal';
 import ExitModal from '../Modal/ExitModal/ExitModal';
+import CreateRoomAlertBadge from '../AlertBadge/CreateRoomAlertBadge/CreateRoomAlertBadge';
 
 export default function Dashboard(): JSX.Element {
 
@@ -31,6 +32,8 @@ export default function Dashboard(): JSX.Element {
             <ForfeitModal></ForfeitModal>
 
             <ExitModal></ExitModal>
+
+            <CreateRoomAlertBadge></CreateRoomAlertBadge>
             
         </>
     );

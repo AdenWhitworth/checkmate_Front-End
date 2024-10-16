@@ -19,8 +19,8 @@ export default function LobbyMenu({
                         <InvitesItem key={invite.requestUserId} invite={invite} index={index} />
                     ))
                 ) : (
-                    searchPlayerResults.map((potentialPlayer, index) => (
-                        <PlayersItem key={potentialPlayer.userId} potentialPlayer={potentialPlayer} index={index} />
+                    searchPlayerResults.map((potentialOpponent, index) => (
+                        <PlayersItem key={potentialOpponent.userId} potentialOpponent={potentialOpponent} index={index} />
                     ))
                 )}
             </ul>
