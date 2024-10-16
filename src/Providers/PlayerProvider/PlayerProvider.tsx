@@ -15,12 +15,10 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
 
     const [players, setPlayers] = useState<Player[]>([]);
     const [loadingPlayers, setLoadingPlayers] = useState<boolean>(false);
-    const [errorPlayers, setErrorPlayers] = useState<string | null>(null);
 
     const [invites, setInvites] = useState<Invite[]>([]);
     const [invitesCount, setInvitesCount] = useState<number>(0);
     const [loadingInvites, setLoadingInvites] = useState<boolean>(false);
-    const [errorInvites, setErrorInvites] = useState<string | null>(null);
 
     const [lobbySelection, setLobbySelection] = useState<boolean>(false);
 
@@ -44,7 +42,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
                 });
             });
         } catch (err) {
-            setErrorPlayer("Error fetching player");
+            setErrorPlayer("Error fetching players and invites.");
         } finally {
             setLoadingPlayer(false);
         }
@@ -61,12 +59,12 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
         invitesUserIDs.push(player.userId);
     
         if (invitesUserIDs.length > 10) {
-            setErrorPlayers("Limited to 10 invites");
+            setErrorPlayer("Error fetching players and invites.");
             return;
         }
 
         setLoadingPlayers(true);
-        setErrorPlayers(null);
+        setErrorPlayer(null);
     
         const q = query(collection(db, "players"), where("userID", 'not-in', invitesUserIDs));
     
@@ -80,12 +78,12 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
 
                 setPlayers(playersData);
             } catch (error) {
-                setErrorPlayers("Error fetching players");
+                setErrorPlayer("Error fetching players and invites.");
             } finally {
                 setLoadingPlayers(false);
             }
         }, (error) => {
-            setErrorPlayers("Error fetching players: " + error.message);
+            setErrorPlayer("Error fetching players and invites.");
         });
     
         return () => unsubscribe();
@@ -100,7 +98,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
         if (!player || !player.userId) return;
     
         setLoadingInvites(true);
-        setErrorInvites(null);
+        setErrorPlayer(null);
     
         const userCollection = collection(db, 'users');
         const DocRef = doc(userCollection, player.userId);
@@ -133,12 +131,12 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
                 setInvitesCount(snapshot.size);
                 setInvites(invitesData);
             } catch (error) {
-                setErrorInvites("Error fetching invites");
+                setErrorPlayer("Error fetching players and invites.");
             } finally {
                 setLoadingInvites(false);
             }
         }, (error) => {
-            setErrorInvites("Error fetching invites: " + error.message);
+            setErrorPlayer("Error fetching players and invites.");
         });
     
         return () => unsubscribe();
@@ -156,11 +154,9 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
             errorPlayer, 
             players, 
             loadingPlayers, 
-            errorPlayers, 
             invites, 
             invitesCount,
             loadingInvites,
-            errorInvites,
             lobbySelection, 
             setLobbySelection
         }}>
