@@ -10,23 +10,26 @@ const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
     const { currentUser } = useAuth();
     const [player, setPlayer] = useState<Player | null>(null);
-    const [loadingPlayer, setLoadingPlayer] = useState<boolean>(true);
-    const [errorPlayer, setErrorPlayer] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     const [players, setPlayers] = useState<Player[]>([]);
-    const [loadingPlayers, setLoadingPlayers] = useState<boolean>(false);
-
     const [invites, setInvites] = useState<Invite[]>([]);
     const [invitesCount, setInvitesCount] = useState<number>(0);
-    const [loadingInvites, setLoadingInvites] = useState<boolean>(false);
-
     const [lobbySelection, setLobbySelection] = useState<boolean>(false);
+
+    const [playerLoaded, setPlayerLoaded] = useState(false);
+    const [playersLoaded, setPlayersLoaded] = useState(false);
+    const [invitesLoaded, setInvitesLoaded] = useState(false);
+
+    const checkAllLoaded = useCallback(() => {
+        if (playerLoaded && playersLoaded && invitesLoaded) {
+            setLoading(false);
+        }
+    }, [playerLoaded, playersLoaded, invitesLoaded]);
 
     const fetchPlayer = useCallback(async () => {
         if (!currentUser) return;
-
-        setLoadingPlayer(true);
-        setErrorPlayer(null);
         
         try {
             const q = query(collection(db, 'users'), where('uid', '==', currentUser.uid));
@@ -41,34 +44,26 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
                     loss: doc.data().loss,
                 });
             });
+            setPlayerLoaded(true);
         } catch (err) {
-            setErrorPlayer("Error fetching players and invites.");
-        } finally {
-            setLoadingPlayer(false);
+            setError("Error fetching players and invites.");
         }
     }, [currentUser]);
-    
-    useEffect(() => {
-        fetchPlayer();
-    }, [currentUser, fetchPlayer]);
 
     const fetchPlayers = useCallback(() => {
         if (!player || !player.userId) return;
-    
+
         const invitesUserIDs = Object.values(invites).map(invite => invite.requestUserId);
         invitesUserIDs.push(player.userId);
-    
+
         if (invitesUserIDs.length > 10) {
-            setErrorPlayer("Error fetching players and invites.");
+            setError("Error fetching players and invites.");
             return;
         }
 
-        setLoadingPlayers(true);
-        setErrorPlayer(null);
-    
         const q = query(collection(db, "players"), where("userID", 'not-in', invitesUserIDs));
-    
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+
+        return onSnapshot(q, (snapshot) => {
             try {
                 const playersData = snapshot.docs.map((doc) => ({
                     playerId: doc.id,
@@ -77,35 +72,22 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
                 }));
 
                 setPlayers(playersData);
+                setPlayersLoaded(true); // Set players loaded flag
             } catch (error) {
-                setErrorPlayer("Error fetching players and invites.");
-            } finally {
-                setLoadingPlayers(false);
+                setError("Error fetching players and invites.");
             }
-        }, (error) => {
-            setErrorPlayer("Error fetching players and invites.");
         });
-    
-        return () => unsubscribe();
     }, [player, invites]);
-
-    useEffect(() => {
-        const unsubscribe = fetchPlayers();
-        return unsubscribe;
-    }, [invites, fetchPlayers]);
 
     const fetchInvites = useCallback(() => {
         if (!player || !player.userId) return;
-    
-        setLoadingInvites(true);
-        setErrorPlayer(null);
-    
+
         const userCollection = collection(db, 'users');
         const DocRef = doc(userCollection, player.userId);
         const inviteCollection = collection(DocRef, 'invites');
         const q = query(inviteCollection);
-    
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+
+        return onSnapshot(q, (snapshot) => {
             try {
                 const invitesData: Invite[] = snapshot.docs.map((doc) => {
                     const roomData = doc.data().requestRoom;
@@ -116,7 +98,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
                             username: player.username
                         })),
                     };
-    
+
                     return {
                         inviteId: doc.id,
                         requestLoss: doc.data().requestLoss,
@@ -127,36 +109,43 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }) => {
                         requestWin: doc.data().requestWin,
                     };
                 });
-    
+
                 setInvitesCount(snapshot.size);
                 setInvites(invitesData);
+                setInvitesLoaded(true);
             } catch (error) {
-                setErrorPlayer("Error fetching players and invites.");
-            } finally {
-                setLoadingInvites(false);
+                setError("Error fetching players and invites.");
             }
-        }, (error) => {
-            setErrorPlayer("Error fetching players and invites.");
         });
-    
-        return () => unsubscribe();
     }, [player]);
 
     useEffect(() => {
-        const unsubscribe = fetchInvites();
-        return unsubscribe;
+        checkAllLoaded();
+    }, [playerLoaded, playersLoaded, invitesLoaded, checkAllLoaded]);
+
+    useEffect(() => {
+        if (!currentUser) return;
+        fetchPlayer();
+    }, [currentUser, fetchPlayer]);
+
+    useEffect(() => {
+        const unsubscribePlayers = fetchPlayers();
+        return unsubscribePlayers;
+    }, [invites, fetchPlayers]);
+
+    useEffect(() => {
+        const unsubscribeInvites = fetchInvites();
+        return unsubscribeInvites;
     }, [fetchInvites]);
 
     return (
         <PlayerContext.Provider value={{ 
             player, 
-            loadingPlayer, 
-            errorPlayer, 
+            loading, 
+            error, 
             players, 
-            loadingPlayers, 
             invites, 
             invitesCount,
-            loadingInvites,
             lobbySelection, 
             setLobbySelection
         }}>
@@ -172,3 +161,5 @@ export const usePlayer = () => {
     }
     return context;
 };
+
+

@@ -10,13 +10,11 @@ export interface Player {
 
 export interface PlayerContextType {
     player: Player | null;
-    loadingPlayer: boolean;
-    errorPlayer: string | null;
+    loading: boolean;
+    error: string | null;
     players: Player[];
-    loadingPlayers: boolean;
     invites: Invite[];
     invitesCount: number;
-    loadingInvites: boolean;
     lobbySelection: boolean;
     setLobbySelection: (value: boolean) => void;
 }

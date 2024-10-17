@@ -11,14 +11,14 @@ import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
 export default function Lobby(): JSX.Element {
 
     const {handleSearchChange, searchPlayerResults, searchInviteResults } = useSearchLobby();
-    const { loadingPlayer, loadingInvites, loadingPlayers, errorPlayer} = usePlayer();
+    const { loading, error} = usePlayer();
 
     return (   
         <div className="lobby">
-            {(loadingPlayer || loadingInvites || loadingPlayers) ? (
+            {(loading) ? (
                 <LoadingSpinner></LoadingSpinner>
-            ) : errorPlayer? (
-               <ErrorLoading message={errorPlayer}></ErrorLoading> 
+            ) : error? (
+               <ErrorLoading message={error}></ErrorLoading> 
             ) : (
                 <>
                     <LobbyOptions></LobbyOptions>
