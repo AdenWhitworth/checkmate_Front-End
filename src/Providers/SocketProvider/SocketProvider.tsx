@@ -142,7 +142,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
   const sendMove = useCallback((moveArgs: MoveArgs): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
-        socketRef.current.emit("move", moveArgs, (response: CallbackResponseMove) => {
+        socketRef.current.emit("sendMove", moveArgs, (response: CallbackResponseMove) => {
           if (response.error) {
             setResponseMessage(response.message);
             reject(false);
@@ -203,6 +203,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     });
 
     socketInstance.on('disconnect', () => {
+      console.error("Disconnected from socket");
       setIsConnected(false);
       setErrorSocket(null);
     });
@@ -256,42 +257,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     };
   }, [connectSocket, disconnectSocket, currentUser, player]);
 
-  /*
-  const sendRemoveUser = useCallback((user_id: string) => {
-    if (socketRef.current && isConnected) {
-      socketRef.current.emit('removeUser', user_id, (response: any) => {
-        if (response.error) {
-          setErrorSocket('Remove user error');
-          console.error('Remove user error:', response.message);
-        } else {
-          setErrorSocket(null);
-          disconnectSocket();
-        }
-      });
-    } else {
-      setErrorSocket('Socket is not connected');
-      console.error('Socket is not connected');
-    }
-  }, [isConnected, disconnectSocket]);
-
-  const sendCheckSocket = useCallback((user_id: string) => {
-    if (socketRef.current && isConnected) {
-      socketRef.current.emit('checkSocket', user_id, (response: any) => {
-        if (response.error) {
-          setErrorSocket(response.message);
-          console.error('Check Socket Error:', response.message);
-          setIsConnected(false);
-        } else {
-          setErrorSocket(null);
-        }
-      });
-    } else {
-      setErrorSocket('Socket is not connected');
-      setIsConnected(false);
-      console.error('Socket is not connected');
-    }
-  }, [isConnected]);
-  */
   return (
     <SocketContext.Provider value={{
       isConnected, errorSocket, refresh, errorReconnect, setErrorReconnect, setRefresh,

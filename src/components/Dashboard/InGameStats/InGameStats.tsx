@@ -23,7 +23,7 @@ export default function InGameStats() {
                 losses={opponent?.opponentLoss || 0} 
                 pieces={opponentPieces} 
                 isTurn={!!(room && room.players.length >= 2 && !isPlayerTurn)} 
-                isLoading={room && room.players.length < 2 || true}
+                isLoading={room && room.players.length < 2 || false}
             ></GameStats>
     
             <HistoryMoves></HistoryMoves>

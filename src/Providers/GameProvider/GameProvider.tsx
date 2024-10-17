@@ -72,6 +72,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setOrientation("w");
         setOpponent(null);
         setHistory([]);
+        setGameOver(null);
     }, []);
 
     const handleForfeit = useCallback(async () => {
@@ -206,7 +207,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
             setOpponent(newOpponent);
             setOrientation("b");
-            setRoom(invite.requestRoom);
+            setRoom(updatedRoom.room);
             setSuccessCreateGame("Game joined successfully! You are playing against: " + invite.requestUsername);
         } catch (error) {
             setErrorJoinGame("Enable to join game. Please try again.");
@@ -268,11 +269,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             handleExit,
             loadingCreateGameOpponentUserId,
             errorCreateGame,
+            setErrorCreateGame,
             successCreateGame,
+            setSuccessCreateGame,
             handleCreateRoom,
             loadingJoinGameOpponentUserId,
             errorJoinGame,
+            setErrorJoinGame,
             successJoinGame,
+            setSuccessJoinGame,
             handleJoinRoom,
             onDrop,
             handleCloseRoom

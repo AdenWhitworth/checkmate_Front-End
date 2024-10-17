@@ -51,11 +51,15 @@ export interface GameContextType {
     handleExit: () => void;
     loadingCreateGameOpponentUserId: string | null;
     errorCreateGame: string | null;
+    setErrorCreateGame: (value: string | null) => void;
     successCreateGame: string | null;
+    setSuccessCreateGame: (value: string | null) => void;
     handleCreateRoom: (value: Player) => void;
     loadingJoinGameOpponentUserId: string | null;
     errorJoinGame: string | null;
+    setErrorJoinGame: (value: string | null) => void;
     successJoinGame: string | null;
+    setSuccessJoinGame: (value: string | null) => void;
     handleJoinRoom: (value: Invite) => void;
     onDrop:(sourceSquare: Square, targetSquare: Square) => boolean;
     handleCloseRoom: () => void;

@@ -1,11 +1,10 @@
-
 import React from "react";
 import { HistoryItemProps } from "./HistoryItemTypes";
 import './HistoryItem.css';
 
 export default function HistoryItem({rowMoves, index}: HistoryItemProps) {
     const rowNumber = index + 1;
-    const rowClassName = `player-line ${index % 2 === 0 ? "even-color" : "odd-color"}`;
+    const rowClassName = `moves-line ${index % 2 === 0 ? "even-color" : "odd-color"}`;
 
     return (
         <li>

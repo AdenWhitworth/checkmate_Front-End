@@ -4,11 +4,16 @@ import { useGame } from '../../../Providers/GameProvider/GameProvider';
 import { AlertColor } from '@mui/material/Alert';
 
 export default function JoinRoomAlertBadge() {
-    const { errorJoinGame, successJoinGame } = useGame();
+    const { errorJoinGame, successJoinGame, setErrorJoinGame, setSuccessJoinGame } = useGame();
     
     const [open, setOpen] = useState<boolean>(false);
     const [severity, setSeverity] = useState<AlertColor>('info');
     const [alertText, setAlertText] = useState<string>('');
+
+    const handleCloseBadge = () => {
+        setErrorJoinGame(null);
+        setSuccessJoinGame(null);
+    }
 
     useEffect(() => {
         if (errorJoinGame) {
@@ -29,7 +34,7 @@ export default function JoinRoomAlertBadge() {
             open={open} 
             severity={severity as AlertColor} 
             text={alertText} 
-            onClose={() => setOpen(false)} 
+            onClose={handleCloseBadge} 
         />
     );
 };

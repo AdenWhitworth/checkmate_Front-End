@@ -92,7 +92,7 @@ export const useCapturedPieces = () => {
 
         pieceTypes.forEach((pieceType) => {
             const count = capturedPieces[playerIdx][pieceType];
-            const img = pieceImages[playerIdx][pieceType][count] || "";
+            const img = pieceImages[playerIdx === 0? 1: 0][pieceType][count - 1] || "";
             const style = count > 0 ? "game-pieces-captured" : "game-pieces-captured-hidden";
 
             piecesStateSetter((prevState) => ({

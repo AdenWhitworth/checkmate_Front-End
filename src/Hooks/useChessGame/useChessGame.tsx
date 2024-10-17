@@ -47,6 +47,8 @@ export const useChessGame = ({
   const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
     if (chess.turn() !== orientation) return false;
     if (!room || room.players.length < 2) return false;
+    
+    const currentFen = chess.fen();
 
     const moveData: Move = {
       from: sourceSquare,
@@ -60,22 +62,29 @@ export const useChessGame = ({
       before: "",
       after: ""
     };
-
+  
     const move: Move | null = makeAMove(moveData);
     if (!move) return false;
 
-    try {
-      sendMove({ room, move });
-      return true;
-    } catch (error) {
-      return false;
-    }
+    // Handle async operation for sending the move
+    sendMoveAsync(move);
+
+    return true;
   };
 
+  const sendMoveAsync = async (move: Move) => {
+    try {
+      if (!room) throw Error("Room required.");
+      await sendMove({ room, move });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
   const handleMove = useCallback(() => {
     if (socketRef.current) {
-      socketRef.current.off('move');
-      socketRef.current.on('move', (moveArgs: MoveArgs, callback: Function) => {
+      socketRef.current.off('recieveMove');
+      socketRef.current.on('recieveMove', (moveArgs: MoveArgs, callback: Function) => {
         try {
           const checkMove = makeAMove(moveArgs.move);
           let message = !checkMove ? "Move not made by opponent" : "Move successfully made by opponent";
@@ -136,7 +145,7 @@ export const useChessGame = ({
     if (!player || !player.win || !player.loss || !opponent) return;
 
     const userCollection = collection(db, 'users');
-    const playerDoc = doc(userCollection, player.playerId);
+    const playerDoc = doc(userCollection, player.userId);
     const opponentDoc = doc(userCollection, opponent.opponentUserId);
 
     const playerRank = calculateRank(player.win, player.loss);
