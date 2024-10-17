@@ -54,7 +54,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [successJoinGame, setSuccessJoinGame] = useState<string | null>(null);
 
     const { onDrop, handleWinLossChange, findWinner } = useChessGame({
-        room, 
+        room,
+        setRoom, 
         setHistory, 
         setPlayerTurn, 
         orientation, 
@@ -185,7 +186,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         try {
             if (!socketRef.current || !player) throw Error("Unable to join room");
 
-            await sendJoinRoom({ room: invite.requestRoom});
+            const updatedRoom = await sendJoinRoom({ room: invite.requestRoom});
+
+            if (!updatedRoom) throw new Error("No updated room.");
             
             const userCollection = collection(db, 'users');
             const DocRef = doc(userCollection, player.userId);

@@ -82,21 +82,21 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     });
   }, [isConnected]);
 
-  const sendJoinRoom = useCallback((joinRoomArgs: JoinRoomArgs): Promise<boolean> => {
+  const sendJoinRoom = useCallback((joinRoomArgs: JoinRoomArgs): Promise<{ room: Room } | null> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
         socketRef.current.emit("joinRoom", joinRoomArgs, (response: CallbackResponseJoinRoom) => {
           if (response.error) {
             setResponseMessage(response.message);
-            reject(false);
+            reject(new Error(response.message));
           } else {
             setResponseMessage(response.message);
-            resolve(true);
+            resolve({ room: response.room });
           }
         });
       } else {
         setErrorSocket('Socket is not connected');
-        reject(false);
+        reject(new Error('Socket is not connected'));
       }
     });
   }, [isConnected]);
@@ -228,11 +228,6 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     socketInstance.on('reconnect_failed', () => {
       console.error('Reconnection failed');
       setErrorReconnect(true);
-    });
-    
-    socketInstance.on('opponentJoined', (joinRoomArgs: JoinRoomArgs, callback) => {
-        handleCallback(callback, 'Opponent join received');
-        console.log(joinRoomArgs);
     });
     
     socketInstance.on('inGameMessage', (inGameMessageArgs: InGameMessageArgs, callback) => {

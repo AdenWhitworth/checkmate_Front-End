@@ -3,6 +3,7 @@ import { Move, Chess } from "chess.js";
 
 export interface UseChessGameProps {
     room: Room | null, 
+    setRoom: (value: Room) => void;
     setHistory: (value: Move[]) => void; 
     setPlayerTurn: (value: "w" | "b") => void; 
     orientation: "w" | "b";

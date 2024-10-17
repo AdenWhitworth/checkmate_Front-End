@@ -2,13 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 import { Move, Square } from "chess.js";
 import { usePlayer } from "../../Providers/PlayerProvider/PlayerProvider";
 import { useSocket, handleCallback } from "../../Providers/SocketProvider/SocketProvider";
-import { MoveArgs, ForfeitArgs, DisconnectArgs } from "../../Providers/SocketProvider/SocketProviderTypes";
+import { MoveArgs, ForfeitArgs, DisconnectArgs, JoinRoomArgs } from "../../Providers/SocketProvider/SocketProviderTypes";
 import { db } from '../../firebase';
 import { collection, doc, increment, updateDoc} from "firebase/firestore";
 import { UseChessGameProps } from "./useChessGameTypes";
 
 export const useChessGame = ({ 
-  room, 
+  room,
+  setRoom, 
   setHistory, 
   setPlayerTurn, 
   orientation, 
@@ -74,7 +75,7 @@ export const useChessGame = ({
   const handleMove = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.off('move');
-      socketRef.current.on('move', (moveArgs: MoveArgs, callback) => {
+      socketRef.current.on('move', (moveArgs: MoveArgs, callback: Function) => {
         try {
           const checkMove = makeAMove(moveArgs.move);
           let message = !checkMove ? "Move not made by opponent" : "Move successfully made by opponent";
@@ -98,12 +99,22 @@ export const useChessGame = ({
   const handlePlayerForfeited = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.off('playerForfeited');
-      socketRef.current.on('playerForfeited', (forfeitArgs: ForfeitArgs, callback) => {
+      socketRef.current.on('playerForfeited', (forfeitArgs: ForfeitArgs, callback: Function) => {
         setGameOver(`${forfeitArgs.username} has Forfeited`);
         handleCallback(callback, "Opponent player received the forfeit");
       });
     }
   }, [setGameOver, socketRef]);
+
+  const handleOpponentJoined = useCallback(() => {
+    if (socketRef.current) {
+      socketRef.current.off('opponentJoined');
+      socketRef.current.on('opponentJoined', (joinRoomArgs: JoinRoomArgs, callback: Function) => {
+        handleCallback(callback, 'Opponent join received');
+        setRoom(joinRoomArgs.room);
+      });
+    }
+  }, [setRoom, socketRef]);
 
   const findWinner = (): "player" | "opponent" | null => {
     if (!gameOver) return null;
@@ -148,7 +159,8 @@ export const useChessGame = ({
     handleMove();
     handleDisconnect();
     handlePlayerForfeited();
-  }, [handleMove, handleDisconnect, handlePlayerForfeited]);
+    handleOpponentJoined();
+  }, [handleMove, handleDisconnect, handlePlayerForfeited, handleOpponentJoined]);
 
   return {
     onDrop,
