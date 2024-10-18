@@ -1,186 +1,45 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { v4 as uuidv4 } from "uuid";
-import Badge from '@mui/material/Badge';
-import message_regular from "../../../../Images/message-regular.svg";
-import message_solid from "../../../../Images/message-solid.svg";
-import paper_plane from "../../../../Images/Paper Plane.svg";
-import MessageItem from "./MessageItem/MessageItem";
-import { useGame } from "../../../../Providers/GameProvider/GameProvider";
-import { useSocket } from "../../../../Providers/SocketProvider/SocketProvider";
-import { usePlayer } from "../../../../Providers/PlayerProvider/PlayerProvider";
-import { Message } from "./GameChatTypes";
-import { InGameMessageArgs } from "../../../../Providers/SocketProvider/SocketProviderTypes";
-import { handleCallback } from "../../../../Providers/SocketProvider/SocketProvider";
+import React, { useEffect, useState } from "react";
+import { useMessageHandler } from "../../../../Hooks/useMessageHandler/useMessageHandler";
+import { MessageContent } from "./MessageContent/MessageContent";
+import { MessageEntry } from "./MessageEntry/MessageEntry";
+import { MessageIcon } from "./MessageIcon/MessageIcon";
+
 import './GameChat.css';
 
 export default function GameChat() {
-    const [textInput, setTextInput] = useState('');
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [lastMessage, setLastMessage] = useState<Message | null>(null);
-    const [messageBadge, setMessageBadge] = useState(0);
-    const [messageStyle, setMessageStyle] = useState(message_regular);
-    const [incomingMessage, setIncomingMessage] = useState<Message | null>(null);
-    const [messagesToggle, setMessagesToggle] = useState(false);
-    const message_txt_container = useRef<HTMLUListElement>(null); 
-  
-    const { player } = usePlayer();
-    const { room } = useGame();
-    const { socketRef, sendInGameMessage } = useSocket();
-  
-    const formatTime = (date: Date) => {
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        const formattedHour = hours % 12 || 12;
-        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
-        return `${formattedHour}:${formattedMinutes} ${ampm}`;
-    };
-  
-    const handleSendMessage = async (retryMessage?: Message) => {
-        if ((!textInput && !retryMessage) || !room || !player) return;
-      
-        const newMessage: Message = retryMessage || {
-            id: uuidv4(),
-            message: textInput,
-            time: formatTime(new Date()),
-            username: player.username,
-            room: room,
-            status: "sending",
-        };
-      
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-      
-        try {
-            await sendInGameMessage({ inGameMessage: newMessage });
-            updateMessageStatus("delivered");
-        } catch (error) {
-            updateMessageStatus("error");
-            setLastMessage(newMessage);
-        } finally {
-            setTextInput('');
-        }
-    };
+    const { 
+        messages, 
+        textInput, 
+        setTextInput, 
+        handleSendMessage, 
+        retrySendMessage, 
+        message_txt_container,
+        messageBadge,
+        handleKeyPress,
+        messagesToggle,
+        messageStyle,
+        showMessages
+    } = useMessageHandler();
 
-    const updateMessageStatus = (status: "delivered" | "error") => {
-        setMessages((prevMessages) => {
-            const updatedMessages = [...prevMessages];
-            updatedMessages[updatedMessages.length - 1].status = status;
-            return updatedMessages;
-        });
-    };
-      
-
-    const removeLastMessage = () => {
-        setMessages((prevMessages) => prevMessages.length > 0 ? prevMessages.slice(0, prevMessages.length - 1) : prevMessages);
-    };
-  
-    const retrySendMessage = () => {
-        if (lastMessage) {
-          const retryMessage = {
-            ...lastMessage,
-            id: uuidv4(),
-          };
-          removeLastMessage();
-          handleSendMessage(retryMessage);
-        }
-      };
-  
-    const handleRecieveMessage = useCallback(() => {
-        if (socketRef.current) {
-            socketRef.current.off('receiveGameMessage');
-            socketRef.current.on('receiveGameMessage', (inGameMessageArgs: InGameMessageArgs, callback: Function) => {
-                try {
-                    const incomingMessage = inGameMessageArgs.inGameMessage;
-                    incomingMessage.status = "received";
-                    setIncomingMessage(inGameMessageArgs.inGameMessage);
-                    handleCallback(callback, "Processed message");
-                } catch (error) {
-                    handleCallback(callback, "Error processing message");
-                }
-            });
-        }
-    }, [socketRef]);
-  
-    const appendIncomingMessage = () => {
-        if (!incomingMessage) return;
-        setMessages((prevMessages) => [...prevMessages, incomingMessage]);
-        setMessageBadge((prevBadge) => prevBadge + 1);
-    };
-  
-    const scrollToBottom = () => {
-        if (messagesToggle && message_txt_container.current) {
-            message_txt_container.current.scrollTop = message_txt_container.current.scrollHeight;
-        }
-    };
-  
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            handleSendMessage();
-        }
-    };
-  
-    const showMessages = () => {
-        setMessageBadge(0);
-        setMessagesToggle(!messagesToggle);
-    };
-  
-    const handleMessagesToggle = () => {
-        if (messagesToggle) {
-            setMessageStyle(message_solid);
-            scrollToBottom();
-        } else {
-            setMessageStyle(message_regular);
-        }
-    };
-  
-    useEffect(() => {
-        handleRecieveMessage();
-    }, [handleRecieveMessage]);
-  
-    useEffect(() => {
-        appendIncomingMessage();
-    }, [incomingMessage]);
-  
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-  
-    useEffect(() => {
-        handleMessagesToggle();
-    }, [messagesToggle]);
-  
     return (
-      <div className="message-container">
-        {messagesToggle && (
-          <div className="message-toggle">
-            <ul className="message-txt-container" ref={message_txt_container}>
-              {messages.map((message, index) => (
-                <MessageItem 
-                  key={message.id} 
-                  message={message}
-                  retrySendMessage={retrySendMessage}
+        <div className="message-container">
+            {messagesToggle && (
+                <div className="message-toggle">
+                <MessageContent 
+                    messages={messages} 
+                    retrySendMessage={retrySendMessage} 
+                    message_txt_container={message_txt_container} 
                 />
-              ))}
-            </ul>
-  
-            <div className="message-entry">
-              <input
-                value={textInput}
-                onKeyDown={handleKeyPress}
-                onChange={(e) => setTextInput(e.target.value)}
-                type="text"
-                placeholder="Message..."
-              />
-              <img onClick={() => handleSendMessage()} src={paper_plane} alt="Send Message" />
-            </div>
-          </div>
-        )}
-  
-        <div className="message-icon-container">
-          <Badge onClick={showMessages} badgeContent={messageBadge} color="primary">
-            <img className="message-icon" src={messageStyle} alt="Message Icon" />
-          </Badge>
+                <MessageEntry 
+                    textInput={textInput} 
+                    setTextInput={setTextInput} 
+                    handleSendMessage={handleSendMessage} 
+                    handleKeyPress={handleKeyPress}
+                />
+                </div>
+            )}
+            
+            <MessageIcon messageBadge={messageBadge} messageStyle={messageStyle} showMessages={showMessages} />
         </div>
-      </div>
     );
 }
