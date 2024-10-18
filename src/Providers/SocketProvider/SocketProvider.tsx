@@ -123,7 +123,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
   const sendInGameMessage = useCallback((inGameMessageArgs: InGameMessageArgs): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
-        socketRef.current.emit("inGameMessage", inGameMessageArgs, (response: CallbackResponse) => {
+        socketRef.current.emit("sendGameMessage", inGameMessageArgs, (response: CallbackResponse) => {
           if (response.error) {
             setResponseMessage(response.message);
             reject(false);

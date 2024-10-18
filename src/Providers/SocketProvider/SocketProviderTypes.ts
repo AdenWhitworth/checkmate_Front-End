@@ -2,6 +2,7 @@ import React, { ReactNode, MutableRefObject } from 'react';
 import { Move } from "chess.js";
 import { SocketPlayer, Room } from '../GameProvider/GameProviderTypes';
 import { Socket } from 'socket.io-client';
+import { Message } from '../../components/Dashboard/ActiveGame/GameChat/GameChatTypes';
 
 export interface SocketContextType {
     isConnected: boolean;
@@ -11,8 +12,6 @@ export interface SocketContextType {
     setErrorReconnect: React.Dispatch<React.SetStateAction<boolean>>;
     setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
     sendAddUser: (addUserArgs: AddUserArgs) => Promise<boolean>;
-    //sendRemoveUser: (user_id: string) => void;
-    //sendCheckSocket: (user_id: string) => void;
     connectSocket: (accessToken: string) => void;
     disconnectSocket: () => void;
     sendCreateRoom: () => Promise<{ room: Room } | null>;
@@ -49,14 +48,6 @@ export interface CallbackResponseMove extends CallbackResponse {
 
 export interface CallbackResponseCloseRoom extends CallbackResponse {
     room: Room;
-}
-
-export interface Message {
-    message: string;
-    time: string;
-    username: string;
-    room: Room;
-    messageError: boolean;
 }
 
 export interface AddUserArgs {

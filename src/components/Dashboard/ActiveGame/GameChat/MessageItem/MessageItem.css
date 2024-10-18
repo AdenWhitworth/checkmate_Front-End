@@ -1,0 +1,66 @@
+.message-txt{
+    
+    border-radius: 10px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    width: 80%;
+    min-height: 30px;
+}
+
+.txt-player{
+    text-align: end;
+    padding-right: 5%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.txt-opponent{
+    text-align: start;
+    padding-left: 5%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+}
+
+.message-error button{
+    background:none;
+    border:none;
+    margin:0;
+    padding:0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1em;
+    color: red;
+    font-weight: bold;
+    text-decoration-line: underline;
+}
+
+.message-status{
+    padding-top: 0px !important;
+    color: #3D3D3D;
+}
+
+.message-error{
+    padding-top: 0px !important;
+    color: red !important;
+}
+
+.error-hide{
+    display: none;
+}
+
+.message-txt h4{
+    font-size: 14px;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.message-player{
+    background-color: #FFE769;
+    margin-left: 18%;
+}
+
+.message-opponent{
+    background-color: #CDCDCD;
+    margin-left: 2%;
+}
