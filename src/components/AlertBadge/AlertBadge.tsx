@@ -18,11 +18,12 @@ export default function AlertBadge({
             <Alert 
                 sx={{ 
                     position: "absolute", 
-                    marginLeft: { xs: "2vw", md: "1vw" }, 
+                    marginLeft: { xs: "5vw", md: "1vw" }, 
                     boxSizing: 'border-box', 
                     top: { xs: "2vw", md: "unset" }, 
                     bottom: { xs: "unset", md: "1vw" }, 
-                    width: { xs: "96vw", md: "98vw" } 
+                    width: { xs: "90vw", md: "98vw" },
+                    zIndex: 200,
                 }} 
                 severity={severity} 
                 onClose={onClose}

@@ -59,3 +59,12 @@
 .even-color{
     background-color: #212121;
 }
+
+@media(max-width: 900px){
+    .lobby{
+        width: 100%;
+        margin-left: 0;
+        height: 60vh;
+        margin-bottom: 20%;
+    }
+}

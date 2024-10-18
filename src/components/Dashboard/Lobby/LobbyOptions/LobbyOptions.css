@@ -64,3 +64,13 @@
     background-color: #3D3D3D;
     transition: 0.3s ease-in-out;
 }
+
+@media(max-width: 900px){
+    .players-option img{
+        height: 30px;
+    }
+
+    .invite-option img{
+        height: 30px;
+    }
+}

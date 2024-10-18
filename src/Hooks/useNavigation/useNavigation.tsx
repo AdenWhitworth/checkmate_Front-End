@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useGame } from "../../Providers/GameProvider/GameProvider";
 import { useAuth } from "../../Providers/AuthProvider/AuthProvider";
 import { usePlayer } from "../../Providers/PlayerProvider/PlayerProvider";
@@ -9,6 +9,7 @@ export const useNavigation = () => {
     const { setExitGame, setForfeitGame } = useGame();
     const { setLobbySelection } = usePlayer();
     const navigate = useNavigate();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleKingClick = useCallback(() => {
         navigate('/', { replace: true });
@@ -16,30 +17,40 @@ export const useNavigation = () => {
 
     const handleBadgeClick = useCallback(() => {
         setLobbySelection(true);
+        setIsMenuOpen(false);
         navigate('/dashboard', { replace: true });
     }, [setLobbySelection, navigate]);
 
     const handleLogoutClick = useCallback(() => {
         logout();
+        setIsMenuOpen(false);
     }, [logout]);
 
     const handleLoginClick = useCallback(() => {
         setIsLoginSelected(true);
+        setIsMenuOpen(false);
         navigate('/auth', { replace: true });
     }, [setIsLoginSelected, navigate]);
 
     const handleSignupClick = useCallback(() => {
         setIsLoginSelected(false);
+        setIsMenuOpen(false);
         navigate('/auth', { replace: true });
     }, [setIsLoginSelected, navigate]);
 
     const handleArrowClick = useCallback(() => {
+        setIsMenuOpen(false);
         setExitGame(true);
     }, [setExitGame]);
 
     const handleFlagClick = useCallback(() => {
+        setIsMenuOpen(false);
         setForfeitGame(true);
     }, [setForfeitGame]);
+
+    const toggleMenu = useCallback(() => {
+        setIsMenuOpen((previous) => !previous);
+    }, [setIsMenuOpen]);
 
     return {
         handleKingClick,
@@ -49,5 +60,7 @@ export const useNavigation = () => {
         handleSignupClick,
         handleArrowClick,
         handleFlagClick,
+        toggleMenu, 
+        isMenuOpen,
     };
 };

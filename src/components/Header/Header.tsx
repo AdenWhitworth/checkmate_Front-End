@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Header.css';
 import Button from '../Button/Button';
 import king_logo_white from "../../Images/King Logo White.svg";
@@ -16,7 +16,7 @@ export default function Header(): JSX.Element {
     const {currentUser, loadingAuth } = useAuth();
     const { room } = useGame();
     const { invitesCount } = usePlayer();
-    const { handleArrowClick, handleBadgeClick, handleFlagClick, handleKingClick, handleLoginClick, handleLogoutClick, handleSignupClick } = useNavigation();
+    const { handleArrowClick, handleBadgeClick, handleFlagClick, handleKingClick, handleLoginClick, handleLogoutClick, handleSignupClick, toggleMenu, isMenuOpen } = useNavigation();
 
     return (
         <>
@@ -25,7 +25,15 @@ export default function Header(): JSX.Element {
                     <div className="nav-img">
                         <img className="king-logo" onClick={handleKingClick} src={king_logo_white} alt='King main logo'></img>
                     </div>
-                    <nav className="nav-links">
+
+                    <div className="hamburger-menu" onClick={toggleMenu}>
+                        <span className={`bar ${isMenuOpen ? 'open' : ''}`}></span>
+                        <span className={`bar ${isMenuOpen ? 'open' : ''}`}></span>
+                        <span className={`bar ${isMenuOpen ? 'open' : ''}`}></span>
+                    </div>
+
+                    <nav className={`nav-links ${isMenuOpen ? 'nav-open' : ''}`}>
+                        <ul>
                         {!currentUser && <li><Button className='fixed-width-button' styleType='primary' onClick={handleSignupClick}>Sign Up</Button></li>}
                         {!currentUser && <li><Button className='fixed-width-button' styleType='secondary' onClick={handleLoginClick}>Log In</Button></li>}
                         {currentUser && !room && 
@@ -38,6 +46,7 @@ export default function Header(): JSX.Element {
                         {currentUser && !room && <li><Badge onClick={handleBadgeClick} className='notification' badgeContent={invitesCount} color="primary"><img src={bell}></img></Badge></li>}
                         {currentUser && room && room.players.length < 2 && <li><img className='exit-arrow' onClick={handleArrowClick} src={arrow_left}></img></li>}
                         {currentUser && room && room.players.length >= 2 && <li><img className='end-game-flag' onClick={handleFlagClick} src={flag}></img></li>}
+                        </ul>
                     </nav>
                 </div>
             </header>

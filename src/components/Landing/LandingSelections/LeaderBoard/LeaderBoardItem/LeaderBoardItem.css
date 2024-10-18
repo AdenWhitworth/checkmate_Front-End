@@ -37,3 +37,9 @@
 .no-medal{
     visibility: hidden;
 }
+
+@media(max-width: 900px){
+    .medal-list{
+        grid-template-columns: 0.5fr 0.5fr 1.5fr 1.25fr 1.25fr;
+    }
+}

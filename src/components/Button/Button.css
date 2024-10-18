@@ -115,13 +115,3 @@
     padding: 0;
 }
 
-@media screen and (max-width: 450px) {
-    .button-primary-icon{
-        width: 100%;
-    }
-
-    .button-secondary-icon{
-        width: 100%;
-    }
-}
-

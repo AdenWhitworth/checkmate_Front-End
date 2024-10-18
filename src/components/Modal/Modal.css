@@ -84,6 +84,10 @@
         width: 60%;
         height: 50%;
     }
+
+    .modal-content p{
+        width: 80%;
+    }
 }
 
 @media (max-width: 500px) {

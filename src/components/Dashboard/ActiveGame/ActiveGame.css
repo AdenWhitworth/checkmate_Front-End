@@ -9,3 +9,15 @@
     width: 40vw;
     margin: auto;
 }
+
+@media(max-width: 900px){
+    .active-game{
+        margin-left: 0;
+        margin-bottom: 20%;
+    }
+
+    .board{
+        width: 80vw;
+        margin: auto;
+    }
+}

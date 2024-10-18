@@ -2,8 +2,16 @@
 .game-card{
     background-color: #181818;
     border-radius: 20px;
-
     height: 100%;
     width: 30vw;
     margin-left: 10vw;
+}
+
+@media(max-width: 900px){
+    .game-card{
+        width: 80%;
+        margin-left: 10%;
+        height: 67vh;
+        margin-bottom: 20%;
+    }
 }
