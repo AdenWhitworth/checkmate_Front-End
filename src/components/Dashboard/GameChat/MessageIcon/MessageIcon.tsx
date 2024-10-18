@@ -1,6 +1,7 @@
 import React from "react";
 import Badge from '@mui/material/Badge';
 import { MessageIconProps } from "./MessageIconTypes";
+import './MessageIcon.css';
 
 export const MessageIcon = ({ 
     messageBadge, 

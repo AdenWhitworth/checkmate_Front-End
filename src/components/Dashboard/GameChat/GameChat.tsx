@@ -25,17 +25,17 @@ export default function GameChat() {
         <div className="message-container">
             {messagesToggle && (
                 <div className="message-toggle">
-                <MessageContent 
-                    messages={messages} 
-                    retrySendMessage={retrySendMessage} 
-                    message_txt_container={message_txt_container} 
-                />
-                <MessageEntry 
-                    textInput={textInput} 
-                    setTextInput={setTextInput} 
-                    handleSendMessage={handleSendMessage} 
-                    handleKeyPress={handleKeyPress}
-                />
+                    <MessageContent 
+                        messages={messages} 
+                        retrySendMessage={retrySendMessage} 
+                        message_txt_container={message_txt_container} 
+                    />
+                    <MessageEntry 
+                        textInput={textInput} 
+                        setTextInput={setTextInput} 
+                        handleSendMessage={handleSendMessage} 
+                        handleKeyPress={handleKeyPress}
+                    />
                 </div>
             )}
             

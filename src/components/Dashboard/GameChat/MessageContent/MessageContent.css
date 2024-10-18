@@ -1,0 +1,31 @@
+
+.message-txt-container{
+    height: 300px;
+    overflow-y: auto;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+.message-txt-container li{
+    list-style: none;
+    text-decoration: none;
+    list-style-type: none;
+}
+
+.message-txt-container::-webkit-scrollbar { 
+    background: transparent; 
+    display: none;
+}
+
+.message-txt-container::-webkit-scrollbar-thumb { 
+    background-color: #FFFFFF; 
+    -webkit-border-radius: 1ex; 
+}
+
+.message-txt-container h5{
+    font-size: 12px;
+    margin: 0;
+}

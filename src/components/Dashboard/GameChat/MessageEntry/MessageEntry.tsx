@@ -1,6 +1,7 @@
 import React from "react";
 import paper_plane from "../../../../Images/Paper Plane.svg";
 import { MessageEntryProps } from "./MessageEntryTypes";
+import "./MessageEntry.css";
 
 export const MessageEntry = ({ 
     textInput, 
@@ -10,14 +11,14 @@ export const MessageEntry = ({
 }: MessageEntryProps) => {
     return (
         <div className="message-entry">
-        <input
-            value={textInput}
-            onKeyDown={handleKeyPress}
-            onChange={(e) => setTextInput(e.target.value)}
-            type="text"
-            placeholder="Message..."
-        />
-        <img onClick={() => handleSendMessage()} src={paper_plane} alt="Send Message" />
+            <input
+                value={textInput}
+                onKeyDown={handleKeyPress}
+                onChange={(e) => setTextInput(e.target.value)}
+                type="text"
+                placeholder="Message..."
+            />
+            <img onClick={() => handleSendMessage()} src={paper_plane} alt="Send Message" />
         </div>
     );
 };

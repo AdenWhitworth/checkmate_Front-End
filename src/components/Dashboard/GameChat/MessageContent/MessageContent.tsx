@@ -1,6 +1,7 @@
 import React from "react";
 import MessageItem from "../MessageItem/MessageItem";
 import { MessageContentProps } from "./MessageContentTypes";
+import './MessageContent.css';
 
 export const MessageContent = ({ 
         messages, 
