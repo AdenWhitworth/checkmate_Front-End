@@ -223,7 +223,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const winner = findWinner();
         
         try {
-            if (winner !== "player" || !room) throw Error("Only winner closes the room.");
+            if (winner !== "player" || !room) {
+                cleanup();
+                return;
+            }
             
             await handleWinLossChange(winner);
             await sendCloseRoom({ room });
