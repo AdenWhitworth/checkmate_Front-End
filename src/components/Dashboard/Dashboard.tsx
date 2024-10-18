@@ -10,7 +10,7 @@ import ExitModal from '../Modal/ExitModal/ExitModal';
 import CreateRoomAlertBadge from '../AlertBadge/CreateRoomAlertBadge/CreateRoomAlertBadge';
 import JoinRoomAlertBadge from '../AlertBadge/JoinRoomAlertBadge/JoinRoomAlertBadge';
 import GameOverModal from '../Modal/GameOverModal/GameOverModal';
-import GameChat from './ActiveGame/GameChat/GameChat';
+import GameChat from './GameChat/GameChat';
 
 export default function Dashboard(): JSX.Element {
     const { room } = useGame();

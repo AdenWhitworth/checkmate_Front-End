@@ -1,5 +1,5 @@
 import React from "react";
-import paper_plane from "../../../../../Images/Paper Plane.svg";
+import paper_plane from "../../../../Images/Paper Plane.svg";
 import { MessageEntryProps } from "./MessageEntryTypes";
 
 export const MessageEntry = ({ 

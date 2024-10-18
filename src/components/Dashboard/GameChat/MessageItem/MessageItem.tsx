@@ -1,5 +1,5 @@
 import { MessageItemProps } from "./MessageItemTypes";
-import { usePlayer } from "../../../../../Providers/PlayerProvider/PlayerProvider";
+import { usePlayer } from "../../../../Providers/PlayerProvider/PlayerProvider";
 import './MessageItem.css';
 
 export default function MessageItem({

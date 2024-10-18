@@ -27,6 +27,16 @@
     padding-right: 5%;
 }
 
+.moves-list::-webkit-scrollbar { 
+    background: transparent; 
+    display: none;
+}
+
+.moves-list::-webkit-scrollbar-thumb { 
+    background-color: transparent; 
+    -webkit-border-radius: 1ex; 
+}
+
 .moves-list li{
     list-style: none;
     text-decoration: none;

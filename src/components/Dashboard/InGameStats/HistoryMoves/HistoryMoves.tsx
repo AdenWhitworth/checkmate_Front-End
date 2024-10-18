@@ -1,5 +1,5 @@
 import arrow_point from "../../../../Images/Arrow Point.svg";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import {v4 as uuidv4} from "uuid";
 import HistoryItem from "../HistoryItem/HistoryItem";
 import './HistoryMoves.css';
@@ -9,6 +9,7 @@ import { useGame } from "../../../../Providers/GameProvider/GameProvider";
 export default function HistoryMoves() {
     const [gameMoves, setGameMoves] = useState<GameMoves[]>([]);
     const { history } = useGame();
+    const history_moves_container = useRef<HTMLUListElement>(null); 
 
     const formatHistory = () => {
         const historyLength = history.length;
@@ -27,6 +28,18 @@ export default function HistoryMoves() {
         setGameMoves(gameMovesCopy);
     };
 
+    const scrollToBottom = () => {
+        if (history_moves_container.current) {
+            history_moves_container.current.scrollTop = history_moves_container.current.scrollHeight;
+        }
+    };
+
+    useEffect(() => {
+        if (gameMoves.length > 0) {
+            scrollToBottom();
+        }
+    }, [gameMoves.length]);
+
     useEffect(() => {
         formatHistory();
     }, [history]);
@@ -39,7 +52,7 @@ export default function HistoryMoves() {
             </div>
 
             <div className="moves-card">
-                <ul className="moves-list">
+                <ul className="moves-list" ref={history_moves_container}>
                     {gameMoves.map((gameMoves, index) => (
                         <HistoryItem key={gameMoves.id} rowMoves={gameMoves.rowMoves} index={index}></HistoryItem>
                     ))}

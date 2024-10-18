@@ -1,4 +1,4 @@
-import { Room } from "../../../../Providers/GameProvider/GameProviderTypes";
+import { Room } from "../../../Providers/GameProvider/GameProviderTypes";
 
 export interface Message {
     id: string;

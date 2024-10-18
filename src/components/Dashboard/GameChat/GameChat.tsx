@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useMessageHandler } from "../../../../Hooks/useMessageHandler/useMessageHandler";
+import { useMessageHandler } from "../../../Hooks/useMessageHandler/useMessageHandler";
 import { MessageContent } from "./MessageContent/MessageContent";
 import { MessageEntry } from "./MessageEntry/MessageEntry";
 import { MessageIcon } from "./MessageIcon/MessageIcon";

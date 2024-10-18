@@ -9,9 +9,9 @@ export const MessageContent = ({
 }: MessageContentProps) => {
     return (
         <ul className="message-txt-container" ref={message_txt_container}>
-        {messages.map((message) => (
-            <MessageItem key={message.id} message={message} retrySendMessage={retrySendMessage} />
-        ))}
+            {messages.map((message) => (
+                <MessageItem key={message.id} message={message} retrySendMessage={retrySendMessage} />
+            ))}
         </ul>
     );
 };

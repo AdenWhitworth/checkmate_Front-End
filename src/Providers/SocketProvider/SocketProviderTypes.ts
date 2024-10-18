@@ -2,7 +2,7 @@ import React, { ReactNode, MutableRefObject } from 'react';
 import { Move } from "chess.js";
 import { SocketPlayer, Room } from '../GameProvider/GameProviderTypes';
 import { Socket } from 'socket.io-client';
-import { Message } from '../../components/Dashboard/ActiveGame/GameChat/GameChatTypes';
+import { Message } from '../../components/Dashboard/GameChat/GameChatTypes';
 
 export interface SocketContextType {
     isConnected: boolean;

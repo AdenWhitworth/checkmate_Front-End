@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Message } from "../../components/Dashboard/ActiveGame/GameChat/GameChatTypes";
+import { Message } from "../../components/Dashboard/GameChat/GameChatTypes";
 import { useGame } from "../../Providers/GameProvider/GameProvider";
 import { useSocket } from "../../Providers/SocketProvider/SocketProvider";
 import { usePlayer } from "../../Providers/PlayerProvider/PlayerProvider";
