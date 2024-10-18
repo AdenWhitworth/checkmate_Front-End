@@ -57,6 +57,12 @@
     padding-right: 40px;
 }
 
+.message-entry input::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+
 .message-entry img{
     height: 20px;
     width: 20px;

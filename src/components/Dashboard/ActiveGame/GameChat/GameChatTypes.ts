@@ -6,5 +6,5 @@ export interface Message {
     time: string;
     username: string;
     room: Room;
-    status: "sending" | "delivered" | "error" | "recieved";
+    status: "sending" | "delivered" | "error" | "received";
 }

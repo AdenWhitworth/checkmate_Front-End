@@ -1,5 +1,4 @@
-.message-txt{
-    
+.message-txt {
     border-radius: 10px;
     margin-top: 10px;
     display: flex;
@@ -8,59 +7,54 @@
     min-height: 30px;
 }
 
-.txt-player{
+.txt-player, .txt-opponent {
+    padding: 2% 5%;
+}
+
+.txt-player {
     text-align: end;
-    padding-right: 5%;
-    padding-top: 2%;
-    padding-bottom: 2%;
 }
 
-.txt-opponent{
+.txt-opponent {
     text-align: start;
-    padding-left: 5%;
-    padding-top: 2%;
-    padding-bottom: 2%;
 }
 
-.message-error button{
-    background:none;
-    border:none;
-    margin:0;
-    padding:0;
+.message-status {
+    color: #3D3D3D;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.message-error {
+    padding-top: 0;
+    margin-top: 0;
+    color: red;
+}
+
+.message-error button {
+    background: none;
+    border: none;
     cursor: pointer;
-    font-family: inherit;
     font-size: 1em;
     color: red;
     font-weight: bold;
-    text-decoration-line: underline;
+    text-decoration: underline;
 }
 
-.message-status{
-    padding-top: 0px !important;
-    color: #3D3D3D;
-}
-
-.message-error{
-    padding-top: 0px !important;
-    color: red !important;
-}
-
-.error-hide{
-    display: none;
-}
-
-.message-txt h4{
+.message-txt h4 {
     font-size: 14px;
-    margin-left: 12px;
-    margin-right: 12px;
+    margin: 12px 12px;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
-.message-player{
+.message-player {
     background-color: #FFE769;
     margin-left: 18%;
 }
 
-.message-opponent{
+.message-opponent {
     background-color: #CDCDCD;
     margin-left: 2%;
 }
