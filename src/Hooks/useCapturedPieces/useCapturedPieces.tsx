@@ -62,21 +62,21 @@ export const useCapturedPieces = () => {
     ]);
 
     const [playerPieces, setPlayerPieces] = useState<Record<PieceType, PieceState>>({
-        p: { img: "", style: "" },
-        n: { img: "", style: "" },
-        b: { img: "", style: "" },
-        r: { img: "", style: "" },
-        q: { img: "", style: "" },
-        k: { img: "", style: "" }
+        p: { img: "", style: "game-pieces-captured-hidden" },
+        n: { img: "", style: "game-pieces-captured-hidden" },
+        b: { img: "", style: "game-pieces-captured-hidden" },
+        r: { img: "", style: "game-pieces-captured-hidden" },
+        q: { img: "", style: "game-pieces-captured-hidden" },
+        k: { img: "", style: "game-pieces-captured-hidden" }
     });
 
     const [opponentPieces, setOpponentPieces] = useState<Record<PieceType, PieceState>>({
-        p: { img: "", style: "" },
-        n: { img: "", style: "" },
-        b: { img: "", style: "" },
-        r: { img: "", style: "" },
-        q: { img: "", style: "" },
-        k: { img: "", style: "" }
+        p: { img: "", style: "game-pieces-captured-hidden" },
+        n: { img: "", style: "game-pieces-captured-hidden" },
+        b: { img: "", style: "game-pieces-captured-hidden" },
+        r: { img: "", style: "game-pieces-captured-hidden" },
+        q: { img: "", style: "game-pieces-captured-hidden" },
+        k: { img: "", style: "game-pieces-captured-hidden" }
     });
 
     const updateCapturedPieces = () => {

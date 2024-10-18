@@ -61,6 +61,8 @@
 
 .game-pieces-captured-hidden{
     visibility: hidden;
+    height: 15px;
+    flex: 1;
 }
 
 .game-row-3{
