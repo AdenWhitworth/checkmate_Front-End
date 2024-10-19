@@ -33,7 +33,7 @@ export default function Button({
     id,
     name,
 }: ButtonProps): JSX.Element {
-    const classType = imgSrc ? `${styleType}-icon` : styleType;
+    const classType = imgSrc ? `button-${styleType}-icon` : `button-${styleType}`;
     const combinedClassName = `${classType}${className ? ` ${className}` : ''}`;
 
     return (

@@ -13,18 +13,27 @@ import GameOverModal from '../Modal/GameOverModal/GameOverModal';
 import GameChat from './GameChat/GameChat';
 import MoveAlertBadge from '../AlertBadge/MoveAlertBadge/MoveAlertBadge';
 
+/**
+ * Dashboard component that serves as the main container for the active game,
+ * lobby, and various game-related modals and alerts.
+ * 
+ * @component
+ * @returns {JSX.Element} - The rendered Dashboard component.
+ */
 export default function Dashboard(): JSX.Element {
     const { room } = useGame();
 
     return (
         <>  
             <Header />
+
             <section className="dashboard">
                 <div className="dashboard-content">
                     <ActiveGame />
                     {room ? <InGameStats /> : <Lobby />}
                 </div>
             </section>
+
             {room && <GameChat></GameChat>}
             <ForfeitModal />
             <ExitModal />

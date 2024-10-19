@@ -1,47 +1,58 @@
 import arrow_point from "../../../../Images/Arrow Point.svg";
-import {useState, useEffect, useRef} from "react";
-import {v4 as uuidv4} from "uuid";
+import { useEffect, useRef, useCallback } from "react";
+import { v4 as uuidv4 } from "uuid";
 import HistoryItem from "../HistoryItem/HistoryItem";
 import './HistoryMoves.css';
-import { GameMoves } from "../InGameStatsTypes";
 import { useGame } from "../../../../Providers/GameProvider/GameProvider";
 
+/**
+ * HistoryMoves component displays a list of chess moves in the current game.
+ * It listens for changes in the game history and updates the displayed moves accordingly.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered HistoryMoves component.
+ */
 export default function HistoryMoves() {
     const { history, gameMoves, setGameMoves } = useGame();
-    const history_moves_container = useRef<HTMLUListElement>(null); 
+    const historyMovesContainerRef = useRef<HTMLUListElement>(null);
 
-    const formatHistory = () => {
-        const historyLength = history.length;
-        if (!historyLength) return;
-    
-        const lastMove = history[historyLength - 1].to;
-        const gameMovesCopy = [...gameMoves];
+    /**
+     * Formats the game history to update the moves displayed in the history list.
+     * It checks the length of the history and adds the latest move to the gameMoves state.
+     * If the move count is odd, it adds a white move. If even, it updates the last black move.
+     */
+    const formatHistory = useCallback(() => {
+        if (history.length === 0) return;
+
+        const lastMove = history[history.length - 1].to;
+        const updatedMoves = [...gameMoves];
         const id = uuidv4();
-    
-        if (historyLength % 2 === 1) {
-            gameMovesCopy.push({ id, rowMoves: { whiteMove: lastMove, blackMove: "" } });
+
+        if (history.length % 2 === 1) {
+            updatedMoves.push({ id, rowMoves: { whiteMove: lastMove, blackMove: "" } });
         } else {
-            gameMovesCopy[gameMovesCopy.length - 1].rowMoves.blackMove = lastMove;
+            updatedMoves[updatedMoves.length - 1].rowMoves.blackMove = lastMove;
         }
-    
-        setGameMoves(gameMovesCopy);
-    };
 
+        setGameMoves(updatedMoves);
+        scrollToBottom();
+    }, [history, gameMoves, setGameMoves]);
+
+    /**
+     * Scrolls the moves list container to the bottom to show the latest move.
+     */
     const scrollToBottom = () => {
-        if (history_moves_container.current) {
-            history_moves_container.current.scrollTop = history_moves_container.current.scrollHeight;
+        if (historyMovesContainerRef.current) {
+            historyMovesContainerRef.current.scrollTop = historyMovesContainerRef.current.scrollHeight;
         }
     };
 
-    useEffect(() => {
-        if (gameMoves.length > 0) {
-            scrollToBottom();
-        }
-    }, [gameMoves.length]);
-
+    /**
+     * UseEffect to reformat the history on every new move
+     */
     useEffect(() => {
         formatHistory();
-    }, [history]);
+    }, [formatHistory]);
 
     return (
         <>
@@ -51,9 +62,9 @@ export default function HistoryMoves() {
             </div>
 
             <div className="moves-card">
-                <ul className="moves-list" ref={history_moves_container}>
-                    {gameMoves.map((gameMoves, index) => (
-                        <HistoryItem key={gameMoves.id} rowMoves={gameMoves.rowMoves} index={index}></HistoryItem>
+                <ul className="moves-list" ref={historyMovesContainerRef}>
+                    {gameMoves.map((move, index) => (
+                        <HistoryItem key={move.id} rowMoves={move.rowMoves} index={index} />
                     ))}
                 </ul>
             </div>
