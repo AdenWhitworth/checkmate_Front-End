@@ -4,6 +4,19 @@ import bronze_medal from "../../../../../Images/Bronze Medal.svg";
 import { LeaderBoardItemProps } from "./LeaderBoardItemTypes";
 import './LeaderBoardItem.css';
 
+/**
+ * LeaderBoardItem component that displays information about a player in the leaderboard, including rank, username, wins, and losses.
+ * 
+ * @component
+ * @param {Object} props - Component props.
+ * @param {Object} props.player - The player object containing details about the player.
+ * @param {string} props.player.username - The username of the player.
+ * @param {number} props.player.win - The number of wins the player has.
+ * @param {number} props.player.loss - The number of losses the player has.
+ * @param {number} props.index - The index of the player in the leaderboard list (used to determine rank).
+ * 
+ * @returns {JSX.Element} The rendered LeaderBoardItem component.
+ */
 export default function LeaderBoardItem({
     player, 
     index

@@ -5,6 +5,13 @@ import LeaderBoardItem from './LeaderBoardItem/LeaderBoardItem';
 import LoadingSpinner from '../../../LoadingSpinner/LoadingSpinner';
 import ErrorLoading from '../../../ErrorLoading/ErrorLoading';
 
+/**
+ * LeaderBoard component displays a list of top players with their stats such as wins and losses.
+ * It fetches the leaderboard data using the `useLeaderBoard` hook and handles loading and error states.
+ * 
+ * @component
+ * @returns {JSX.Element} The rendered LeaderBoard component.
+ */
 export default function LeaderBoard(): JSX.Element {
     
     const { leaderBoardPlayers, loadingLeaders, leadersError } = useLeaderBoard();
