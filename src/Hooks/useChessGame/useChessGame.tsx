@@ -6,6 +6,7 @@ import { MoveArgs, ForfeitArgs, DisconnectArgs, JoinRoomArgs } from "../../Provi
 import { db } from '../../firebase';
 import { collection, doc, increment, updateDoc} from "firebase/firestore";
 import { UseChessGameProps } from "./useChessGameTypes";
+import { GameMoves } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
 
 export const useChessGame = ({ 
   room,
@@ -17,7 +18,9 @@ export const useChessGame = ({
   setFen,
   gameOver, 
   setGameOver,
-  opponent 
+  opponent,
+  setErrorMove,
+  setGameMoves
 }: UseChessGameProps) => {
   const { player } = usePlayer();
   const { sendMove, socketRef } = useSocket();
@@ -66,18 +69,35 @@ export const useChessGame = ({
     const move: Move | null = makeAMove(moveData);
     if (!move) return false;
 
-    // Handle async operation for sending the move
-    sendMoveAsync(move);
+    sendMoveAsync(move, currentFen);
 
     return true;
   };
 
-  const sendMoveAsync = async (move: Move) => {
+  const sendMoveAsync = async (move: Move, previousFen: string) => {
     try {
       if (!room) throw Error("Room required.");
       await sendMove({ room, move });
     } catch (error) {
-      console.log(error);
+      chess.load(previousFen);
+      setFen(previousFen);
+
+      setGameMoves((prevMoves: GameMoves[]) => {
+        const updatedMoves = [...prevMoves];
+        if (updatedMoves.length > 0) {
+          const lastMove = updatedMoves[updatedMoves.length - 1];
+          if (!lastMove.rowMoves.blackMove) {
+            updatedMoves.pop();
+          } else {
+            lastMove.rowMoves.blackMove = "";
+          }
+        }
+        return updatedMoves;
+      });
+      
+      setHistory(chess.history({ verbose: true }));
+      setPlayerTurn(chess.turn());
+      setErrorMove("Move failed, reverting to previous state and please try again.");
     }
   };
   

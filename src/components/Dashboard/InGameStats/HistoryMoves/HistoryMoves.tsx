@@ -7,8 +7,7 @@ import { GameMoves } from "../InGameStatsTypes";
 import { useGame } from "../../../../Providers/GameProvider/GameProvider";
 
 export default function HistoryMoves() {
-    const [gameMoves, setGameMoves] = useState<GameMoves[]>([]);
-    const { history } = useGame();
+    const { history, gameMoves, setGameMoves } = useGame();
     const history_moves_container = useRef<HTMLUListElement>(null); 
 
     const formatHistory = () => {

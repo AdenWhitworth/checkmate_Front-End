@@ -8,6 +8,7 @@ import { db } from "../../firebase";
 import { collection, deleteDoc, doc, addDoc, getDoc } from "firebase/firestore";
 import { Invite, Player } from '../PlayerProvider/PlayerProviderTypes';
 import { useChessGame } from '../../Hooks/useChessGame/useChessGame';
+import { GameMoves } from '../../components/Dashboard/InGameStats/InGameStatsTypes';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
@@ -32,6 +33,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const chess = useMemo<Chess>(() => new Chess(), [room]);
     const [fen, setFen] = useState<string>("start");
+    const [errorMove, setErrorMove] = useState<string | null>(null);
+    const [gameMoves, setGameMoves] = useState<GameMoves[]>([]);
     
     const [gameOver, setGameOver] = useState<string | null>(null);
     const [loadingOver, setLoadingOver] = useState<boolean>(false);
@@ -63,7 +66,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setFen,
         gameOver, 
         setGameOver,
-        opponent 
+        opponent,
+        setErrorMove,
+        setGameMoves 
     });
 
     const cleanup = useCallback(() => {
@@ -283,7 +288,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setSuccessJoinGame,
             handleJoinRoom,
             onDrop,
-            handleCloseRoom
+            handleCloseRoom,
+            errorMove,
+            setErrorMove,
+            gameMoves,
+            setGameMoves
         }}>
             {children}
         </GameContext.Provider>

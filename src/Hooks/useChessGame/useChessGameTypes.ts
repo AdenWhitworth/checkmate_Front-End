@@ -1,3 +1,4 @@
+import { GameMoves } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
 import { Room, Opponent } from "../../Providers/GameProvider/GameProviderTypes";
 import { Move, Chess } from "chess.js";
 
@@ -12,4 +13,6 @@ export interface UseChessGameProps {
     gameOver: string | null; 
     setGameOver: (value: string | null) => void;
     opponent: Opponent | null;
+    setErrorMove: (value: string | null) => void;
+    setGameMoves: (value: GameMoves[] | ((prev: GameMoves[]) => GameMoves[])) => void;
 }

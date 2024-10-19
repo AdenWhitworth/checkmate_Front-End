@@ -11,6 +11,7 @@ import CreateRoomAlertBadge from '../AlertBadge/CreateRoomAlertBadge/CreateRoomA
 import JoinRoomAlertBadge from '../AlertBadge/JoinRoomAlertBadge/JoinRoomAlertBadge';
 import GameOverModal from '../Modal/GameOverModal/GameOverModal';
 import GameChat from './GameChat/GameChat';
+import MoveAlertBadge from '../AlertBadge/MoveAlertBadge/MoveAlertBadge';
 
 export default function Dashboard(): JSX.Element {
     const { room } = useGame();
@@ -30,6 +31,7 @@ export default function Dashboard(): JSX.Element {
             <GameOverModal />
             <CreateRoomAlertBadge />
             <JoinRoomAlertBadge />
+            <MoveAlertBadge />
         </>
     );
 }

@@ -1,5 +1,6 @@
 import { Move, Chess, Square } from "chess.js";
 import { Invite, Player } from "../PlayerProvider/PlayerProviderTypes";
+import { GameMoves } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
 
 export interface SocketPlayer {
     id: string;
@@ -63,4 +64,8 @@ export interface GameContextType {
     handleJoinRoom: (value: Invite) => void;
     onDrop:(sourceSquare: Square, targetSquare: Square) => boolean;
     handleCloseRoom: () => void;
+    errorMove: string | null;
+    setErrorMove: (value: string | null) => void;
+    gameMoves: GameMoves[];
+    setGameMoves: (value: GameMoves[]) => void;
 }
