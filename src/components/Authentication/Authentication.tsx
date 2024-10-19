@@ -1,17 +1,21 @@
-import React, { useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import king_logo from '../../Images/King Logo White.svg';
 import "./Authentication.css";
 import LoginForm from './LoginForm/LoginForm';
 import SignupForm from './SignupForm/SignupForm';
-import { useNavigate } from 'react-router-dom';
 import { FormData } from './AuthenticationTypes';
 import { useAuth } from '../../Providers/AuthProvider/AuthProvider';
+import { useNavigation } from '../../Hooks/useNavigation/useNavigation';
 
-export default function Authentication() {
 
-    const navigate = useNavigate();
-    const hasNavigated = useRef<boolean>(false);
-    const {currentUser, resetError, login, signup, isLoginSelected } = useAuth();
+/**
+ * Renders the Authentication component, which includes login and signup forms.
+ * @component
+ * @returns {JSX.Element} The rendered Authentication component.
+ */
+export default function Authentication(): JSX.Element {
+    const { handleKingClick, handleSendToDashboard } = useNavigation();
+    const { currentUser, resetError, login, signup, isLoginSelected } = useAuth();
     
     const [formData, setFormData] = useState<FormData>({
         firstName: '',
@@ -21,58 +25,77 @@ export default function Authentication() {
         username: ''
     });
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    /**
+     * Handles changes to input fields in the login or signup form.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+     */
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
           ...prevData,
           [name]: value,
         }));
-    };
+    }, []);
 
-    const handleReturnLanding = () => {
-        navigate('/', { replace: true });
-    };
-
-    const handleLoginSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    /**
+     * Handles form submission for the login form.
+     *
+     * @param {React.FormEvent<HTMLFormElement>} e - The form submission event.
+     */
+    const handleLoginSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
         login(formData.email || '', formData.password || '');
-    };
+    }, [login, formData.email, formData.password]);
 
-    const handleSignUpSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    /**
+     * Handles form submission for the signup form.
+     *
+     * @param {React.FormEvent<HTMLFormElement>} e - The form submission event.
+     */
+    const handleSignUpSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
         signup(formData.email || '', formData.password || '', formData.username || '');
-    };
+    }, [signup, formData.email, formData.password, formData.username]);
 
+    /**
+     * Resets error messages when switching between login and signup forms.
+     */
     useEffect(() => {
         resetError();
     }, [isLoginSelected, resetError]);
 
+    /**
+     * Navigates to the dashboard when a user is successfully logged in.
+     */
     useEffect(() => {
-        if(currentUser){
-            navigate('/dashboard', { replace: true });
-            hasNavigated.current = true;
+        if (currentUser) {
+            handleSendToDashboard();
         }
-    }, [currentUser, navigate]);
+    }, [currentUser, handleSendToDashboard]);
 
     return (
         <section className='auth'>
             <div className='auth-content'>
                 <div className='auth-logo'>
-                    <img onClick={handleReturnLanding} className='auth-logo-img' src={king_logo} alt='King Logo'></img>
+                    <img 
+                        onClick={handleKingClick} 
+                        className='auth-logo-img' 
+                        src={king_logo} 
+                        alt='King Logo'
+                    />
                 </div>
 
-                {isLoginSelected? (
+                {isLoginSelected ? (
                     <LoginForm 
                         handleInputChange={handleInputChange}
                         handleSubmit={handleLoginSubmit}
-                    ></LoginForm>
-                ):(
+                    />
+                ) : (
                     <SignupForm
                         handleInputChange={handleInputChange}
                         handleSubmit={handleSignUpSubmit}
-                    ></SignupForm>
+                    />
                 )}
             </div>
         </section>

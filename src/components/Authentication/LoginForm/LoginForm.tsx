@@ -4,46 +4,60 @@ import Button from '../../Button/Button';
 import { LoginFormProps } from './LoginFormTypes';
 import { useAuth } from '../../../Providers/AuthProvider/AuthProvider';
 
+/**
+ * LoginForm component allows users to enter their email and password to sign in.
+ * Provides a form with input fields for the email and password, and a button to submit the form.
+ * It also includes an option to switch to the signup form if the user doesn't have an account.
+ * 
+ * @component
+ * @param {LoginFormProps} props - The props for the LoginForm component.
+ * @param {function} props.handleInputChange - A function to handle changes in the input fields.
+ * @param {function} props.handleSubmit - A function to handle form submission.
+ * 
+ * @returns {JSX.Element} A form for logging in users with fields for email and password.
+ */
 export default function LoginForm({
     handleInputChange,
     handleSubmit
-}:LoginFormProps) {
-
+}: LoginFormProps): JSX.Element {
     const { loadingAuth, error, setIsLoginSelected } = useAuth();
 
-    const handleChangeToSignup = () => {
-        setIsLoginSelected(false)
+    /**
+     * Switches the form view to the signup form.
+     */
+    const switchToSignUp = () => {
+        setIsLoginSelected(false);
     };
 
     return (
-        <form className='auth-form' onSubmit={handleSubmit}>
+        <form className="auth-form" onSubmit={handleSubmit}>
             <h2>Welcome back</h2>
 
             <InputField
-                onChange={handleInputChange} 
-                name='email' 
-                isRequired={true} 
-                type='email' 
-                label='Email' 
+                onChange={handleInputChange}
+                name="email"
+                isRequired
+                type="email"
+                label="Email"
                 isSpellCheck={false}
-            ></InputField>
+            />
 
             <InputField
-                onChange={handleInputChange} 
-                name='password'
-                isRequired={true} 
-                type='password' 
-                label='Password' 
+                onChange={handleInputChange}
+                name="password"
+                isRequired
+                type="password"
+                label="Password"
                 isSpellCheck={false}
-            ></InputField>
+            />
 
-            <Button type="submit" disabled={loadingAuth} styleType='primary'>
+            <Button type="submit" disabled={loadingAuth} styleType="primary">
                 {loadingAuth ? 'Signing In...' : 'Sign In'}
             </Button>
 
             <p>
-                Don’t have an account?{'  '}
-                <span onClick={handleChangeToSignup} className='auth-selection'>
+                Don’t have an account?{' '}
+                <span onClick={switchToSignUp} className="auth-selection">
                     Sign Up
                 </span>
             </p>

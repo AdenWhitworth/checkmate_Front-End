@@ -32,6 +32,10 @@ export const useNavigation = () => {
         navigate('/auth', { replace: true });
     }, [setIsLoginSelected, navigate]);
 
+    const handleSendToDashboard = useCallback(() => {
+        navigate('/dashboard', { replace: true });
+    }, [navigate]);
+
     const handleSignupClick = useCallback(() => {
         setIsLoginSelected(false);
         setIsMenuOpen(false);
@@ -62,5 +66,6 @@ export const useNavigation = () => {
         handleFlagClick,
         toggleMenu, 
         isMenuOpen,
+        handleSendToDashboard
     };
 };
