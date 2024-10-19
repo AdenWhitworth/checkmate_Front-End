@@ -3,6 +3,12 @@ import Modal from '../Modal';
 import { useGame } from '../../../Providers/GameProvider/GameProvider';
 import king_logo_black from '../../../Images/King Logo Black.svg';
 
+/**
+ * ForfeitModal component that displays a confirmation modal when a user attempts to forfeit a game.
+ *
+ * @component
+ * @returns {JSX.Element|null} The rendered ForfeitModal component, or null if forfeitGame is false.
+ */
 export default function ForfeitModal() {
     const { forfeitGame, setForfeitGame, handleForfeit, opponent, errorForfeit, loadingForfeit } = useGame();
     if (!forfeitGame) return null;
