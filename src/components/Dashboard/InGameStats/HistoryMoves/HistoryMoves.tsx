@@ -12,7 +12,7 @@ import { useGame } from "../../../../Providers/GameProvider/GameProvider";
  * @component
  * @returns {JSX.Element} The rendered HistoryMoves component.
  */
-export default function HistoryMoves() {
+export default function HistoryMoves(): JSX.Element {
     const { history, gameMoves, setGameMoves } = useGame();
     const historyMovesContainerRef = useRef<HTMLUListElement>(null);
 

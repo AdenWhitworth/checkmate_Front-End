@@ -1,13 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { Move, Square } from "chess.js";
 import { usePlayer } from "../../Providers/PlayerProvider/PlayerProvider";
 import { useSocket, handleCallback } from "../../Providers/SocketProvider/SocketProvider";
 import { MoveArgs, ForfeitArgs, DisconnectArgs, JoinRoomArgs } from "../../Providers/SocketProvider/SocketProviderTypes";
 import { db } from '../../firebase';
-import { collection, doc, increment, updateDoc} from "firebase/firestore";
-import { UseChessGameProps } from "./useChessGameTypes";
+import { collection, doc, increment, writeBatch} from "firebase/firestore";
+import { UseChessGameProps, UseChessGameOutput } from "./useChessGameTypes";
 import { GameMoves } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
 
+/**
+ * Custom hook for managing a multiplayer chess game using socket connections.
+ *
+ * @param {UseChessGameProps} props - The properties required by the useChessGame hook.
+ * @returns {UseChessGameOutput} - The returned functions and properties from the useChessGame hook.
+ */
 export const useChessGame = ({ 
   room,
   setRoom, 
@@ -21,10 +27,16 @@ export const useChessGame = ({
   opponent,
   setErrorMove,
   setGameMoves
-}: UseChessGameProps) => {
+}: UseChessGameProps): UseChessGameOutput => {
   const { player } = usePlayer();
   const { sendMove, socketRef } = useSocket();
   
+  /**
+   * Attempts to execute a chess move on the board.
+   *
+   * @param {Move} move - The move data containing source and target squares, piece type, etc.
+   * @returns {Move|null} - The executed move or null if the move was invalid.
+   */
   const makeAMove = useCallback((move: Move) => {
     try {
       const result = chess.move(move);
@@ -47,6 +59,13 @@ export const useChessGame = ({
     }
   }, [chess, setFen, setHistory, setPlayerTurn, setGameOver]);
 
+  /**
+   * Handles dropping a piece on the board and sending the move to the opponent.
+   *
+   * @param {Square} sourceSquare - The starting square of the piece.
+   * @param {Square} targetSquare - The destination square of the piece.
+   * @returns {boolean} - True if the move was successful, false otherwise.
+   */
   const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
     if (chess.turn() !== orientation) return false;
     if (!room || room.players.length < 2) return false;
@@ -74,6 +93,13 @@ export const useChessGame = ({
     return true;
   };
 
+  /**
+   * Sends a move asynchronously to the server and handles rollback on failure.
+   *
+   * @async
+   * @param {Move} move - The move to send.
+   * @param {string} previousFen - The FEN notation of the board before the move.
+   */
   const sendMoveAsync = async (move: Move, previousFen: string) => {
     try {
       if (!room) throw Error("Room required.");
@@ -101,6 +127,9 @@ export const useChessGame = ({
     }
   };
   
+  /**
+   * Sets up event listeners for receiving moves from the server.
+   */
   const handleMove = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.off('recieveMove');
@@ -116,6 +145,9 @@ export const useChessGame = ({
     }
   }, [makeAMove, socketRef]);
 
+  /**
+   * Sets up event listeners for handling opponent disconnection.
+   */
   const handleDisconnect = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.off('playerDisconnected');
@@ -125,6 +157,9 @@ export const useChessGame = ({
     }
   }, [setGameOver, socketRef]);
 
+  /**
+   * Sets up event listeners for handling opponent forfeits.
+   */
   const handlePlayerForfeited = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.off('playerForfeited');
@@ -135,6 +170,9 @@ export const useChessGame = ({
     }
   }, [setGameOver, socketRef]);
 
+  /**
+   * Sets up event listeners for handling an opponent joining the game.
+   */
   const handleOpponentJoined = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.off('opponentJoined');
@@ -145,6 +183,11 @@ export const useChessGame = ({
     }
   }, [setRoom, socketRef]);
 
+  /**
+   * Determines the winner of the game based on the game state.
+   *
+   * @returns {"player" | "opponent" | null} - The winner of the game or null if no winner.
+   */
   const findWinner = (): "player" | "opponent" | null => {
     if (!gameOver) return null;
 
@@ -159,8 +202,22 @@ export const useChessGame = ({
     return null;
   };
 
-  const calculateRank = (win: number, loss: number) => (win * win) / (win + loss);
+  /**
+   * Calculates a player's rank based on their win/loss ratio.
+   *
+   * @param {number} win - The number of wins.
+   * @param {number} loss - The number of losses.
+   * @returns {number} - The calculated rank.
+   */
+  const calculateRank = (win: number, loss: number): number => (win * win) / (win + loss);
 
+  /**
+   * Handles updating the win/loss count and rank for both players based on the game outcome.
+   *
+   * @async
+   * @param {"player" | "opponent" | null} winner - The winner of the game.
+   * @returns {Promise<void>}
+   */
   const handleWinLossChange = async (winner: "player" | "opponent" | null): Promise<void> => {
     if (!player || !player.win || !player.loss || !opponent) return;
 
@@ -171,19 +228,25 @@ export const useChessGame = ({
     const playerRank = calculateRank(player.win, player.loss);
     const opponentRank = calculateRank(opponent.opponentWin, opponent.opponentLoss);
 
+    const batch = writeBatch(db);
+
     try {
       if (winner === "player") {
-        await updateDoc(playerDoc, { win: increment(1), rank: playerRank });
-        await updateDoc(opponentDoc, { loss: increment(1), rank: opponentRank });
-      } else {
-        await updateDoc(opponentDoc, { win: increment(1), rank: opponentRank });
-        await updateDoc(playerDoc, { loss: increment(1), rank: playerRank });
+        batch.update(playerDoc, { win: increment(1), rank: playerRank });
+        batch.update(opponentDoc, { loss: increment(1), rank: opponentRank });
+      } else if (winner === "opponent") {
+        batch.update(opponentDoc, { win: increment(1), rank: opponentRank });
+        batch.update(playerDoc, { loss: increment(1), rank: playerRank });
       }
+      await batch.commit();
     } catch (error) {
       throw error;
     }
   };
 
+  /**
+   * Initializes the socket event listeners when the hook mounts.
+   */
   useEffect(() => {
     handleMove();
     handleDisconnect();

@@ -33,6 +33,7 @@ import king_black from "../../Images/King Black.svg";
 import React, {useState, useEffect} from "react";
 import { PieceType, CapturedPiece, PieceState, PieceImages } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
 import { useGame } from "../../Providers/GameProvider/GameProvider";
+import { UseCapturedPiecesOutput } from "./useCapturedPiecesTypes";
 
 const pieceImages: PieceImages[] = [
     {
@@ -53,7 +54,15 @@ const pieceImages: PieceImages[] = [
     },
 ];
 
-export const useCapturedPieces = () => {
+const pieceTypes: PieceType[] = ["p", "n", "b", "r", "q", "k"];
+
+/**
+ * Custom hook that manages and updates the state of captured chess pieces for both players.
+ *
+ * @function useCapturedPieces
+ * @returns {UseCapturedPiecesOutput} The captured pieces, player and opponent pieces state, and functions to update pieces.
+ */
+export const useCapturedPieces = (): UseCapturedPiecesOutput => {
     const { orientation, history } = useGame();
 
     const [capturedPieces, setCapturedPieces] = useState<CapturedPiece[]>([
@@ -79,6 +88,9 @@ export const useCapturedPieces = () => {
         k: { img: "", style: "game-pieces-captured-hidden" }
     });
 
+    /**
+     * Updates the captured pieces state for both the player and the opponent.
+     */
     const updateCapturedPieces = () => {
         const currentPlayer = orientation === "w" ? 0 : 1;
         const opponentPlayer = currentPlayer === 0 ? 1 : 0;
@@ -87,9 +99,13 @@ export const useCapturedPieces = () => {
         updatePieces(opponentPlayer, setOpponentPieces);
     };
 
+    /**
+     * Updates the pieces state for the specified player.
+     * 
+     * @param {number} playerIdx - The index of the player (0 for white, 1 for black).
+     * @param {React.Dispatch<React.SetStateAction<Record<PieceType, PieceState>>>} piecesStateSetter - The state setter for updating piece styles and images.
+     */
     const updatePieces = (playerIdx: number, piecesStateSetter: React.Dispatch<React.SetStateAction<Record<PieceType, PieceState>>>) => {
-        const pieceTypes: PieceType[] = ["p", "n", "b", "r", "q", "k"];
-
         pieceTypes.forEach((pieceType) => {
             const count = capturedPieces[playerIdx][pieceType];
             const img = pieceImages[playerIdx === 0? 1: 0][pieceType][count - 1] || "";
@@ -102,6 +118,9 @@ export const useCapturedPieces = () => {
         });
     };
 
+    /**
+     * Checks if the last move in history involved capturing a piece and updates the captured pieces state accordingly.
+     */
     const checkCaptured = () => {
         if (!history.length) return;
     
@@ -118,11 +137,17 @@ export const useCapturedPieces = () => {
             );
         }
     };
-
+    
+    /**
+     * Updates the captured pieces whenever there is a change in the captured pieces state or the player's orientation.
+     */
     useEffect(() => {
         updateCapturedPieces();
     }, [capturedPieces]);
 
+    /**
+     * Checks for captured pieces whenever there is a change in the game's history.
+     */
     useEffect(() => {
         checkCaptured();
     }, [history]);

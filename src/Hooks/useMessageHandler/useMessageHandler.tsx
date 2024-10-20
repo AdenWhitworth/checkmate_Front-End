@@ -8,22 +8,32 @@ import { InGameMessageArgs } from "../../Providers/SocketProvider/SocketProvider
 import { handleCallback } from "../../Providers/SocketProvider/SocketProvider";
 import message_regular from "../../Images/message-regular.svg";
 import message_solid from "../../Images/message-solid.svg";
+import { UseMessageHandlerOutput } from "./useMessageHandlerTypes";
 
-export const useMessageHandler = () => {
+/**
+ * Custom hook to handle messaging functionality in an in-game chat.
+ *
+ * @returns {UseMessageHandlerOutput} The returned functions and properties from the useMessageHandler hook.
+ */
+export const useMessageHandler = (): UseMessageHandlerOutput => {
     const [textInput, setTextInput] = useState<string>('');
     const [messages, setMessages] = useState<Message[]>([]);
     const [lastMessage, setLastMessage] = useState<Message | null>(null);
-    const [incomingMessage, setIncomingMessage] = useState<Message | null>(null);
     const message_txt_container = useRef<HTMLUListElement>(null); 
-    const [messageBadge, setMessageBadge] = useState(0);
-    const [messageStyle, setMessageStyle] = useState(message_regular);
-    const [messagesToggle, setMessagesToggle] = useState(false);
+    const [messageBadge, setMessageBadge] = useState<number>(0);
+    const [messageStyle, setMessageStyle] = useState<string>(message_regular);
+    const [messagesToggle, setMessagesToggle] = useState<boolean>(false);
 
     const { player } = usePlayer();
     const { room } = useGame();
     const { socketRef, sendInGameMessage } = useSocket();
 
-    const formatTime = (date: Date) => {
+    /**
+     * Formats a JavaScript Date object into a 12-hour format with AM/PM.
+     * @param {Date} date - The date object to format.
+     * @returns {string} The formatted time string.
+     */
+    const formatTime = (date: Date): string => {
         const hours = date.getHours();
         const minutes = date.getMinutes();
         const ampm = hours >= 12 ? 'PM' : 'AM';
@@ -32,6 +42,10 @@ export const useMessageHandler = () => {
         return `${formattedHour}:${formattedMinutes} ${ampm}`;
     };
 
+    /**
+     * Sends a message to the game room.
+     * @param {Message} [retryMessage] - The message to retry if the initial attempt failed.
+     */
     const handleSendMessage = async (retryMessage?: Message) => {
         if ((!textInput && !retryMessage) || !room || !player) return;
       
@@ -57,6 +71,10 @@ export const useMessageHandler = () => {
         }
     };
 
+    /**
+     * Updates the status of the last sent message.
+     * @param {"delivered" | "error"} status - The new status of the message.
+     */
     const updateMessageStatus = (status: "delivered" | "error") => {
         setMessages((prevMessages) => {
             const updatedMessages = [...prevMessages];
@@ -65,10 +83,16 @@ export const useMessageHandler = () => {
         });
     };
 
+    /**
+     * Removes the last message from the messages state.
+     */
     const removeLastMessage = () => {
         setMessages((prevMessages) => prevMessages.length > 0 ? prevMessages.slice(0, prevMessages.length - 1) : prevMessages);
     };
-  
+    
+    /**
+     * Retries sending the last failed message.
+     */
     const retrySendMessage = () => {
         if (lastMessage) {
             const retryMessage = {
@@ -79,7 +103,10 @@ export const useMessageHandler = () => {
             handleSendMessage(retryMessage);
         }
     };
-  
+    
+    /**
+     * Handles receiving a message from the socket connection.
+     */
     const handleReceiveMessage = useCallback(() => {
         if (socketRef.current) {
             socketRef.current.off('receiveGameMessage');
@@ -87,7 +114,8 @@ export const useMessageHandler = () => {
                 try {
                     const incomingMessage = inGameMessageArgs.inGameMessage;
                     incomingMessage.status = "received";
-                    setIncomingMessage(inGameMessageArgs.inGameMessage);
+                    setMessages((prevMessages) => [...prevMessages, incomingMessage]);
+                    setMessageBadge((prevBadge) => prevBadge + 1);
                     handleCallback(callback, "Processed message");
                 } catch (error) {
                     handleCallback(callback, "Error processing message");
@@ -96,17 +124,27 @@ export const useMessageHandler = () => {
         }
     }, [socketRef]);
 
+    /**
+     * Handles the "Enter" key press to send a message.
+     * @param {React.KeyboardEvent<HTMLInputElement>} event - The keyboard event.
+     */
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             handleSendMessage();
         }
     };
 
+    /**
+     * Toggles the visibility of the messages container and resets the badge count.
+     */
     const showMessages = () => {
         setMessageBadge(0);
         setMessagesToggle(!messagesToggle);
     };
 
+    /**
+     * Updates the message style based on the messages toggle state.
+     */
     const handleMessagesToggle = () => {
         if (messagesToggle) {
             setMessageStyle(message_solid);
@@ -116,26 +154,25 @@ export const useMessageHandler = () => {
         }
     };
 
+    /**
+     * Scrolls to the bottom of the messages container.
+     */
     const scrollToBottom = () => {
         if (messagesToggle && message_txt_container.current) {
             message_txt_container.current.scrollTop = message_txt_container.current.scrollHeight;
         }
     };
 
-    const appendIncomingMessage = () => {
-        if (!incomingMessage) return;
-        setMessages((prevMessages) => [...prevMessages, incomingMessage]);
-        setMessageBadge((prevBadge) => prevBadge + 1);
-    };
-
+    /**
+     * Effect to handle incomming messages
+     */
     useEffect(() => {
         handleReceiveMessage();
     }, [handleReceiveMessage]);
 
-    useEffect(() => {
-        appendIncomingMessage();
-    }, [incomingMessage]);
-
+    /**
+     * Effect to toggle between showing and hidding the ingame message field
+     */
     useEffect(() => {
         handleMessagesToggle();
     }, [messagesToggle]);

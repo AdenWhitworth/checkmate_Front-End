@@ -31,10 +31,16 @@ export default function HeaderLinks(): JSX.Element {
     const { room } = useGame();
     const { invitesCount } = usePlayer();
 
-    const isGameActive = currentUser && room;
-    const isGameFull = isGameActive && room.players.length >= 2;
-
-    const renderAuthButtons = () => (
+    const isNoActiveRoom = currentUser && !room;
+    const isRoomActive = room && room.players.length > 0;
+    const isGameFull = isRoomActive && room.players.length >= 2;
+    const isGameNotFull = isRoomActive && room.players.length < 2;
+    
+    /**
+     * Renders the authentication buttons (Sign Up and Log In) if no user is currently authenticated.
+     * @returns {JSX.Element} The rendered JSX for the authentication buttons.
+     */
+    const renderAuthButtons = (): JSX.Element => (
         <>
             {!currentUser && (
                 <>
@@ -45,36 +51,48 @@ export default function HeaderLinks(): JSX.Element {
         </>
     );
 
-    const renderLoggedOutButtons = () => (
-        isGameActive! && (
-            <>
-                <li>
-                    <Button 
-                        className='fixed-width-button' 
-                        disabled={loadingAuth} 
-                        styleType='secondary' 
-                        onClick={handleLogoutClick}
-                    >
-                        {loadingAuth ? 'Logging out...' : 'Log out'}
-                    </Button>
-                </li>
-                <li>
-                    <Badge 
-                        onClick={handleBadgeClick} 
-                        className='notification' 
-                        badgeContent={invitesCount} 
-                        color="primary"
-                    >
-                        <img src={bell} alt="Notifications" />
-                    </Badge>
-                </li>
-            </>
-        )
+    /**
+     * Renders the buttons for a logged-out state, including the logout button and notifications badge.
+     * @returns {JSX.Element} The rendered JSX for the logged-out buttons
+     */
+    const renderLoggedOutButtons = (): JSX.Element => (
+        <>
+            {isNoActiveRoom && (
+                <>
+                    <li>
+                        <Button 
+                            className='fixed-width-button' 
+                            disabled={loadingAuth} 
+                            styleType='secondary' 
+                            onClick={handleLogoutClick}
+                        >
+                            {loadingAuth ? 'Logging out...' : 'Log out'}
+                        </Button>
+                    </li>
+                    <li>
+                        <Badge 
+                            onClick={handleBadgeClick} 
+                            className='notification' 
+                            badgeContent={invitesCount} 
+                            color="primary"
+                        >
+                            <img src={bell} alt="Notifications" />
+                        </Badge>
+                    </li>
+                </>
+            )}
+        </>
     );
 
-    const renderInGameButtons = () => (
+    /**
+     * Renders the in-game buttons based on the game state, including the exit game arrow and end game flag.
+     * 
+     * @function renderInGameButtons
+     * @returns {JSX.Element} The rendered JSX for the in-game buttons.
+     */
+    const renderInGameButtons = (): JSX.Element => (
         <>
-            {!isGameFull &&
+            {isGameNotFull &&
                 <li>
                     <img 
                         className='exit-arrow' 
