@@ -1,12 +1,12 @@
-<img width="80" src="https://github.com/AdenWhitworth/online_chess_with_friends_Front-End/raw/master/src/Images/King%20Logo%20Black.svg" alt="Online Chess With Friends Logo">
+<img width="80" src="https://github.com/AdenWhitworth/checkmate_Front-End/raw/master/src/Images/King%20Logo%20Black.svg" alt="Checkmate Logo">
 
-# Online Chess With Friends Front-End
+# Checkmate Front-End
 
-Welcome to the **Online Chess With Friends Front-End**! This repository contains the code for the web-based user interface, allowing players to challenge friends to chess matches, chat during the game, and track their rankings. The project integrates seamlessly with the back-end to provide real-time multiplayer chess gameplay.
+Welcome to the **Checkmate Front-End**! This repository contains the code for the web-based user interface, allowing players to challenge friends to chess matches, chat during the game, and track their rankings. The project integrates seamlessly with the back-end to provide real-time multiplayer chess gameplay.
 
 ## Table of Contents
 - [Overview](#overview)
-- [Online Chess With Friends Live Demo](#online-chess-with-friends-live-demo)
+- [Checkmate Demo](#checkmate-demo)
 - [Features](#features)
 - [Technologies Used](#technologies-used)
 - [Getting Started](#getting-started)
@@ -22,11 +22,11 @@ Welcome to the **Online Chess With Friends Front-End**! This repository contains
 
 ## Overview
 
-The Online Chess With Friends Front-End is built using React and provides a responsive, real-time chess-playing experience. Users can create and join chess games, communicate through in-game chat, and track their performance using the integrated ranking system.
+The Checkmate Front-End is built using React and provides a responsive, real-time chess-playing experience. Users can create and join chess games, communicate through in-game chat, and track their performance using the integrated ranking system.
 
-## Online Chess With Friends Live Demo
+## Checkmate Demo
 
-The Online Chess With Friends application is live and can be accessed here: [Online Chess With Friends Demo](https://online-chess-with-friends.web.app/). You can explore all features of the game, including real-time gameplay, chat, and rankings.
+The Checkmate application is live and can be accessed here: [Checkmate Demo](https://online-chess-with-friends.web.app/). You can explore all features of the game, including real-time gameplay, chat, and rankings.
 
 ### Test User Credentials
 
@@ -48,6 +48,7 @@ Try out the app using the following demo accounts:
 ## Technologies Used
 
 - **React**: A powerful JavaScript library for building user interfaces, enabling the development of dynamic and responsive web applications.
+- **TypeScript**: A strongly typed superset of JavaScript that enhances code quality and provides better tooling and type safety during development.
 - **HTML/JSX**: The foundational markup language used for structuring the components of the React application, ensuring semantic and accessible content.
 - **CSS**: Styles the application with a modern aesthetic, allowing for flexible and maintainable design.
 - **React Router**: A library that enables dynamic routing in the application, providing a seamless navigation experience for users.
@@ -75,7 +76,7 @@ Make sure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/AdenWhitworth/online_chess_with_friends_Front-End.git
+   git clone https://github.com/AdenWhitworth/checkmate_Front-End.git
    ```
 2. Install dependencies:
    ```bash
@@ -88,6 +89,16 @@ Create a `.env` file in the root directory and define the following variables:
   ```plain text
   # Application Configuration
   REACT_APP_BASE_URL=your_back-end_url  # url for the server application
+  REACT_APP_PORT=your_port # port for local development
+
+  #Firebase Configuration
+  REACT_APP_API_KEY=your_firebase_api_key # api key for firebase
+  REACT_APP_AUTH_DOMAIN=your_firebase_auth_domain # authentication domain for firebase
+  REACT_APP_PROJECT_ID=your_firebase_project_id # project id for firebase
+  REACT_APP_STORAGE_BUCKET=your_firebase_storage_bucket # storage bucket for firebase
+  REACT_APP_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id # messaging sender id for firebase
+  REACT_APP_APP_ID=your_firebase_app_id # app id for firebase
+  REACT_APP_MEASUREMENT_ID=your_firebase_measurement_id # measurement id for firebase
   ```
 
 ### Firebase Setup Guide
@@ -100,30 +111,7 @@ Create a `.env` file in the root directory and define the following variables:
  ```bash
    npm install firebase
    ```
-3. Se up Firebase in Your React App:
-```javascript
-import { initializeApp } from "firebase/app";
-import { getFirestore } from 'firebase/firestore';
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-
-const firebaseConfig = {
-    apiKey: "your_firebase_api_key",
-    authDomain: "your_firebase_auth_domain",
-    projectId: "online-chess-with-friends",
-    storageBucket: "your_firebase_storage_bucket",
-    messagingSenderId: "your_firebase_messaging_sender_id",
-    appId: "your_firebase_app_id",
-    measurementId: "your_firebase_measurement_id"
-};
-
-const app = initializeApp(firebaseConfig);
-
-const analytics = getAnalytics(app);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export default app;
-  ```
+3. Set up Firebase configuration variables in Your React App `.env`.
 4. Set Up Firebase Authentication
   - In the Firebase Console, navigate to Firestore Database and create your database. Add collections for users, games, etc.
 5. Set Up Firestore Database:
@@ -131,10 +119,22 @@ export default app;
 
 ### Running the Application
 
-Once the environment variables are configured and dependencies are installed, you can start the application with:
+After configuring your environment variables and installing all dependencies, you can start the application with:
 ```bash
 npm start
 ```
+#### Running Locally as Two Players
+
+If you want to play as two players on your local machine, you can run two instances of the application concurrently:
+  1. First, install the required tool:
+  ```bash
+  npm install concurrently
+  ```
+  2. Then, run both instances with:
+  ```bash
+  npm run start:both
+  ```
+This setup allows you to simulate a game between two players on separate browser tabs.
 
 ## Database Structure
 
