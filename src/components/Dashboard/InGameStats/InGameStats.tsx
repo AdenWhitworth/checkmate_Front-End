@@ -20,8 +20,40 @@ export default function InGameStats(): JSX.Element {
     const { playerPieces, opponentPieces } = useCapturedPieces();
 
     const isWhite = orientation === "w";
-    const isRoomFull = room && room.players.length >= 2 || false;
-    const isPlayerTurn = isRoomFull && playerTurn === (isWhite ? "w" : "b");
+    const isRoomFull = checkIfRoomIsFull(room);
+    const isPlayerTurn = checkIfPlayerTurn(isRoomFull, playerTurn, isWhite);
+    const isOpponentTurn = checkIfOpponentTurn(isRoomFull, playerTurn, isWhite);
+
+    /**
+     * Checks if the room is full.
+     * @param {object | null} room - The room object.
+     * @returns {boolean} True if the room is full, otherwise false.
+     */
+    function checkIfRoomIsFull(room: any): boolean {
+        return !!(room && room.players.length >= 2);
+    }
+
+    /**
+     * Determines if it's the player's turn based on the room status and player orientation.
+     * @param {boolean} isRoomFull - True if the room is full.
+     * @param {"w" | "b"} playerTurn - The current player's turn.
+     * @param {boolean} isWhite - True if the player's orientation is white.
+     * @returns {boolean} True if it's the player's turn.
+     */
+    function checkIfPlayerTurn(isRoomFull: boolean, playerTurn: "w" | "b", isWhite: boolean): boolean {
+        return isRoomFull && playerTurn === (isWhite ? "w" : "b");
+    }
+
+    /**
+     * Determines if it's the opponent's turn based on the room status and player orientation.
+     * @param {boolean} isRoomFull - True if the room is full.
+     * @param {"w" | "b"} playerTurn - The current player's turn.
+     * @param {boolean} isWhite - True if the player's orientation is white.
+     * @returns {boolean} True if it's the opponent's turn.
+     */
+    function checkIfOpponentTurn(isRoomFull: boolean, playerTurn: "w" | "b", isWhite: boolean): boolean {
+        return isRoomFull && playerTurn === (isWhite ? "b" : "w");
+    }
 
     return (
         <div className="game-card">
@@ -30,10 +62,10 @@ export default function InGameStats(): JSX.Element {
                 wins={opponent?.opponentWin || 0} 
                 losses={opponent?.opponentLoss || 0} 
                 pieces={opponentPieces} 
-                isTurn={!isPlayerTurn} 
+                isTurn={isOpponentTurn} 
                 isLoading={!isRoomFull}
-            ></GameStats>
-    
+            />
+
             <HistoryMoves />
 
             <GameStats 
@@ -43,7 +75,7 @@ export default function InGameStats(): JSX.Element {
                 pieces={playerPieces} 
                 isTurn={isPlayerTurn} 
                 isLoading={false}
-            ></GameStats>
+            />
         </div>
     );
 }
