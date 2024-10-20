@@ -6,7 +6,6 @@ import { GamePieceProps } from './GamePieceTypes';
  *
  * @component
  * @param {Object} props - The component props.
- * @param {string} props.key - The key associated with this piece (typically its type).
  * @param {Object} props.piece - The piece object containing style and image details.
  * @param {string} props.piece.style - The CSS class name for styling the piece.
  * @param {string} props.piece.img - The source URL for the piece image.
