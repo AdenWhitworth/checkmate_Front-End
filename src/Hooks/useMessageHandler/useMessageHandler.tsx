@@ -5,7 +5,6 @@ import { useGame } from "../../Providers/GameProvider/GameProvider";
 import { useSocket } from "../../Providers/SocketProvider/SocketProvider";
 import { usePlayer } from "../../Providers/PlayerProvider/PlayerProvider";
 import { InGameMessageArgs } from "../../Providers/SocketProvider/SocketProviderTypes";
-import { handleCallback } from "../../Providers/SocketProvider/SocketProvider";
 import message_regular from "../../Images/message-regular.svg";
 import message_solid from "../../Images/message-solid.svg";
 import { UseMessageHandlerOutput } from "./useMessageHandlerTypes";
@@ -26,7 +25,7 @@ export const useMessageHandler = (): UseMessageHandlerOutput => {
 
     const { player } = usePlayer();
     const { room } = useGame();
-    const { socketRef, sendInGameMessage } = useSocket();
+    const { socketRef, sendInGameMessage, handleCallback } = useSocket();
 
     /**
      * Formats a JavaScript Date object into a 12-hour format with AM/PM.
