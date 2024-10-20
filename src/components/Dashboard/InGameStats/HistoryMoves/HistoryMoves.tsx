@@ -24,18 +24,20 @@ export default function HistoryMoves(): JSX.Element {
     const formatHistory = useCallback(() => {
         if (history.length === 0) return;
 
-        const lastMove = history[history.length - 1].to;
-        const updatedMoves = [...gameMoves];
-        const id = uuidv4();
+        setGameMoves((prevMoves) => {
+            const updatedMoves = [...prevMoves];
+            const lastMove = history[history.length - 1].to;
+            const id = uuidv4();
 
-        if (history.length % 2 === 1) {
-            updatedMoves.push({ id, rowMoves: { whiteMove: lastMove, blackMove: "" } });
-        } else {
-            updatedMoves[updatedMoves.length - 1].rowMoves.blackMove = lastMove;
-        }
+            if (history.length % 2 === 1) {
+                updatedMoves.push({ id, rowMoves: { whiteMove: lastMove, blackMove: "" } });
+            } else {
+                updatedMoves[updatedMoves.length - 1].rowMoves.blackMove = lastMove;
+            }
 
-        setGameMoves(updatedMoves);
-        scrollToBottom();
+            scrollToBottom();
+            return updatedMoves;
+        });
     }, [history, setGameMoves]);
 
     /**

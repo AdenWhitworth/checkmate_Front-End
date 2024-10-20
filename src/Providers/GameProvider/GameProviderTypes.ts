@@ -67,5 +67,5 @@ export interface GameContextType {
     errorMove: string | null;
     setErrorMove: (value: string | null) => void;
     gameMoves: GameMoves[];
-    setGameMoves: (value: GameMoves[]) => void;
+    setGameMoves: (value: GameMoves[] | ((prev: GameMoves[]) => GameMoves[])) => void;
 }
