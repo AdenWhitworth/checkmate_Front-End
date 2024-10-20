@@ -1,0 +1,11 @@
+
+.message-container{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+}
+
+.message-toggle{
+    transition: 0.3s ease-in-out;
+}

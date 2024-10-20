@@ -1,0 +1,45 @@
+.moves-header{
+    height: 6%;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.moves-header-text{
+    font-size: 18px;
+    height: 50%;
+    padding: 0;
+    margin: 0;
+    color: #FFE769;
+}
+
+.moves-icon{
+    padding: 0;
+    margin: 0;
+    height: 50%;
+}
+
+.moves-list{
+    text-align: left;
+    height: 27vh;
+    overflow: auto;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.moves-list::-webkit-scrollbar { 
+    background: transparent; 
+    display: none;
+}
+
+.moves-list::-webkit-scrollbar-thumb { 
+    background-color: transparent; 
+    -webkit-border-radius: 1ex; 
+}
+
+.moves-list li{
+    list-style: none;
+    text-decoration: none;
+    list-style-type: none;
+    
+}

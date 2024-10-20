@@ -1,0 +1,19 @@
+.loading-error{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+}
+
+.loading-error-img{
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.loading-error-txt{
+    color: #FF4C4C;
+}

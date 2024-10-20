@@ -1,0 +1,117 @@
+.button-primary{
+    border: 2px solid #FFCD05;
+    border-radius: 26px;
+    background: #FFCD05;
+    cursor: pointer;
+    color: #000000;
+    height: 52px;
+    padding-left: 40px;
+    padding-right: 40px;
+    text-align: center;
+    font-size: 18px;
+    font-family: inherit;
+    transition: background 0.3s ease, border 0.3s ease;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.button-primary:hover {
+    background-color: #B78B02;
+    border-color: #B78B02;
+}
+
+.button-secondary{
+    border: 4px solid #FFCD05;
+    border-radius: 26px;
+    background: transparent;
+    cursor: pointer;
+    color: #FFCD05;
+    height: 52px;
+    padding-left: 40px;
+    padding-right: 40px;
+    text-align: center;
+    font-size: 18px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    transition: color 0.3s ease, border 0.3s ease;
+}
+
+.button-secondary:hover {
+    border-color: #B78B02;
+    color: #B78B02;
+}
+
+.button-split{
+    width: 50%;
+}
+
+.button-primary-icon{
+    border: 2px solid #FFCD05;
+    border-radius: 26px;
+    background: #FFCD05;
+    cursor: pointer;
+    color: #000000;
+    height: 52px;
+    padding: 0;
+    margin: 0;
+    font-size: 18px;
+    font-family: inherit;
+    transition: background 0.3s ease, border 0.3s ease;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    display: inline-flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.button-primary-icon:hover {
+    background-color: #B78B02;
+    border-color: #B78B02;
+}
+
+.button-secondary-icon{
+    border: 4px solid #FFCD05;
+    border-radius: 26px;
+    background: transparent;
+    cursor: pointer;
+    color: #FFCD05;
+    height: 52px;
+    padding: 0;
+    margin: 0;
+    font-size: 18px;
+    font-family: inherit;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    transition: color 0.3s ease, border 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.button-secondary-icon:hover {
+    border-color: #B78B02;
+    color: #B78B02;
+}
+
+.button-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    padding: 0;
+    object-fit: contain;
+    display: inline-block;
+}
+
+.button-secondary-icon:hover .button-icon {
+    filter: invert(100%);
+}
+
+.fixed-width-icon-button{
+    width: 200px;
+}
+
+.fixed-width-button{
+    width: 150px;
+    padding: 0;
+}
+

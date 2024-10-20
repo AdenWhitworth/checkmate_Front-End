@@ -1,0 +1,29 @@
+.odd-color{
+    background-color: #3D3D3D;
+}
+
+.even-color{
+    background-color: #212121;
+}
+
+.moves-line{
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 4.5vh;
+}
+
+.moves-scroll{
+    width: 105%;
+}
+
+.moves-line h3{
+    font-size: 14px;
+    flex: 1;
+}
+
+.move-number{
+    padding-left: 15%;
+}

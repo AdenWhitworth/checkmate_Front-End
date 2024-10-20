@@ -1,0 +1,60 @@
+.message-txt {
+    border-radius: 10px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    width: 80%;
+    min-height: 30px;
+}
+
+.txt-player, .txt-opponent {
+    padding: 2% 5%;
+}
+
+.txt-player {
+    text-align: end;
+}
+
+.txt-opponent {
+    text-align: start;
+}
+
+.message-status {
+    color: #3D3D3D;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.message-error {
+    padding-top: 0;
+    margin-top: 0;
+    color: red;
+}
+
+.message-error button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    color: red;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.message-txt h4 {
+    font-size: 14px;
+    margin: 12px 12px;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.message-player {
+    background-color: #FFE769;
+    margin-left: 18%;
+}
+
+.message-opponent {
+    background-color: #CDCDCD;
+    margin-left: 2%;
+}

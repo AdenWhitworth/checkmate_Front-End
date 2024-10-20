@@ -1,0 +1,10 @@
+.message-icon-container{
+    justify-content: right;
+    display: flex;
+}
+
+.message-icon{
+    height: 50px;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+}
