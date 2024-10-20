@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { Move, Square } from "chess.js";
 import { usePlayer } from "../../Providers/PlayerProvider/PlayerProvider";
-import { useSocket, handleCallback } from "../../Providers/SocketProvider/SocketProvider";
+import { useSocket } from "../../Providers/SocketProvider/SocketProvider";
 import { MoveArgs, ForfeitArgs, DisconnectArgs, JoinRoomArgs } from "../../Providers/SocketProvider/SocketProviderTypes";
 import { db } from '../../firebase';
 import { collection, doc, increment, writeBatch} from "firebase/firestore";
@@ -29,7 +29,7 @@ export const useChessGame = ({
   setGameMoves
 }: UseChessGameProps): UseChessGameOutput => {
   const { player } = usePlayer();
-  const { sendMove, socketRef } = useSocket();
+  const { sendMove, socketRef, handleCallback } = useSocket();
   
   /**
    * Attempts to execute a chess move on the board.

@@ -10,13 +10,13 @@ import king_logo_black from '../../../Images/King Logo Black.svg';
  * @returns {JSX.Element|null} The rendered ExitModal component, or null if exitGame is false.
  */
 export default function ExitModal(): JSX.Element | null {
-    const { exitGame, setExitGame, handleExit, opponent, errorExit, loadingExit } = useGame();
+    const { exitGame, setExitGame, handleExitRoom, opponent, errorExit, loadingExit } = useGame();
     if (!exitGame) return null;
 
     return (
         <Modal
             addButton={true}
-            handleButtonClick={handleExit}
+            handleButtonClick={handleExitRoom}
             buttonLabel="Confirm"
             styleType="primary"
             addClose={true}

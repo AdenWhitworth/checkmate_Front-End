@@ -2,28 +2,21 @@ import React, { createContext, ReactNode, useContext, useState, useMemo, useCall
 import { Room } from './GameProviderTypes';
 import { GameContextType, Opponent } from './GameProviderTypes';
 import { Chess, Move } from "chess.js";
-import { usePlayer } from '../PlayerProvider/PlayerProvider';
-import { useSocket } from '../SocketProvider/SocketProvider';
-import { db } from "../../firebase";
-import { collection, deleteDoc, doc, addDoc, getDoc } from "firebase/firestore";
-import { Invite, Player } from '../PlayerProvider/PlayerProviderTypes';
 import { useChessGame } from '../../Hooks/useChessGame/useChessGame';
 import { GameMoves } from '../../components/Dashboard/InGameStats/InGameStatsTypes';
+import { useGameRoomManagement } from '../../Hooks/useGameRoomManagement/useGameRoomManagement';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-export const useGame = (): GameContextType => {
-    const context = useContext(GameContext);
-    if (context === undefined) {
-        throw new Error('useGame must be used within a GameProvider');
-    }
-    return context;
-};
-
-export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-
-    const { player } = usePlayer();
-    const { socketRef, sendForfeit, sendCreateRoom, sendJoinRoom, sendCloseRoom } = useSocket();
+/**
+ * Provides the game context to its child components, managing the state and logic for game rooms, players, and moves.
+ *
+ * @component
+ * @param {Object} props - The props object.
+ * @param {ReactNode} props.children - The child components to receive the game context.
+ * @returns {JSX.Element} The rendered GameProvider component.
+ */
+export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
 
     const [playerTurn, setPlayerTurn] = useState<"w" | "b">("w");
     const [history, setHistory] = useState<Move[]>([]);
@@ -71,6 +64,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setGameMoves 
     });
 
+    /**
+     * Resets the game state to its initial values.
+     */
     const cleanup = useCallback(() => {
         setFen("start");
         setRoom(null);
@@ -80,170 +76,36 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setGameOver(null);
     }, []);
 
-    const handleForfeit = useCallback(async () => {
-        setLoadingForfeit(true);
-        setErrorForfeit(null);
-        try {
-            if (!socketRef.current || !room || !player) throw new Error("Socket, room, and player required");
-
-            const username = player.username;
-            await sendForfeit({ room, username });
-            cleanup();
-        } catch (error) {
-            setErrorForfeit("Unable to forfeit. Please try again.");
-        } finally {
-            setForfeitGame(false);
-            setLoadingForfeit(false);
-        }
-    }, [room, player, socketRef, sendForfeit, cleanup]);
-
-    const handleExit = useCallback(async () => {
-        setLoadingExit(true);
-        setErrorExit(null);
-        
-        try {
-            if (!opponent) throw new Error("Opponent required.");
-            
-            const userCollection = collection(db, "users");
-            const DocRef = doc(userCollection, opponent.opponentUserId);
-            const inviteCollection = collection(DocRef, "invites");
-            const DocRef2 = doc(inviteCollection, opponent.opponentInviteId);
-            
-            await deleteDoc(DocRef2);
-            cleanup();
-        } catch (error) {
-            setErrorExit("Unable to exit. Please try again.");
-        } finally {
-            setExitGame(false);
-            setLoadingExit(false);
-        }
-    }, [opponent, cleanup]);
-
-    const handleCreateRoom = async (potentialOpponent: Player) => {
-        setLoadingCreateGameOpponentUserId(potentialOpponent.userId);
-        setErrorCreateGame(null);
-        setSuccessCreateGame(null);
-
-        try {
-            if (!socketRef.current) throw new Error("No room created.");
-
-            const newRoom = await sendCreateRoom();
-            if (!newRoom) throw new Error("No room created.");
-            setOrientation("w");
-            await invitePlayer(newRoom.room, potentialOpponent);
-            setSuccessCreateGame("Game created successfully! Waiting on opponent: " + potentialOpponent.username);
-        } catch (error) {
-            setErrorCreateGame("Unable to create game. Please try again.")
-        } finally {
-            setLoadingCreateGameOpponentUserId(null);
-        }
-    };
-
-    const invitePlayer = async (room: Room, potentialOpponent: Player) => {
-        try {
-            if (!player) throw new Error("Player not found");
-
-            const userCollection = collection(db, 'users');
-            const docRefPlayer = doc(userCollection, potentialOpponent.userId);
-            const docSnap = await getDoc(docRefPlayer);
-            
-            if (!docSnap.exists()) throw new Error("Player not found");
-
-            const inviteCollection = collection(docRefPlayer, 'invites');
-
-            const roomData = {
-                roomId: room.roomId,
-                players: room.players.map(player => ({
-                    id: player.id,
-                    username: player.username
-                }))
-            };
-
-            const inviteDocRef = await addDoc(inviteCollection, {
-                requestUserID: player.userId,
-                requestUserName: player.username,
-                requestPlayerID: player.playerId,
-                requestRoom: roomData,
-                requestWin: player.win,
-                requestLoss: player.loss,
-            });
-
-            const newOpponent: Opponent = {
-                opponentUsername: docSnap.data()?.username,
-                opponentUserId: docSnap.id,
-                opponentPlayerId: docSnap.data()?.playerID,
-                opponentWin: docSnap.data()?.win,
-                opponentLoss: docSnap.data()?.loss,
-                opponentInviteId: inviteDocRef.id,
-            };
-
-            setOpponent(newOpponent);
-            setRoom(room);
-        } catch (error) {
-            throw new Error("Invitation failed")
-        }
-    };
-
-    const handleJoinRoom = async (invite: Invite) => {
-        setLoadingJoinGameOpponentUserId(invite.requestUserId);
-        setErrorJoinGame(null);
-        setSuccessJoinGame(null);
-        
-        try {
-            if (!socketRef.current || !player) throw Error("Unable to join room");
-
-            const updatedRoom = await sendJoinRoom({ room: invite.requestRoom});
-
-            if (!updatedRoom) throw new Error("No updated room.");
-            
-            const userCollection = collection(db, 'users');
-            const DocRef = doc(userCollection, player.userId);
-            const inviteCollection = collection(DocRef,'invites');
-            const DocRef2 = doc(inviteCollection, invite.inviteId);
-            deleteDoc(DocRef2);
-            
-            const newOpponent: Opponent = {
-                opponentUsername: invite.requestUsername,
-                opponentUserId: invite.requestUserId,
-                opponentPlayerId: invite.requestPlayerId,
-                opponentWin: invite.requestWin,
-                opponentLoss: invite.requestLoss
-            };
-
-            setOpponent(newOpponent);
-            setOrientation("b");
-            setRoom(updatedRoom.room);
-            setSuccessCreateGame("Game joined successfully! You are playing against: " + invite.requestUsername);
-        } catch (error) {
-            setErrorJoinGame("Enable to join game. Please try again.");
-        } finally {
-            setLoadingJoinGameOpponentUserId(null);
-        }
-    };
-
-    const handleCloseRoom = async () => {
-        setErrorOver(null);
-        setLoadingOver(true);
-
-        const winner = findWinner();
-        
-        try {
-            if (winner !== "player" || !room) {
-                cleanup();
-                return;
-            }
-            
-            await handleWinLossChange(winner);
-            await sendCloseRoom({ room });
-            
-            cleanup();
-
-        } catch (error) {
-            setErrorOver("Enable to close game. Please try again.")
-        } finally {
-            setLoadingOver(false);
-        }
-    };
+    const { 
+        handleCreateRoom, 
+        handleJoinRoom, 
+        handleExitRoom, 
+        handleCloseRoom, 
+        handleForfeit 
+    } = useGameRoomManagement({
+        cleanup,
+        opponent,
+        room,
+        setRoom,
+        setOrientation,
+        setOpponent,
+        setLoadingOver,
+        setErrorOver,
+        setExitGame,
+        setLoadingExit,
+        setErrorExit,
+        setForfeitGame,
+        setLoadingForfeit,
+        setErrorForfeit,
+        setLoadingCreateGameOpponentUserId,
+        setErrorCreateGame,
+        setSuccessCreateGame,
+        setLoadingJoinGameOpponentUserId,
+        setErrorJoinGame,
+        setSuccessJoinGame,
+        findWinner,
+        handleWinLossChange,
+    });
 
     return (
         <GameContext.Provider value={{
@@ -274,7 +136,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setExitGame,
             loadingExit,
             errorExit,
-            handleExit,
+            handleExitRoom,
             loadingCreateGameOpponentUserId,
             errorCreateGame,
             setErrorCreateGame,
@@ -297,4 +159,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             {children}
         </GameContext.Provider>
     );
+};
+
+/**
+ * Custom hook to access the game context and ensure it's used within a GameProvider.
+ *
+ * @returns {GameContextType} The current game context value.
+ * @throws Will throw an error if used outside of a GameProvider.
+ */
+export const useGame = (): GameContextType => {
+    const context = useContext(GameContext);
+    if (context === undefined) {
+        throw new Error('useGame must be used within a GameProvider');
+    }
+    return context;
 };

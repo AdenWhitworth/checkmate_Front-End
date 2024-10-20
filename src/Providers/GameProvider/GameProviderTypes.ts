@@ -49,7 +49,7 @@ export interface GameContextType {
     setExitGame: (value: boolean) => void;
     loadingExit: boolean;
     errorExit: string | null;
-    handleExit: () => void;
+    handleExitRoom: () => void;
     loadingCreateGameOpponentUserId: string | null;
     errorCreateGame: string | null;
     setErrorCreateGame: (value: string | null) => void;

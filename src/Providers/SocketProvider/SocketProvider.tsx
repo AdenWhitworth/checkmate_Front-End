@@ -2,19 +2,18 @@ import React, { createContext, useContext, useState, useEffect, useRef, useCallb
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '../AuthProvider/AuthProvider';
 import { 
-    SocketContextType, 
-    SocketProviderProps,
-    CallbackResponseCreateRoom,
-    CallbackResponseJoinRoom,
-    CallbackResponseCloseRoom,
-    CallbackResponseMove,
-    AddUserArgs,
-    JoinRoomArgs,
-    CloseRoomArgs,
-    InGameMessageArgs,
-    MoveArgs,
-    ForfeitArgs,
-    DisconnectArgs
+  SocketContextType, 
+  SocketProviderProps,
+  CallbackResponseCreateRoom,
+  CallbackResponseJoinRoom,
+  CallbackResponseCloseRoom,
+  CallbackResponseMove,
+  AddUserArgs,
+  JoinRoomArgs,
+  CloseRoomArgs,
+  InGameMessageArgs,
+  MoveArgs,
+  ForfeitArgs,
 } from './SocketProviderTypes';
 import { usePlayer } from '../PlayerProvider/PlayerProvider';
 import { CallbackResponse } from './SocketProviderTypes';
@@ -22,18 +21,13 @@ import { Room } from '../GameProvider/GameProviderTypes';
 
 const SocketContext: React.Context<SocketContextType | undefined> = createContext<SocketContextType | undefined>(undefined);
 
-export const useSocket = (): SocketContextType => {
-  const context = useContext(SocketContext);
-  if (!context) {
-    throw new Error('useSocket must be used within a SocketProvider');
-  }
-  return context;
-};
-
-export const handleCallback = (callback: Function, message: string, data?: any) => {
-    callback({ message, ...data });
-};
-
+/**
+ * Socket Provider that handles WebSocket connections using Socket.io.
+ * It provides functions to send and manage socket events related to a multiplayer game.
+ * 
+ * @param {SocketProviderProps} props - The properties required by the SocketProvider.
+ * @returns {JSX.Element} The rendered JSX for the SocketProvider context.
+ */
 export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }: SocketProviderProps): JSX.Element => {
   const [isConnected, setIsConnected] = useState(false);
   const [errorSocket, setErrorSocket] = useState<string | null>(null);
@@ -44,6 +38,23 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
   const {currentUser, accessToken} = useAuth();
   const { player } = usePlayer();
 
+  /**
+   * Handles executing a callback function with a given message and optional data.
+   * 
+   * @param {Function} callback - The callback function to be executed.
+   * @param {string} message - The message to be sent with the callback.
+   * @param {Object} [data] - Optional additional data to be sent with the callback.
+   */
+  const handleCallback = (callback: Function, message: string, data?: any) => {
+    callback({ message, ...data });
+  };
+
+  /**
+   * Sends a request to add a user to the current session via the socket.
+   * 
+   * @param {AddUserArgs} addUserArgs - The user information required to add a user to the session.
+   * @returns {Promise<boolean>} A promise that resolves to true if successful, false otherwise.
+   */
   const sendAddUser = useCallback((addUserArgs: AddUserArgs): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current) {
@@ -63,6 +74,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     });
   }, []);
 
+  /**
+   * Sends a request to create a game room via the socket.
+   * 
+   * @returns {Promise<{ room: Room } | null>} A promise that resolves to an object with the created room information, or null on failure.
+   */
   const sendCreateRoom = useCallback((): Promise<{ room: Room } | null> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
@@ -82,6 +98,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     });
   }, [isConnected]);
 
+  /**
+   * Sends a request to join an existing game room via the socket.
+   * 
+   * @param {JoinRoomArgs} joinRoomArgs - The information required to join a room.
+   * @returns {Promise<{ room: Room } | null>} A promise that resolves to an object with the joined room information, or null on failure.
+   */
   const sendJoinRoom = useCallback((joinRoomArgs: JoinRoomArgs): Promise<{ room: Room } | null> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
@@ -101,6 +123,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     });
   }, [isConnected]);
 
+  /**
+   * Sends a request to close an existing game room via the socket.
+   * 
+   * @param {CloseRoomArgs} closeRoomArgs - The information required to close a room.
+   * @returns {Promise<boolean>} A promise that resolves to true if successful, false otherwise.
+   */
   const sendCloseRoom = useCallback((closeRoomArgs: CloseRoomArgs): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
@@ -120,6 +148,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     });
   }, [isConnected]);
 
+  /**
+   * Sends an in-game message via the socket.
+   * 
+   * @param {InGameMessageArgs} inGameMessageArgs - The message details to be sent during the game.
+   * @returns {Promise<boolean>} A promise that resolves to true if the message is sent successfully, false otherwise.
+   */
   const sendInGameMessage = useCallback((inGameMessageArgs: InGameMessageArgs): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
@@ -139,6 +173,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     });
   }, [isConnected]);
 
+  /**
+   * Sends a move during a game via the socket.
+   * 
+   * @param {MoveArgs} moveArgs - The move details to be sent during the game.
+   * @returns {Promise<boolean>} A promise that resolves to true if the move is sent successfully, false otherwise.
+   */
   const sendMove = useCallback((moveArgs: MoveArgs): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
@@ -157,7 +197,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
       }
     });
   }, [isConnected]);
-      
+  
+  /**
+   * Sends a forfeit signal during a game via the socket.
+   * 
+   * @param {ForfeitArgs} forfeitArgs - The forfeit details to be sent during the game.
+   * @returns {Promise<boolean>} A promise that resolves to true if the forfeit signal is sent successfully, false otherwise.
+   */
   const sendForfeit = useCallback((forfeitArgs: ForfeitArgs): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
@@ -177,6 +223,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     });
   }, [isConnected]);
 
+  /**
+   * Establishes a socket connection using the provided access token.
+   * 
+   * @param {string} accessToken - The access token used for authenticating the socket connection.
+   */
   const connectSocket = useCallback((accessToken: string) => {
     if (socketRef.current || !player) return;
 
@@ -237,6 +288,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     });
   }, [url, player]);
 
+  /**
+   * Disconnects the socket connection and clears the relevant states.
+   */
   const disconnectSocket = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.disconnect();
@@ -246,6 +300,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     }
   }, []);
 
+  /**
+   * Initializes and manages socket connections and disconnections based on user authentication and player data.
+   */
   useEffect(() => {
     if (currentUser && accessToken && player) {
       disconnectSocket();
@@ -261,9 +318,23 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     <SocketContext.Provider value={{
       isConnected, errorSocket, refresh, errorReconnect, setErrorReconnect, setRefresh,
       sendAddUser, sendCreateRoom, sendJoinRoom, sendCloseRoom, sendInGameMessage, connectSocket, 
-      disconnectSocket, sendMove, sendForfeit, responseMessage, socketRef
+      disconnectSocket, sendMove, sendForfeit, responseMessage, socketRef, handleCallback
     }}>
       {children}
     </SocketContext.Provider>
   );
+};
+
+/**
+ * Custom hook to access the SocketContext.
+ * Throws an error if used outside of SocketProvider.
+ * 
+ * @returns {SocketContextType} The player context value.
+ */
+export const useSocket = (): SocketContextType => {
+  const context = useContext(SocketContext);
+  if (!context) {
+    throw new Error('useSocket must be used within a SocketProvider');
+  }
+  return context;
 };
