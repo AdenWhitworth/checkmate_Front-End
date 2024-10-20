@@ -14,13 +14,12 @@ import { GamePieceProps } from './GamePieceTypes';
  *
  * @returns {JSX.Element} The rendered GamePiece component.
  */
-export default function GamePiece({ key, piece, username }: GamePieceProps): JSX.Element {
+export default function GamePiece({ piece, username }: GamePieceProps): JSX.Element {
     return (
         <img
-            key={key}
             className={piece.style}
             src={piece.img}
-            alt={`${username} ${key}`}
+            alt={`${username}`}
         />
     );
 }
