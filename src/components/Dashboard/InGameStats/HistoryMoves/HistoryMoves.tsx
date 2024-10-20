@@ -36,7 +36,7 @@ export default function HistoryMoves(): JSX.Element {
 
         setGameMoves(updatedMoves);
         scrollToBottom();
-    }, [history, gameMoves, setGameMoves]);
+    }, [history, setGameMoves]);
 
     /**
      * Scrolls the moves list container to the bottom to show the latest move.
