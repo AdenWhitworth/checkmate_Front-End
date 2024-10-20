@@ -42,7 +42,7 @@ export default function HeaderLinks(): JSX.Element {
      */
     const renderAuthButtons = (): JSX.Element => (
         <>
-            {!currentUser && (
+            {!currentUser && !loadingAuth && (
                 <>
                     <li><Button className='fixed-width-button' styleType='primary' onClick={handleSignupClick}>Sign Up</Button></li>
                     <li><Button className='fixed-width-button' styleType='secondary' onClick={handleLoginClick}>Log In</Button></li>
