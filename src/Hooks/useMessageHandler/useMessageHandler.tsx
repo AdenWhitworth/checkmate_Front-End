@@ -32,20 +32,32 @@ export const useMessageHandler = (): UseMessageHandlerOutput => {
      * @param {Date} date - The date object to format.
      * @returns {string} The formatted time string.
      */
-    const formatTime = (date: Date): string => {
+    const formatTime = useCallback((date: Date): string => {
         const hours = date.getHours();
         const minutes = date.getMinutes();
         const ampm = hours >= 12 ? 'PM' : 'AM';
         const formattedHour = hours % 12 || 12;
         const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
         return `${formattedHour}:${formattedMinutes} ${ampm}`;
-    };
+    }, []);
+
+    /**
+     * Updates the status of the last sent message.
+     * @param {"delivered" | "error"} status - The new status of the message.
+     */
+    const updateMessageStatus = useCallback((status: "delivered" | "error") => {
+        setMessages((prevMessages) => {
+            const updatedMessages = [...prevMessages];
+            updatedMessages[updatedMessages.length - 1].status = status;
+            return updatedMessages;
+        });
+    }, []);
 
     /**
      * Sends a message to the game room.
      * @param {Message} [retryMessage] - The message to retry if the initial attempt failed.
      */
-    const handleSendMessage = async (retryMessage?: Message) => {
+    const handleSendMessage = useCallback(async (retryMessage?: Message) => {
         if ((!textInput && !retryMessage) || !room || !player) return;
       
         const newMessage: Message = retryMessage || {
@@ -68,31 +80,19 @@ export const useMessageHandler = (): UseMessageHandlerOutput => {
         } finally {
             setTextInput('');
         }
-    };
-
-    /**
-     * Updates the status of the last sent message.
-     * @param {"delivered" | "error"} status - The new status of the message.
-     */
-    const updateMessageStatus = (status: "delivered" | "error") => {
-        setMessages((prevMessages) => {
-            const updatedMessages = [...prevMessages];
-            updatedMessages[updatedMessages.length - 1].status = status;
-            return updatedMessages;
-        });
-    };
+    }, [textInput, room, player, sendInGameMessage, formatTime, updateMessageStatus]);
 
     /**
      * Removes the last message from the messages state.
      */
-    const removeLastMessage = () => {
+    const removeLastMessage = useCallback(() => {
         setMessages((prevMessages) => prevMessages.length > 0 ? prevMessages.slice(0, prevMessages.length - 1) : prevMessages);
-    };
+    }, []);
     
     /**
      * Retries sending the last failed message.
      */
-    const retrySendMessage = () => {
+    const retrySendMessage = useCallback(() => {
         if (lastMessage) {
             const retryMessage = {
                 ...lastMessage,
@@ -101,7 +101,7 @@ export const useMessageHandler = (): UseMessageHandlerOutput => {
             removeLastMessage();
             handleSendMessage(retryMessage);
         }
-    };
+    }, [lastMessage, removeLastMessage, handleSendMessage]);
     
     /**
      * Handles receiving a message from the socket connection.
@@ -121,46 +121,46 @@ export const useMessageHandler = (): UseMessageHandlerOutput => {
                 }
             });
         }
-    }, [socketRef]);
+    }, [socketRef, handleCallback]);
 
     /**
      * Handles the "Enter" key press to send a message.
      * @param {React.KeyboardEvent<HTMLInputElement>} event - The keyboard event.
      */
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyPress = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             handleSendMessage();
         }
-    };
+    }, [handleSendMessage]);
 
     /**
      * Toggles the visibility of the messages container and resets the badge count.
      */
-    const showMessages = () => {
+    const showMessages = useCallback(() => {
         setMessageBadge(0);
-        setMessagesToggle(!messagesToggle);
-    };
+        setMessagesToggle((prev) => !prev);
+    }, []);
+
+    /**
+     * Scrolls to the bottom of the messages container.
+     */
+    const scrollToBottom = useCallback(() => {
+        if (messagesToggle && message_txt_container.current) {
+            message_txt_container.current.scrollTop = message_txt_container.current.scrollHeight;
+        }
+    }, [messagesToggle]);
 
     /**
      * Updates the message style based on the messages toggle state.
      */
-    const handleMessagesToggle = () => {
+    const handleMessagesToggle = useCallback(() => {
         if (messagesToggle) {
             setMessageStyle(message_solid);
             scrollToBottom();
         } else {
             setMessageStyle(message_regular);
         }
-    };
-
-    /**
-     * Scrolls to the bottom of the messages container.
-     */
-    const scrollToBottom = () => {
-        if (messagesToggle && message_txt_container.current) {
-            message_txt_container.current.scrollTop = message_txt_container.current.scrollHeight;
-        }
-    };
+    }, [messagesToggle, scrollToBottom]);
 
     /**
      * Effect to handle incomming messages
@@ -174,7 +174,7 @@ export const useMessageHandler = (): UseMessageHandlerOutput => {
      */
     useEffect(() => {
         handleMessagesToggle();
-    }, [messagesToggle]);
+    }, [messagesToggle, handleMessagesToggle]);
 
     return {
         messages,

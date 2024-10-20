@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '../AuthProvider/AuthProvider';
 import { 
@@ -28,7 +28,7 @@ const SocketContext: React.Context<SocketContextType | undefined> = createContex
  * @param {SocketProviderProps} props - The properties required by the SocketProvider.
  * @returns {JSX.Element} The rendered JSX for the SocketProvider context.
  */
-export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }: SocketProviderProps): JSX.Element => {
+export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Element => {
   const [isConnected, setIsConnected] = useState(false);
   const [errorSocket, setErrorSocket] = useState<string | null>(null);
   const [refresh, setRefresh] = useState(false);
@@ -45,9 +45,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
    * @param {string} message - The message to be sent with the callback.
    * @param {Object} [data] - Optional additional data to be sent with the callback.
    */
-  const handleCallback = (callback: Function, message: string, data?: any) => {
+  const handleCallback = useCallback((callback: Function, message: string, data?: any) => {
     callback({ message, ...data });
-  };
+  }, []);
 
   /**
    * Sends a request to add a user to the current session via the socket.
@@ -286,7 +286,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
         handleCallback(callback, 'Message recieved by opponent');
         console.log(inGameMessageArgs);
     });
-  }, [url, player]);
+  }, [url, player, sendAddUser, handleCallback]);
 
   /**
    * Disconnects the socket connection and clears the relevant states.
@@ -312,7 +312,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ url, children }:
     return () => {
       disconnectSocket();
     };
-  }, [connectSocket, disconnectSocket, currentUser, player]);
+  }, [connectSocket, disconnectSocket, currentUser, player, accessToken]);
 
   return (
     <SocketContext.Provider value={{

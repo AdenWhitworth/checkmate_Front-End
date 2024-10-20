@@ -49,7 +49,7 @@ export default function InvitesItem({invite, index}: InvitesItemProps): JSX.Elem
                         <LoadingDots position={'center'} color={'black'} size={'small'} />
                     ):(
                         <>
-                            <img className="request-icon" src={check}></img>
+                            <img className="request-icon" src={check} alt={`${invite.requestUsername} check icon`}></img>
                             <h3 className="request-text">Join</h3>
                         </>
                     )}

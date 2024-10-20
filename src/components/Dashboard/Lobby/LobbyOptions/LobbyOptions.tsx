@@ -31,12 +31,12 @@ export default function LobbyOptions(): JSX.Element {
     return (   
         <div className='lobby-options'>
             <div className={lobbySelection? "players-option unselected" : "players-option selected"} onClick={handlePlayersClick}>
-                <img src={globe}></img>
+                <img src={globe} alt='Globe Icon'></img>
                 <h4>Players</h4>
             </div>
 
             <div className={lobbySelection? "invites-option selected" : "invites-option unselected"} onClick={handleInvitesClick}>
-                <img src={reply_arrow}></img>
+                <img src={reply_arrow} alt='Reply Arrow Icon'></img>
                 <h4>Invites</h4>
             </div>
         </div>

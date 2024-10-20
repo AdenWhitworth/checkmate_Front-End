@@ -30,7 +30,7 @@ import knight_black from "../../Images/Knight Black.svg";
 import knight_black2 from "../../Images/Knight Black 2.svg";
 import queen_black from "../../Images/Queen Black.svg";
 import king_black from "../../Images/King Black.svg";
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import { PieceType, CapturedPiece, PieceState, PieceImages } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
 import { useGame } from "../../Providers/GameProvider/GameProvider";
 import { UseCapturedPiecesOutput } from "./useCapturedPiecesTypes";
@@ -89,45 +89,45 @@ export const useCapturedPieces = (): UseCapturedPiecesOutput => {
     });
 
     /**
-     * Updates the captured pieces state for both the player and the opponent.
-     */
-    const updateCapturedPieces = () => {
-        const currentPlayer = orientation === "w" ? 0 : 1;
-        const opponentPlayer = currentPlayer === 0 ? 1 : 0;
-
-        updatePieces(currentPlayer, setPlayerPieces);
-        updatePieces(opponentPlayer, setOpponentPieces);
-    };
-
-    /**
      * Updates the pieces state for the specified player.
      * 
      * @param {number} playerIdx - The index of the player (0 for white, 1 for black).
      * @param {React.Dispatch<React.SetStateAction<Record<PieceType, PieceState>>>} piecesStateSetter - The state setter for updating piece styles and images.
      */
-    const updatePieces = (playerIdx: number, piecesStateSetter: React.Dispatch<React.SetStateAction<Record<PieceType, PieceState>>>) => {
+    const updatePieces = useCallback((playerIdx: number, piecesStateSetter: React.Dispatch<React.SetStateAction<Record<PieceType, PieceState>>>) => {
         pieceTypes.forEach((pieceType) => {
             const count = capturedPieces[playerIdx][pieceType];
-            const img = pieceImages[playerIdx === 0? 1: 0][pieceType][count - 1] || "";
+            const img = pieceImages[playerIdx === 0 ? 1 : 0][pieceType][count - 1] || "";
             const style = count > 0 ? "game-pieces-captured" : "game-pieces-captured-hidden";
 
             piecesStateSetter((prevState) => ({
-            ...prevState,
-            [pieceType]: { img, style },
+                ...prevState,
+                [pieceType]: { img, style },
             }));
         });
-    };
+    },[capturedPieces]);
+
+    /**
+     * Updates the captured pieces state for both the player and the opponent.
+     */
+    const updateCapturedPieces = useCallback(() => {
+        const currentPlayer = orientation === "w" ? 0 : 1;
+        const opponentPlayer = currentPlayer === 0 ? 1 : 0;
+
+        updatePieces(currentPlayer, setPlayerPieces);
+        updatePieces(opponentPlayer, setOpponentPieces);
+    }, [orientation, updatePieces]);
 
     /**
      * Checks if the last move in history involved capturing a piece and updates the captured pieces state accordingly.
      */
-    const checkCaptured = () => {
+    const checkCaptured = useCallback(() => {
         if (!history.length) return;
-    
+
         const { captured: capturedPiece, color } = history[history.length - 1];
-    
+
         if (capturedPiece) {
-            setCapturedPieces(prevCaptured => 
+            setCapturedPieces((prevCaptured) =>
                 prevCaptured.map((pieces, idx) => {
                     if (idx === (color === "w" ? 0 : 1)) {
                         return { ...pieces, [capturedPiece]: pieces[capturedPiece] + 1 };
@@ -136,21 +136,21 @@ export const useCapturedPieces = (): UseCapturedPiecesOutput => {
                 })
             );
         }
-    };
+    }, [history]);
     
     /**
      * Updates the captured pieces whenever there is a change in the captured pieces state or the player's orientation.
      */
     useEffect(() => {
         updateCapturedPieces();
-    }, [capturedPieces]);
+    }, [capturedPieces, updateCapturedPieces]);
 
     /**
      * Checks for captured pieces whenever there is a change in the game's history.
      */
     useEffect(() => {
         checkCaptured();
-    }, [history]);
+    }, [history, checkCaptured]);
 
     return { updateCapturedPieces, capturedPieces, playerPieces, opponentPieces, checkCaptured };
 };

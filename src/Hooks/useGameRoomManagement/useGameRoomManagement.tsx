@@ -99,6 +99,61 @@ export const useGameRoomManagement = ({
     }, [opponent, cleanup, setLoadingExit, setErrorExit, setExitGame]);
 
     /**
+     * Sends an invitation to a potential opponent to join a game room.
+     * 
+     * @function
+     * @param {Room} room - The game room to invite the opponent to.
+     * @param {Player} potentialOpponent - The player object of the opponent to invite.
+     * @returns {Promise<void>} - A promise that resolves when the invitation is complete.
+     * @throws {Error} - Throws an error if the invitation fails.
+     */
+    const invitePlayer = useCallback(async (room: Room, potentialOpponent: Player): Promise<void> => {
+    try {
+        if (!player) throw new Error("Player not found");
+
+        const userCollection = collection(db, 'users');
+        const docRefPlayer = doc(userCollection, potentialOpponent.userId);
+        const docSnap = await getDoc(docRefPlayer);
+        
+        if (!docSnap.exists()) throw new Error("Player not found");
+
+        const inviteCollection = collection(docRefPlayer, 'invites');
+
+        const roomData = {
+        roomId: room.roomId,
+        players: room.players.map(player => ({
+            id: player.id,
+            username: player.username
+        }))
+        };
+
+        const inviteDocRef = await addDoc(inviteCollection, {
+        requestUserID: player.userId,
+        requestUserName: player.username,
+        requestPlayerID: player.playerId,
+        requestRoom: roomData,
+        requestWin: player.win,
+        requestLoss: player.loss,
+        });
+
+        const newOpponent: Opponent = {
+        opponentUsername: docSnap.data()?.username,
+        opponentUserId: docSnap.id,
+        opponentPlayerId: docSnap.data()?.playerID,
+        opponentWin: docSnap.data()?.win,
+        opponentLoss: docSnap.data()?.loss,
+        opponentInviteId: inviteDocRef.id,
+        };
+
+        setOpponent(newOpponent);
+        setRoom(room);
+    } catch (error) {
+        throw new Error("Invitation failed");
+    }
+    }, [player, setOpponent, setRoom]);
+
+
+    /**
      * Handles creating a new game room and sending an invitation to the selected opponent.
      * 
      * @param {Player} potentialOpponent - The player object of the opponent to invite.
@@ -124,62 +179,7 @@ export const useGameRoomManagement = ({
         } finally {
             setLoadingCreateGameOpponentUserId(null);
         }
-    }, [socketRef, sendCreateRoom, setLoadingCreateGameOpponentUserId, setErrorCreateGame, setSuccessCreateGame, setOrientation]);
-    
-
-    /**
-     * Sends a game invitation to a potential opponent and updates the game room state.
-     * 
-     * @param {Room} room - The game room to invite the opponent to.
-     * @param {Player} potentialOpponent - The player object of the opponent to invite.
-     * @async
-     * @returns {Promise<void>} A promise that resolves when the invitation operation is complete.
-     * @throws {Error} Throws an error if the invitation fails.
-     */
-    const invitePlayer = async (room: Room, potentialOpponent: Player): Promise<void> => {
-        try {
-            if (!player) throw new Error("Player not found");
-
-            const userCollection = collection(db, 'users');
-            const docRefPlayer = doc(userCollection, potentialOpponent.userId);
-            const docSnap = await getDoc(docRefPlayer);
-            
-            if (!docSnap.exists()) throw new Error("Player not found");
-
-            const inviteCollection = collection(docRefPlayer, 'invites');
-
-            const roomData = {
-                roomId: room.roomId,
-                players: room.players.map(player => ({
-                    id: player.id,
-                    username: player.username
-                }))
-            };
-
-            const inviteDocRef = await addDoc(inviteCollection, {
-                requestUserID: player.userId,
-                requestUserName: player.username,
-                requestPlayerID: player.playerId,
-                requestRoom: roomData,
-                requestWin: player.win,
-                requestLoss: player.loss,
-            });
-
-            const newOpponent: Opponent = {
-                opponentUsername: docSnap.data()?.username,
-                opponentUserId: docSnap.id,
-                opponentPlayerId: docSnap.data()?.playerID,
-                opponentWin: docSnap.data()?.win,
-                opponentLoss: docSnap.data()?.loss,
-                opponentInviteId: inviteDocRef.id,
-            };
-
-            setOpponent(newOpponent);
-            setRoom(room);
-        } catch (error) {
-            throw new Error("Invitation failed")
-        }
-    };
+    }, [socketRef, sendCreateRoom, setLoadingCreateGameOpponentUserId, setErrorCreateGame, setSuccessCreateGame, setOrientation, invitePlayer]);
 
     /**
      * Handles joining a game room using the provided invitation.

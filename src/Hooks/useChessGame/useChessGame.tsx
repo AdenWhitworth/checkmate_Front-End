@@ -60,47 +60,13 @@ export const useChessGame = ({
   }, [chess, setFen, setHistory, setPlayerTurn, setGameOver]);
 
   /**
-   * Handles dropping a piece on the board and sending the move to the opponent.
-   *
-   * @param {Square} sourceSquare - The starting square of the piece.
-   * @param {Square} targetSquare - The destination square of the piece.
-   * @returns {boolean} - True if the move was successful, false otherwise.
-   */
-  const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
-    if (chess.turn() !== orientation) return false;
-    if (!room || room.players.length < 2) return false;
-    
-    const currentFen = chess.fen();
-
-    const moveData: Move = {
-      from: sourceSquare,
-      to: targetSquare,
-      color: chess.turn(),
-      piece: chess.get(sourceSquare)?.type || "",
-      promotion: targetSquare.endsWith("8") || targetSquare.endsWith("1") ? "q" : undefined,
-      flags: "",
-      san: "",
-      lan: "",
-      before: "",
-      after: ""
-    };
-  
-    const move: Move | null = makeAMove(moveData);
-    if (!move) return false;
-
-    sendMoveAsync(move, currentFen);
-
-    return true;
-  };
-
-  /**
    * Sends a move asynchronously to the server and handles rollback on failure.
    *
    * @async
    * @param {Move} move - The move to send.
    * @param {string} previousFen - The FEN notation of the board before the move.
    */
-  const sendMoveAsync = async (move: Move, previousFen: string) => {
+  const sendMoveAsync = useCallback(async (move: Move, previousFen: string) => {
     try {
       if (!room) throw Error("Room required.");
       await sendMove({ room, move });
@@ -125,7 +91,41 @@ export const useChessGame = ({
       setPlayerTurn(chess.turn());
       setErrorMove("Move failed, reverting to previous state and please try again.");
     }
-  };
+  }, [room, chess, setFen, setGameMoves, setHistory, setPlayerTurn, setErrorMove, sendMove]);
+
+  /**
+   * Handles dropping a piece on the board and sending the move to the opponent.
+   *
+   * @param {Square} sourceSquare - The starting square of the piece.
+   * @param {Square} targetSquare - The destination square of the piece.
+   * @returns {boolean} - True if the move was successful, false otherwise.
+   */
+  const onDrop = useCallback((sourceSquare: Square, targetSquare: Square): boolean => {
+    if (chess.turn() !== orientation) return false;
+    if (!room || room.players.length < 2) return false;
+  
+    const currentFen = chess.fen();
+  
+    const moveData: Move = {
+      from: sourceSquare,
+      to: targetSquare,
+      color: chess.turn(),
+      piece: chess.get(sourceSquare)?.type || "",
+      promotion: targetSquare.endsWith("8") || targetSquare.endsWith("1") ? "q" : undefined,
+      flags: "",
+      san: "",
+      lan: "",
+      before: "",
+      after: ""
+    };
+  
+    const move: Move | null = makeAMove(moveData);
+    if (!move) return false;
+  
+    sendMoveAsync(move, currentFen);
+  
+    return true;
+  }, [chess, orientation, room, makeAMove, sendMoveAsync]);
   
   /**
    * Sets up event listeners for receiving moves from the server.
@@ -143,7 +143,7 @@ export const useChessGame = ({
         }
       });
     }
-  }, [makeAMove, socketRef]);
+  }, [makeAMove, socketRef, handleCallback]);
 
   /**
    * Sets up event listeners for handling opponent disconnection.
@@ -168,7 +168,7 @@ export const useChessGame = ({
         handleCallback(callback, "Opponent player received the forfeit");
       });
     }
-  }, [setGameOver, socketRef]);
+  }, [setGameOver, socketRef, handleCallback]);
 
   /**
    * Sets up event listeners for handling an opponent joining the game.
@@ -181,14 +181,14 @@ export const useChessGame = ({
         setRoom(joinRoomArgs.room);
       });
     }
-  }, [setRoom, socketRef]);
+  }, [setRoom, socketRef, handleCallback]);
 
   /**
    * Determines the winner of the game based on the game state.
    *
    * @returns {"player" | "opponent" | null} - The winner of the game or null if no winner.
    */
-  const findWinner = (): "player" | "opponent" | null => {
+  const findWinner = useCallback((): "player" | "opponent" | null => {
     if (!gameOver) return null;
 
     if (gameOver.includes("Black wins")) {
@@ -200,7 +200,7 @@ export const useChessGame = ({
     }
 
     return null;
-  };
+  }, [gameOver, orientation, opponent]);
 
   /**
    * Calculates a player's rank based on their win/loss ratio.
@@ -218,7 +218,7 @@ export const useChessGame = ({
    * @param {"player" | "opponent" | null} winner - The winner of the game.
    * @returns {Promise<void>}
    */
-  const handleWinLossChange = async (winner: "player" | "opponent" | null): Promise<void> => {
+  const handleWinLossChange = useCallback(async (winner: "player" | "opponent" | null): Promise<void> => {
     if (!player || !player.win || !player.loss || !opponent) return;
 
     const userCollection = collection(db, 'users');
@@ -242,7 +242,7 @@ export const useChessGame = ({
     } catch (error) {
       throw error;
     }
-  };
+  }, [player, opponent]);
 
   /**
    * Initializes the socket event listeners when the hook mounts.
