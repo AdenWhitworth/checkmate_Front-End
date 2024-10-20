@@ -24,9 +24,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
     const [orientation, setOrientation] = useState<"w" | "b">("w");
     const [room, setRoom] = useState<Room | null>(null);
 
-    const chess = useMemo<Chess>(() => {
-        return new Chess();
-    }, [room]);
+    const chess = useMemo<Chess>(() => new Chess(), [room]);
     const [fen, setFen] = useState<string>("start");
     const [errorMove, setErrorMove] = useState<string | null>(null);
     const [gameMoves, setGameMoves] = useState<GameMoves[]>([]);
@@ -75,6 +73,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
         setOrientation("w");
         setOpponent(null);
         setHistory([]);
+        setGameMoves([]);
+        setPlayerTurn("w");
         setGameOver(null);
     }, []);
 
