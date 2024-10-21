@@ -4,6 +4,7 @@ import Button from '../../../Button/Button';
 import pawn_logo from "../../../../Images/Pawn Logo.svg";
 import play_logo from '../../../../Images/play-black.svg';
 import { useNavigation } from '../../../../Hooks/useNavigation/useNavigation';
+import chessboard_logo from '../../../../Images/Chess Board Logo.svg';
 
 /**
  * LandingSelections component displays a welcome section with an option to "Play Friends".
@@ -19,8 +20,9 @@ export default function LandingSelections(): JSX.Element {
     
     return (
         <div className="welcome">
+            <img className='chessboard-logo' src={chessboard_logo} alt='Chessboard logo'></img>
             <div className="play">
-                <img className="pawn-logo" src={pawn_logo}></img>
+                <img className="pawn-logo" src={pawn_logo} alt='Pawn logo'></img>
                 <Button onClick={handleSendToDashboard} className='fixed-width-icon-button' styleType='primary' imgSrc={play_logo} imgAlt='Play Logo'>Play Friends</Button>
             </div>
         </div>          
