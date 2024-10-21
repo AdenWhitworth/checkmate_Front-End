@@ -29,7 +29,7 @@ export default function AlertBadge({
         <Slide in={open} direction={isMobile ? "down" : "up"} timeout={500}>
             <Alert
                 sx={{
-                    position: "absolute",
+                    position: "fixed",
                     marginLeft: isMobile ? "5vw" : "1vw",
                     boxSizing: 'border-box',
                     top: isMobile ? "2vw" : "unset",
