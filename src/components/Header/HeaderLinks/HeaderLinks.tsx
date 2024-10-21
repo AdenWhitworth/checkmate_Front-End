@@ -7,7 +7,7 @@ import Badge from '@mui/material/Badge';
 import { useAuth } from '../../../Providers/AuthProvider/AuthProvider';
 import { useGame } from '../../../Providers/GameProvider/GameProvider';
 import { usePlayer } from '../../../Providers/PlayerProvider/PlayerProvider';
-import { useNavigation } from '../../../Hooks/useNavigation/useNavigation';
+import { HeaderLinksProps } from './HeaderLinksTypes';
 
 /**
  * HeaderLinks component displays navigation links and buttons for user interactions
@@ -17,16 +17,15 @@ import { useNavigation } from '../../../Hooks/useNavigation/useNavigation';
  * @returns {JSX.Element} The rendered HeaderLinks component.
  */
 
-export default function HeaderLinks(): JSX.Element {
-    const { 
-        handleArrowClick, 
-        handleBadgeClick, 
-        handleFlagClick, 
-        handleLoginClick, 
-        handleLogoutClick, 
-        handleSignupClick, 
-        isMenuOpen 
-    } = useNavigation();
+export default function HeaderLinks({
+    handleArrowClick, 
+    handleBadgeClick, 
+    handleFlagClick, 
+    handleLoginClick, 
+    handleLogoutClick, 
+    handleSignupClick,
+    isMenuOpen 
+}: HeaderLinksProps): JSX.Element {
     const { currentUser, loadingAuth } = useAuth();
     const { room } = useGame();
     const { invitesCount } = usePlayer();

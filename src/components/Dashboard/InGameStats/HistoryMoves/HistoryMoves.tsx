@@ -1,7 +1,7 @@
 import arrow_point from "../../../../Images/Arrow Point.svg";
 import { useEffect, useRef, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
-import HistoryItem from "../HistoryItem/HistoryItem";
+import HistoryItem from "./HistoryItem/HistoryItem";
 import './HistoryMoves.css';
 import { useGame } from "../../../../Providers/GameProvider/GameProvider";
 
@@ -55,6 +55,71 @@ export default function HistoryMoves(): JSX.Element {
     useEffect(() => {
         formatHistory();
     }, [formatHistory]);
+    
+    const testMoves = [
+        {
+            id: 1,
+            rowMoves: {
+                whiteMove: "1ad",
+                blackMove: "2sd",
+            }
+        },
+        {
+            id: 2,
+            rowMoves: {
+                whiteMove: "1ad",
+                blackMove: "2sd",
+            }
+        },
+        {
+            id: 3,
+            rowMoves: {
+                whiteMove: "1ad",
+                blackMove: "2sd",
+            }
+        },
+        {
+            id: 4,
+            rowMoves: {
+                whiteMove: "1ad",
+                blackMove: "2sd",
+            }
+        }, {
+            id: 5,
+            rowMoves: {
+                whiteMove: "1ad",
+                blackMove: "2sd",
+            }
+        },
+        {
+            id: 6,
+            rowMoves: {
+                whiteMove: "1ad",
+                blackMove: "2sd",
+            }
+        },
+        {
+            id: 7,
+            rowMoves: {
+                whiteMove: "1ad",
+                blackMove: "2sd",
+            }
+        },
+        {
+            id: 8,
+            rowMoves: {
+                whiteMove: "1ad",
+                blackMove: "2sd",
+            }
+        },
+        {
+            id: 9,
+            rowMoves: {
+                whiteMove: "1ad",
+                blackMove: "2sd",
+            }
+        }
+    ];
 
     return (
         <>
@@ -65,7 +130,7 @@ export default function HistoryMoves(): JSX.Element {
 
             <div className="moves-card">
                 <ul className="moves-list" ref={historyMovesContainerRef}>
-                    {gameMoves.map((move, index) => (
+                    {testMoves.map((move, index) => (
                         <HistoryItem key={move.id} rowMoves={move.rowMoves} index={index} />
                     ))}
                 </ul>

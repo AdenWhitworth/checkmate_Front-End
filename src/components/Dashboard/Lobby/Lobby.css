@@ -4,7 +4,6 @@
     border-radius: 20px;
     height: 100%;
     width: 30vw;
-    margin-left: 10vw;
     display: flex;
     flex-direction: column;
 }
@@ -15,7 +14,7 @@
     flex-direction: row;
     align-items: center;
     width: 100%;
-    height: 4.5vh;
+    height: 40px;
 }
 
 .player-username{
@@ -24,7 +23,9 @@
 }
 
 .player-icon{
-    height: 2vh;
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
     flex: 1;
 }
 
@@ -35,7 +36,7 @@
     align-items: center;
     justify-content: center;
     background-color: #FFCD05;
-    height: 3vh;
+    height: 25px;
     color: #000000;
     flex: 1;
     gap: 5%;
@@ -46,7 +47,9 @@
 }
 
 .request-icon{
-    height: 2vh;
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
 }
 
 .request-text{
@@ -66,6 +69,5 @@
         width: 100%;
         margin-left: 0;
         height: 60vh;
-        margin-bottom: 20%;
     }
 }

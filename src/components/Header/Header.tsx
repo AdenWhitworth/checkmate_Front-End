@@ -13,7 +13,15 @@ import HeaderLinks from './HeaderLinks/HeaderLinks';
  */
 export default function Header(): JSX.Element {
     const { 
-        handleKingClick, 
+        handleArrowClick, 
+        handleBadgeClick, 
+        handleFlagClick, 
+        handleLoginClick, 
+        handleLogoutClick, 
+        handleSignupClick, 
+        isMenuOpen,
+        toggleMenu,
+        handleKingClick
     } = useNavigation();
 
     return (
@@ -24,9 +32,17 @@ export default function Header(): JSX.Element {
                         <img className="king-logo" onClick={handleKingClick} src={king_logo_white} alt='King main logo'></img>
                     </div>
 
-                    <HamburgerMenu />
+                    <HamburgerMenu toggleMenu={toggleMenu} isMenuOpen={isMenuOpen} />
 
-                    <HeaderLinks />
+                    <HeaderLinks 
+                        handleArrowClick={handleArrowClick}
+                        handleBadgeClick={handleBadgeClick}
+                        handleFlagClick={handleFlagClick}
+                        handleLoginClick={handleLoginClick}
+                        handleLogoutClick={handleLogoutClick}
+                        handleSignupClick={handleSignupClick}
+                        isMenuOpen={isMenuOpen}
+                    />
                 </div>
             </header>
         </>

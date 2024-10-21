@@ -1,8 +1,7 @@
 .active-game{
-    grid-area: activeGame;
     display: flex;
     align-items: center;
-    margin-left: 10vw;
+    max-height: 78vh;
 }
 
 .board{
@@ -11,13 +10,32 @@
 }
 
 @media(max-width: 900px){
-    .active-game{
-        margin-left: 0;
-        margin-bottom: 20%;
-    }
-
     .board{
         width: 80vw;
         margin: auto;
+    }
+}
+
+@media (min-width: 1700px) {
+    .board {
+        max-width: 35vw;
+    }
+}
+
+@media (min-width: 2000px) {
+    .board {
+        max-width: 30vw;
+    }
+}
+
+@media (min-width: 2200px) {
+    .board {
+        max-width: 25vw;
+    }
+}
+
+@media (min-width: 2500px) {
+    .board {
+        max-width: 20vw;
     }
 }

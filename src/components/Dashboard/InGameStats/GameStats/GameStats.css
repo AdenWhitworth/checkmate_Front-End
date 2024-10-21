@@ -3,12 +3,13 @@
     background-color: #3D3D3D;
     border-radius: 20px;
     margin-left: 5%;
-    height: 20%;
+    height: 150px;
     width: 90%;
     margin-top: 5%;
     margin-bottom: 5%;
     display: flex;
     flex-direction: row;
+    flex-shrink: 0;
 }
 
 .game-stats{
@@ -17,7 +18,7 @@
     width: 90%;
     padding-left: 5%;
     justify-content: center;
-    gap: 10%;
+    gap: 15px;
     
 }
 
@@ -34,7 +35,7 @@
     text-align: left;
     justify-content: left;
     align-items: center;
-    gap: 2%;
+    gap: 10px;
     
 }
 
@@ -45,7 +46,7 @@
     text-align: left;
     justify-content: left;
     align-items: center;
-    gap: 5%;
+    gap: 15px;
     
 }
 
@@ -55,13 +56,13 @@
 }
 
 .game-pieces-captured{
-    height: 15px;
+    height: 20px;
     flex: 1;
 }
 
 .game-pieces-captured-hidden{
     visibility: hidden;
-    height: 15px;
+    height: 20px;
     flex: 1;
 }
 
@@ -71,7 +72,8 @@
     text-align: left;
     justify-content: left;
     align-items: center;
-    gap: 5%;   
+    gap: 5%;
+    height: 20px;
 }
 
 .player-turn{

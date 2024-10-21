@@ -281,11 +281,6 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
       console.error('Reconnection failed');
       setErrorReconnect(true);
     });
-    
-    socketInstance.on('inGameMessage', (inGameMessageArgs: InGameMessageArgs, callback) => {
-        handleCallback(callback, 'Message recieved by opponent');
-        console.log(inGameMessageArgs);
-    });
   }, [url, player, sendAddUser, handleCallback]);
 
   /**

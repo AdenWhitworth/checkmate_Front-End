@@ -1,13 +1,18 @@
 .moves-header{
-    height: 6%;
+    height: 55px;
+    display: flex;
+    flex-direction: column;
     text-align: center;
     justify-content: center;
     align-items: center;
+    gap: 10px;
+    width: 90%;
+    margin-left: 5%;
+    margin-bottom: 5%;
 }
 
 .moves-header-text{
     font-size: 18px;
-    height: 50%;
     padding: 0;
     margin: 0;
     color: #FFE769;
@@ -16,23 +21,33 @@
 .moves-icon{
     padding: 0;
     margin: 0;
-    height: 50%;
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+}
+
+.moves-card{
+    background-color: green;
+    width: 90%;
+    flex: 1;
+    margin-left: 5%;
+    padding: 0;
+    overflow: auto;
 }
 
 .moves-list{
+    width: 100%;
     text-align: left;
-    height: 27vh;
-    overflow: auto;
-    padding-left: 5%;
-    padding-right: 5%;
+    padding: 0;
+    margin: 0;
 }
 
-.moves-list::-webkit-scrollbar { 
+.moves-card::-webkit-scrollbar { 
     background: transparent; 
     display: none;
 }
 
-.moves-list::-webkit-scrollbar-thumb { 
+.moves-card::-webkit-scrollbar-thumb { 
     background-color: transparent; 
     -webkit-border-radius: 1ex; 
 }
@@ -41,5 +56,4 @@
     list-style: none;
     text-decoration: none;
     list-style-type: none;
-    
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigation } from '../../../Hooks/useNavigation/useNavigation';
+import { HamburgerMenuProps } from './HamburgerMenuTypes';
 
 /**
  * HamburgerMenu component provides a clickable menu icon for toggling navigation visibility.
@@ -8,12 +8,10 @@ import { useNavigation } from '../../../Hooks/useNavigation/useNavigation';
  * @component
  * @returns {JSX.Element} The rendered HamburgerMenu component.
  */
-export default function HamburgerMenu(): JSX.Element {
-    const {
-        toggleMenu, 
-        isMenuOpen 
-    } = useNavigation();
-
+export default function HamburgerMenu({
+    toggleMenu, 
+    isMenuOpen
+}: HamburgerMenuProps): JSX.Element {
     return(
         <div className="hamburger-menu" onClick={toggleMenu}>
             <span className={`bar ${isMenuOpen ? 'open' : ''}`}></span>

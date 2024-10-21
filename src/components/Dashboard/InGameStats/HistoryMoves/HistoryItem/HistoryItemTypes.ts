@@ -1,4 +1,4 @@
-import { RowMoves } from "../InGameStatsTypes";
+import { RowMoves } from "../../InGameStatsTypes";
 
 /**
  * Properties for the HistoryItem component which represents a single row of moves in the game history.

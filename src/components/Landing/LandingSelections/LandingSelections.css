@@ -17,8 +17,8 @@
 @media(max-width: 900px){
     .content{
         height: 100%;
-        padding-bottom: 20%;
-        padding-top: 16vh;
+        margin-top: 14vh;
+        padding-bottom: 4vh;
     }
 
     .container{
