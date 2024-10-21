@@ -9,7 +9,7 @@ import king_logo_black from '../../../Images/King Logo Black.svg';
  * @component
  * @returns {JSX.Element|null} The rendered ForfeitModal component, or null if forfeitGame is false.
  */
-export default function ForfeitModal() {
+export default function ForfeitModal(): JSX.Element | null {
     const { forfeitGame, setForfeitGame, handleForfeit, opponent, errorForfeit, loadingForfeit } = useGame();
     if (!forfeitGame) return null;
 

@@ -9,7 +9,7 @@ import king_logo_black from '../../../Images/King Logo Black.svg';
  * @component
  * @returns {JSX.Element|null} The rendered GameOverModal component, or null if gameOver is false.
  */
-export default function GameOverModal() {
+export default function GameOverModal(): JSX.Element | null {
     const { gameOver, handleCloseRoom, errorOver, loadingOver } = useGame();
     if (!gameOver) return null;
 

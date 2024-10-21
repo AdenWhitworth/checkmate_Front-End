@@ -27,12 +27,14 @@
 }
 
 .moves-card{
-    background-color: green;
     width: 90%;
     flex: 1;
     margin-left: 5%;
     padding: 0;
     overflow: auto;
+    border-radius: 10px;
+    border: 2px solid #444444;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 }
 
 .moves-list{

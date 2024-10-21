@@ -55,71 +55,6 @@ export default function HistoryMoves(): JSX.Element {
     useEffect(() => {
         formatHistory();
     }, [formatHistory]);
-    
-    const testMoves = [
-        {
-            id: 1,
-            rowMoves: {
-                whiteMove: "1ad",
-                blackMove: "2sd",
-            }
-        },
-        {
-            id: 2,
-            rowMoves: {
-                whiteMove: "1ad",
-                blackMove: "2sd",
-            }
-        },
-        {
-            id: 3,
-            rowMoves: {
-                whiteMove: "1ad",
-                blackMove: "2sd",
-            }
-        },
-        {
-            id: 4,
-            rowMoves: {
-                whiteMove: "1ad",
-                blackMove: "2sd",
-            }
-        }, {
-            id: 5,
-            rowMoves: {
-                whiteMove: "1ad",
-                blackMove: "2sd",
-            }
-        },
-        {
-            id: 6,
-            rowMoves: {
-                whiteMove: "1ad",
-                blackMove: "2sd",
-            }
-        },
-        {
-            id: 7,
-            rowMoves: {
-                whiteMove: "1ad",
-                blackMove: "2sd",
-            }
-        },
-        {
-            id: 8,
-            rowMoves: {
-                whiteMove: "1ad",
-                blackMove: "2sd",
-            }
-        },
-        {
-            id: 9,
-            rowMoves: {
-                whiteMove: "1ad",
-                blackMove: "2sd",
-            }
-        }
-    ];
 
     return (
         <>
@@ -130,7 +65,7 @@ export default function HistoryMoves(): JSX.Element {
 
             <div className="moves-card">
                 <ul className="moves-list" ref={historyMovesContainerRef}>
-                    {testMoves.map((move, index) => (
+                    {gameMoves.map((move, index) => (
                         <HistoryItem key={move.id} rowMoves={move.rowMoves} index={index} />
                     ))}
                 </ul>
