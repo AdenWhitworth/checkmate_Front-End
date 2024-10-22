@@ -225,8 +225,11 @@ export const useChessGame = ({
     const playerDoc = doc(userCollection, player.userId);
     const opponentDoc = doc(userCollection, opponent.opponentUserId);
 
-    const playerRank = calculateRank(player.win, player.loss);
-    const opponentRank = calculateRank(opponent.opponentWin, opponent.opponentLoss);
+    const incrementPlayerWin = player.win + 1;
+    const incrementOpponentLoss = opponent.opponentLoss + 1;
+
+    const playerRank = calculateRank(incrementPlayerWin, player.loss);
+    const opponentRank = calculateRank(opponent.opponentWin, incrementOpponentLoss);
 
     const batch = writeBatch(db);
 
