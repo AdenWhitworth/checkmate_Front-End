@@ -19,7 +19,10 @@
 
 .player-username{
     font-size: 14px;
-    flex: 1;
+    flex: 1.75;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .player-icon{

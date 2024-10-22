@@ -14,7 +14,10 @@ import { useAuth } from '../../../Providers/AuthProvider/AuthProvider';
  * @param {function} props.handleInputChange - Callback function to handle input changes for the form fields.
  * @returns {JSX.Element} The SignupForm component.
  */
-export default function SignupForm({ handleInputChange }: SignupFormProps): JSX.Element {
+export default function SignupForm({ 
+    handleInputChange,
+    handleSubmit
+}: SignupFormProps): JSX.Element {
     const { loadingAuth, error, setIsLoginSelected } = useAuth();
 
     /**
@@ -25,7 +28,7 @@ export default function SignupForm({ handleInputChange }: SignupFormProps): JSX.
     };
 
     return (
-        <form className='auth-form'>
+        <form className='auth-form' onSubmit={handleSubmit}>
             <h2>Create an account</h2>
 
             <InputField
