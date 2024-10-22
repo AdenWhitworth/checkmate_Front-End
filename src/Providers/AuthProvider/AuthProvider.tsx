@@ -146,7 +146,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
 
       await setDoc(playerDocRef, {
         username,
-        userID: uid,
+        userID: usersRef.id,
       });
     } catch (e) {
       setCurrentUser(null);
