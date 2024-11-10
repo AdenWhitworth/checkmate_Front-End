@@ -11,8 +11,7 @@ import './LeaderBoardItem.css';
  * @param {Object} props - Component props.
  * @param {Object} props.player - The player object containing details about the player.
  * @param {string} props.player.username - The username of the player.
- * @param {number} props.player.win - The number of wins the player has.
- * @param {number} props.player.loss - The number of losses the player has.
+ * @param {number} props.player.elo - The elo of the player
  * @param {number} props.index - The index of the player in the leaderboard list (used to determine rank).
  * 
  * @returns {JSX.Element} The rendered LeaderBoardItem component.
@@ -35,8 +34,7 @@ export default function LeaderBoardItem({
                 {medalImg && <img className={medalClass} src={medalImg} alt={`${place} place medal`} />}
                 <h3 className="medal-place">{place}.</h3>
                 <h3 className="medal-user">{player.username}</h3>
-                <h3 className="medal-wins">Win: {player.win}</h3>
-                <h3 className="medal-lost">Loss: {player.loss}</h3>
+                <h3 className="medal-elo">{player.elo}</h3>
             </div>
         </li>
     );
