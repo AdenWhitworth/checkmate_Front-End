@@ -138,15 +138,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
         username,
         email,
         uid,
-        playerID: playerDocRef.id,
+        playerId: playerDocRef.id,
         loss: 0,
         win: 0,
         rank: 0,
+        elo: 1200
       });
 
       await setDoc(playerDocRef, {
         username,
-        userID: usersRef.id,
+        userId: usersRef.id,
+        elo: 1200
       });
     } catch (e) {
       setCurrentUser(null);

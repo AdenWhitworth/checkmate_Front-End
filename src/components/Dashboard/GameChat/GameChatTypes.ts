@@ -1,4 +1,4 @@
-import { Room } from "../../../Providers/GameProvider/GameProviderTypes";
+import { Game } from "../../../Providers/GameProvider/GameProviderTypes";
 
 /**
  * Represents a chat message in the game chat system.
@@ -8,7 +8,7 @@ import { Room } from "../../../Providers/GameProvider/GameProviderTypes";
  * @property {string} message - The content of the chat message.
  * @property {string} time - The time when the message was sent, formatted as a string.
  * @property {string} username - The username of the sender of the message.
- * @property {Room} room - The room to which this message belongs.
+ * @property {Game} game - The game to which this message belongs.
  * @property {"sending" | "delivered" | "error" | "received"} status - The current status of the message.
  */
 export interface Message {
@@ -16,6 +16,6 @@ export interface Message {
     message: string;
     time: string;
     username: string;
-    room: Room;
+    game: Game;
     status: "sending" | "delivered" | "error" | "received";
 }

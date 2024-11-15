@@ -27,13 +27,13 @@ export default function HeaderLinks({
     isMenuOpen 
 }: HeaderLinksProps): JSX.Element {
     const { currentUser, loadingAuth } = useAuth();
-    const { room } = useGame();
+    const { game } = useGame();
     const { invitesCount } = usePlayer();
 
-    const isNoActiveRoom = currentUser && !room;
-    const isRoomActive = room && room.players.length > 0;
-    const isGameFull = isRoomActive && room.players.length >= 2;
-    const isGameNotFull = isRoomActive && room.players.length < 2;
+    const isNoActiveRoom = currentUser && !game;
+    const isRoomActive = game && (game.playerA.connected || game.playerB.connected);
+    const isGameFull = isRoomActive && (game.playerA.connected && game.playerB.connected);
+    const isGameNotFull = isRoomActive && !(game.playerA.connected && game.playerB.connected);
     
     /**
      * Renders the authentication buttons (Sign Up and Log In) if no user is currently authenticated.

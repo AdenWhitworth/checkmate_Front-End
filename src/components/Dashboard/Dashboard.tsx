@@ -21,7 +21,7 @@ import MoveAlertBadge from '../AlertBadge/MoveAlertBadge/MoveAlertBadge';
  * @returns {JSX.Element} - The rendered Dashboard component.
  */
 export default function Dashboard(): JSX.Element {
-    const { room } = useGame();
+    const { game } = useGame();
 
     return (
         <>  
@@ -30,11 +30,11 @@ export default function Dashboard(): JSX.Element {
             <section className="dashboard">
                 <div className="dashboard-content">
                     <ActiveGame />
-                    {room ? <InGameStats /> : <Lobby />}
+                    {game ? <InGameStats /> : <Lobby />}
                 </div>
             </section>
 
-            {room && <GameChat></GameChat>}
+            {game && <GameChat></GameChat>}
             <ForfeitModal />
             <ExitModal />
             <GameOverModal />

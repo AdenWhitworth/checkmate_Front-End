@@ -119,23 +119,23 @@ export const useCapturedPieces = (): UseCapturedPiecesOutput => {
     }, [orientation, updatePieces]);
 
     /**
-     * Checks if the last move in history involved capturing a piece and updates the captured pieces state accordingly.
+     * Updates tthe captured pieces state according to captures in the history state.
      */
     const checkCaptured = useCallback(() => {
-        if (!history.length) return;
+        const newCapturedPieces: CapturedPiece[] = [
+            { player: "w", p: 0, n: 0, b: 0, r: 0, q: 0, k: 0 },
+            { player: "b", p: 0, n: 0, b: 0, r: 0, q: 0, k: 0 },
+        ];
 
-        const { captured: capturedPiece, color } = history[history.length - 1];
+        history.forEach((move) => {
+            if (typeof move === "string") move = JSON.parse(move);
+            if (move.captured) {
+                const playerIdx = move.color === "w" ? 0 : 1;
+                newCapturedPieces[playerIdx][move.captured] += 1;
+            }
+        });
 
-        if (capturedPiece) {
-            setCapturedPieces((prevCaptured) =>
-                prevCaptured.map((pieces, idx) => {
-                    if (idx === (color === "w" ? 0 : 1)) {
-                        return { ...pieces, [capturedPiece]: pieces[capturedPiece] + 1 };
-                    }
-                    return pieces;
-                })
-            );
-        }
+        setCapturedPieces(newCapturedPieces);
     }, [history]);
     
     /**

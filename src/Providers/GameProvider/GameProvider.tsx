@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
-import { Room } from './GameProviderTypes';
+import { Game } from './GameProviderTypes';
 import { GameContextType, Opponent } from './GameProviderTypes';
 import { Chess, Move } from "chess.js";
 import { useChessGame } from '../../Hooks/useChessGame/useChessGame';
@@ -22,9 +22,39 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
     const [history, setHistory] = useState<Move[]>([]);
     const [opponent, setOpponent] = useState<Opponent | null>(null);
     const [orientation, setOrientation] = useState<"w" | "b">("w");
-    const [room, setRoom] = useState<Room | null>(null);
-
-    const chess = useMemo<Chess>(() => new Chess(), [room]);
+    const [game, setGame] = useState<Game | null>(null);
+    const chess = useMemo(() => {
+        const instance = new Chess();
+    
+        if (!game?.history || game.history.length === 0) {
+            return instance;
+        }
+    
+        instance.reset();
+    
+        for (const moveString of game.history) {
+            let move = typeof moveString === "string" ? JSON.parse(moveString) : moveString;
+    
+            if (move && move.from && move.to) {
+                const result = instance.move(move);
+                if (!result) {
+                    console.error("Invalid move:", move);
+                    console.error("Current FEN:", instance.fen());
+                    break;
+                }
+            } else {
+                console.error("Invalid move format:", move);
+            }
+        }
+    
+        if (instance.fen() !== game.fen) {
+            console.warn("Game is out of sync");
+        } else {
+            console.log("Game is in sync");
+        }
+    
+        return instance;
+    }, [game]);
     const [fen, setFen] = useState<string>("start");
     const [errorMove, setErrorMove] = useState<string | null>(null);
     const [gameMoves, setGameMoves] = useState<GameMoves[]>([]);
@@ -49,9 +79,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
     const [errorJoinGame, setErrorJoinGame] = useState<string | null>(null);
     const [successJoinGame, setSuccessJoinGame] = useState<string | null>(null);
 
-    const { onDrop, handleWinLossChange, findWinner } = useChessGame({
-        room,
-        setRoom, 
+    const { onDrop, findWinner } = useChessGame({
+        game,
+        setGame, 
         setHistory, 
         setPlayerTurn, 
         orientation, 
@@ -69,7 +99,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
      */
     const cleanup = useCallback(() => {
         setFen("start");
-        setRoom(null);
+        setGame(null);
         setOrientation("w");
         setOpponent(null);
         setHistory([]);
@@ -87,10 +117,13 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
     } = useGameRoomManagement({
         cleanup,
         opponent,
-        room,
-        setRoom,
+        game,
+        setGame,
+        setFen,
+        setHistory,
         setOrientation,
         setOpponent,
+        setPlayerTurn,
         setLoadingOver,
         setErrorOver,
         setExitGame,
@@ -106,7 +139,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
         setErrorJoinGame,
         setSuccessJoinGame,
         findWinner,
-        handleWinLossChange,
     });
 
     return (
@@ -119,8 +151,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
             setOpponent,
             orientation,
             setOrientation,
-            room,
-            setRoom,
+            game,
+            setGame, 
             fen,
             setFen,
             gameOver,

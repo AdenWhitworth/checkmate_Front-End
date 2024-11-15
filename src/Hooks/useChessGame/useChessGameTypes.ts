@@ -1,13 +1,13 @@
 import { GameMoves } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
-import { Room, Opponent } from "../../Providers/GameProvider/GameProviderTypes";
+import { Game, Opponent } from "../../Providers/GameProvider/GameProviderTypes";
 import { Move, Chess, Square } from "chess.js";
 
 /**
  * Interface defining the properties passed to the `useChessGame` hook.
  *
  * @interface UseChessGameProps
- * @property {Room | null} room - The current game room information.
- * @property {function} setRoom - Function to set the current game room information.
+ * @property {Game | null} game - The current game information.
+ * @property {function} setGame - Function to set the current game information.
  * @property {function} setHistory - Function to set the move history of the game.
  * @property {function} setPlayerTurn - Function to set the current player's turn ("w" or "b").
  * @property {"w" | "b"} orientation - The orientation of the current player ("w" for white, "b" for black).
@@ -20,8 +20,8 @@ import { Move, Chess, Square } from "chess.js";
  * @property {function} setGameMoves - Function to set the current state of game moves. Accepts a new array of moves or a function that returns an updated array.
  */
 export interface UseChessGameProps {
-    room: Room | null;
-    setRoom: (value: Room) => void;
+    game: Game | null;
+    setGame: (game: Game | null) => void;
     setHistory: (value: Move[]) => void;
     setPlayerTurn: (value: "w" | "b") => void;
     orientation: "w" | "b";
@@ -43,15 +43,13 @@ export interface UseChessGameProps {
  * @param {Square} targetSquare - The target square of the piece being moved.
  * @returns {boolean} - Returns true if the move was successful, false otherwise.
  *
- * @property {function} handleWinLossChange - Updates the win/loss count for both players based on the game outcome.
  * @param {"player" | "opponent" | null} winner - The winner of the game ("player" or "opponent"), or null if no winner.
  * @returns {Promise<void>}
  *
  * @property {function} findWinner - Determines the winner of the game based on the game over state.
- * @returns {"player" | "opponent" | null} - Returns "player" or "opponent" if there is a winner, or null if there is no winner.
+ * @returns {"playerA" | "playerB" | "draw" | null} - Returns "player" or "opponent" if there is a winner, or null if there is no winner.
  */
 export interface UseChessGameOutput {
     onDrop: (sourceSquare: Square, targetSquare: Square) => boolean;
-    handleWinLossChange: (winner: "player" | "opponent" | null) => Promise<void>;
-    findWinner: () => "player" | "opponent" | null;
+    findWinner: () => "playerA" | "playerB" | "draw" | null
 }

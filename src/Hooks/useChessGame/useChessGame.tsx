@@ -1,10 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { Move, Square } from "chess.js";
-import { usePlayer } from "../../Providers/PlayerProvider/PlayerProvider";
 import { useSocket } from "../../Providers/SocketProvider/SocketProvider";
-import { MoveArgs, ForfeitArgs, DisconnectArgs, JoinRoomArgs } from "../../Providers/SocketProvider/SocketProviderTypes";
-import { db } from '../../firebase';
-import { collection, doc, increment, writeBatch} from "firebase/firestore";
+import { MoveArgs, ForfeitArgs, DisconnectArgs, OpponentJoinedArgs, RoomReconnectedArgs } from "../../Providers/SocketProvider/SocketProviderTypes";
 import { UseChessGameProps, UseChessGameOutput } from "./useChessGameTypes";
 import { GameMoves } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
 
@@ -15,8 +12,8 @@ import { GameMoves } from "../../components/Dashboard/InGameStats/InGameStatsTyp
  * @returns {UseChessGameOutput} - The returned functions and properties from the useChessGame hook.
  */
 export const useChessGame = ({ 
-  room,
-  setRoom, 
+  game,
+  setGame, 
   setHistory, 
   setPlayerTurn, 
   orientation, 
@@ -28,7 +25,6 @@ export const useChessGame = ({
   setErrorMove,
   setGameMoves
 }: UseChessGameProps): UseChessGameOutput => {
-  const { player } = usePlayer();
   const { sendMove, socketRef, handleCallback } = useSocket();
   
   /**
@@ -68,8 +64,8 @@ export const useChessGame = ({
    */
   const sendMoveAsync = useCallback(async (move: Move, previousFen: string) => {
     try {
-      if (!room) throw Error("Room required.");
-      await sendMove({ room, move });
+      if (!game) throw Error("Room required.");
+      await sendMove({ game, move, history: chess.history({verbose: true}), fen: chess.fen(), currentTurn: chess.turn()});
     } catch (error) {
       chess.load(previousFen);
       setFen(previousFen);
@@ -91,7 +87,7 @@ export const useChessGame = ({
       setPlayerTurn(chess.turn());
       setErrorMove("Move failed, reverting to previous state and please try again.");
     }
-  }, [room, chess, setFen, setGameMoves, setHistory, setPlayerTurn, setErrorMove, sendMove]);
+  }, [game, chess, setFen, setGameMoves, setHistory, setPlayerTurn, setErrorMove, sendMove]);
 
   /**
    * Handles dropping a piece on the board and sending the move to the opponent.
@@ -102,7 +98,7 @@ export const useChessGame = ({
    */
   const onDrop = useCallback((sourceSquare: Square, targetSquare: Square): boolean => {
     if (chess.turn() !== orientation) return false;
-    if (!room || room.players.length < 2) return false;
+    if (!game || !game.playerA.connected || !game.playerB.connected) return false;
   
     const currentFen = chess.fen();
   
@@ -125,7 +121,7 @@ export const useChessGame = ({
     sendMoveAsync(move, currentFen);
   
     return true;
-  }, [chess, orientation, room, makeAMove, sendMoveAsync]);
+  }, [chess, orientation, game, makeAMove, sendMoveAsync]);
   
   /**
    * Sets up event listeners for receiving moves from the server.
@@ -152,10 +148,32 @@ export const useChessGame = ({
     if (socketRef.current) {
       socketRef.current.off('playerDisconnected');
       socketRef.current.on('playerDisconnected', (disconnectArgs: DisconnectArgs) => {
-        setGameOver(`${disconnectArgs.player.username} has Forfeited`);
+        if(disconnectArgs.game.playerA.userId === disconnectArgs.disconnectUserId){
+          console.log("Opponent Disconnected: ", disconnectArgs.game.playerA.username);
+        } else {
+          console.log("Opponent Disconnected: ", disconnectArgs.game.playerB.username);
+        }
       });
     }
-  }, [setGameOver, socketRef]);
+  }, [socketRef]);
+
+  /**
+   * Sets up event listeners for handling opponent reconnection.
+   */
+  const handleRoomReconnected = useCallback(() => {
+    if (socketRef.current) {
+      socketRef.current.off('roomReconnected');
+      socketRef.current.on('roomReconnected', (roomReconnectedArgs: RoomReconnectedArgs, callback: Function) => {
+        if(roomReconnectedArgs.game.playerA.userId === roomReconnectedArgs.connectUserId){
+          console.log("Opponent connected again: ", roomReconnectedArgs.game.playerA.username);
+        } else {
+          console.log("Opponent connected again: ", roomReconnectedArgs.game.playerB.username);
+        }
+
+        handleCallback(callback, "Opponent connected again recieved.");
+      });
+    }
+  }, [socketRef, handleCallback]);
 
   /**
    * Sets up event listeners for handling opponent forfeits.
@@ -176,76 +194,33 @@ export const useChessGame = ({
   const handleOpponentJoined = useCallback(() => {
     if (socketRef.current) {
       socketRef.current.off('opponentJoined');
-      socketRef.current.on('opponentJoined', (joinRoomArgs: JoinRoomArgs, callback: Function) => {
+      socketRef.current.on('opponentJoined', (opponentJoinedArgs: OpponentJoinedArgs, callback: Function) => {
         handleCallback(callback, 'Opponent join received');
-        setRoom(joinRoomArgs.room);
+        setGame(opponentJoinedArgs.game);
       });
     }
-  }, [setRoom, socketRef, handleCallback]);
+  }, [setGame, socketRef, handleCallback]);
 
   /**
    * Determines the winner of the game based on the game state.
    *
-   * @returns {"player" | "opponent" | null} - The winner of the game or null if no winner.
+   * @returns {"playerA" | "playerB" | "draw" | null} - The winner of the game or null if no winner.
    */
-  const findWinner = useCallback((): "player" | "opponent" | null => {
+  const findWinner = useCallback((): "playerA" | "playerB" | "draw" | null => {
     if (!gameOver) return null;
 
     if (gameOver.includes("Black wins")) {
-      return orientation === "w" ? "opponent" : "player";
+      return orientation === "w" ? "playerB" : "playerA";
     } else if (gameOver.includes("White wins")) {
-      return orientation === "w" ? "player" : "opponent";
+      return orientation === "w" ? "playerA" : "playerB";
     } else if (gameOver === `${opponent?.opponentUsername} has Forfeited`) {
-      return "player";
+      return orientation === "w" ? "playerA" : "playerB";
+    } else if (gameOver.includes("Draw")) {
+      return "draw";
     }
 
     return null;
   }, [gameOver, orientation, opponent]);
-
-  /**
-   * Calculates a player's rank based on their win/loss ratio.
-   *
-   * @param {number} win - The number of wins.
-   * @param {number} loss - The number of losses.
-   * @returns {number} - The calculated rank.
-   */
-  const calculateRank = (win: number, loss: number): number => (win * win) / (win + loss);
-
-  /**
-   * Handles updating the win/loss count and rank for both players based on the game outcome.
-   *
-   * @async
-   * @param {"player" | "opponent" | null} winner - The winner of the game.
-   * @returns {Promise<void>}
-   */
-  const handleWinLossChange = useCallback(async (winner: "player" | "opponent" | null): Promise<void> => {
-    if (!player || !player.win || !player.loss || !opponent) return;
-
-    const userCollection = collection(db, 'users');
-    const playerDoc = doc(userCollection, player.userId);
-    const opponentDoc = doc(userCollection, opponent.opponentUserId);
-
-    const incrementPlayerWin = player.win + 1;
-    const incrementOpponentLoss = opponent.opponentLoss + 1;
-
-    const playerRank = calculateRank(incrementPlayerWin, player.loss);
-    const opponentRank = calculateRank(opponent.opponentWin, incrementOpponentLoss);
-
-    const batch = writeBatch(db);
-
-    try {
-      if (winner === "player") {
-        batch.update(playerDoc, { win: increment(1), rank: playerRank });
-        batch.update(opponentDoc, { loss: increment(1), rank: opponentRank });
-      } else if (winner === "opponent") {
-        batch.update(opponentDoc, { win: increment(1), rank: opponentRank });
-        batch.update(playerDoc, { loss: increment(1), rank: playerRank });
-      }
-      await batch.commit();
-    } catch (error) {
-      throw error;
-    }
-  }, [player, opponent]);
 
   /**
    * Initializes the socket event listeners when the hook mounts.
@@ -255,11 +230,11 @@ export const useChessGame = ({
     handleDisconnect();
     handlePlayerForfeited();
     handleOpponentJoined();
-  }, [handleMove, handleDisconnect, handlePlayerForfeited, handleOpponentJoined]);
+    handleRoomReconnected();
+  }, [handleMove, handleDisconnect, handlePlayerForfeited, handleOpponentJoined, handleRoomReconnected]);
 
   return {
     onDrop,
-    handleWinLossChange,
     findWinner,
   };
 };

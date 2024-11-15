@@ -3,7 +3,6 @@ import { db } from '../../firebase';
 import { collection, query, where, getDocs, onSnapshot, doc } from 'firebase/firestore';
 import { useAuth } from '../AuthProvider/AuthProvider';
 import { Player, PlayerContextType, Invite } from './PlayerProviderTypes';
-import { Room, SocketPlayer } from '../GameProvider/GameProviderTypes';
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
@@ -58,11 +57,14 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
 
             querySnapshot.forEach((doc) => {
                 setPlayer({
-                    playerId: doc.data().playerID,
+                    playerId: doc.data().playerId,
                     userId: doc.id,
                     username: doc.data().username,
                     win: doc.data().win,
                     loss: doc.data().loss,
+                    draw: doc.data().draw,
+                    elo: doc.data().elo,
+                    currentGameId: doc.data().currentGameId ?? undefined
                 });
             });
             setPlayerLoaded(true);
@@ -83,14 +85,15 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
             return;
         }
 
-        const q = query(collection(db, "players"), where("userID", 'not-in', invitesUserIDs));
+        const q = query(collection(db, "players"), where("userId", 'not-in', invitesUserIDs));
 
         return onSnapshot(q, (snapshot) => {
             try {
                 const playersData = snapshot.docs.map((doc) => ({
                     playerId: doc.id,
-                    userId: doc.data().userID,
+                    userId: doc.data().userId,
                     username: doc.data().username,
+                    elo: doc.data().elo,
                 }));
 
                 setPlayers(playersData);
@@ -116,23 +119,13 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
         return onSnapshot(q, (snapshot) => {
             try {
                 const invitesData: Invite[] = snapshot.docs.map((doc) => {
-                    const roomData = doc.data().requestRoom;
-                    const room: Room = {
-                        roomId: roomData.roomId,
-                        players: roomData.players.map((player: SocketPlayer) => ({
-                            id: player.id,
-                            username: player.username
-                        })),
-                    };
-
                     return {
                         inviteId: doc.id,
-                        requestLoss: doc.data().requestLoss,
-                        requestPlayerId: doc.data().requestPlayerID,
-                        requestRoom: room,
-                        requestUserId: doc.data().requestUserID,
-                        requestUsername: doc.data().requestUserName,
-                        requestWin: doc.data().requestWin,
+                        requestPlayerId: doc.data().requestPlayerId,
+                        requestGameId: doc.data().requestGameId,
+                        requestUserId: doc.data().requestUserId,
+                        requestUsername: doc.data().requestUsername,
+                        requestElo: doc.data().requestElo,
                     };
                 });
 

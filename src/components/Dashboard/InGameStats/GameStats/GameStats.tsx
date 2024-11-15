@@ -13,8 +13,7 @@ import './GameStats.css';
  * @component
  * @param {Object} props - Component props.
  * @param {string} props.username - The username of the player.
- * @param {number} props.wins - The number of wins the player has.
- * @param {number} props.losses - The number of losses the player has.
+ * @param {number} props.elo - The Elo rank of the player.
  * @param {Record<PieceType, PieceState>} props.pieces - An object containing the player's captured pieces and their corresponding states.
  * @param {boolean} props.isTurn - Whether it's currently the player's turn.
  * @param {boolean} props.isLoading - Indicates whether the captured pieces data is still loading.
@@ -23,8 +22,7 @@ import './GameStats.css';
  */
 export default function GameStats({ 
     username, 
-    wins, 
-    losses, 
+    elo,
     pieces, 
     isTurn,
     isLoading
@@ -34,15 +32,10 @@ export default function GameStats({
             <div className="game-stats">
                 <div className="game-row-1">
                     <img className="game-icon" src={user_circle} alt={`${username} icon`} />
-                    <h3 className="game-username">{username}</h3>
+                    <h3 className="game-username">{`${username} (${elo})`}</h3>
                 </div>
 
                 <div className="game-row-2">
-                    <h3 className="game-wins">Win: {wins}</h3>
-                    <h3 className="game-loss">Loss: {losses}</h3>
-                </div>
-
-                <div className="game-row-3">
                     {isLoading? (
                         <LoadingDots position={'left'} color={'grey'} size={'medium'}></LoadingDots>
                     ) : (

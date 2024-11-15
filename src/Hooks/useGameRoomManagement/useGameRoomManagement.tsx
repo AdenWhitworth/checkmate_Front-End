@@ -1,13 +1,14 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { collection, deleteDoc, doc, addDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { UseGameRoomManagementOutput, UseGameRoomManagementProps } from './useGameRoomManagementTypes';
 import { useSocket } from '../../Providers/SocketProvider/SocketProvider';
 import { usePlayer } from '../../Providers/PlayerProvider/PlayerProvider';
-import { Opponent, Room } from '../../Providers/GameProvider/GameProviderTypes';
+import { Game, Opponent, InGamePlayer } from '../../Providers/GameProvider/GameProviderTypes';
 import { Player, Invite } from '../../Providers/PlayerProvider/PlayerProviderTypes';
+import { Move } from 'chess.js';
 
-/**
+/*
  * Custom hook for managing game room actions including creating, joining, forfeiting, exiting, and closing game rooms.
  *
  * @param {UseGameRoomManagementProps} props - The properties required by the useGameRoomManagement hook.
@@ -16,10 +17,13 @@ import { Player, Invite } from '../../Providers/PlayerProvider/PlayerProviderTyp
 export const useGameRoomManagement = ({
     cleanup,
     opponent,
-    room,
-    setRoom,
+    game,
+    setGame,
+    setFen,
+    setHistory,
     setOrientation,
     setOpponent,
+    setPlayerTurn,
     setLoadingOver,
     setErrorOver,
     setExitGame,
@@ -35,7 +39,6 @@ export const useGameRoomManagement = ({
     setErrorJoinGame,
     setSuccessJoinGame,
     findWinner,
-    handleWinLossChange,
 }: UseGameRoomManagementProps): UseGameRoomManagementOutput => {
     
     const { 
@@ -43,7 +46,8 @@ export const useGameRoomManagement = ({
         sendForfeit, 
         sendCreateRoom, 
         sendCloseRoom, 
-        sendJoinRoom 
+        sendJoinRoom,
+        sendReconnectRoom
     } = useSocket();
     const { player } = usePlayer();
 
@@ -57,10 +61,10 @@ export const useGameRoomManagement = ({
         setLoadingForfeit(true);
         setErrorForfeit(null);
         try {
-            if (!socketRef.current || !room || !player) throw new Error("Socket, room, and player required");
+            if (!socketRef.current || !game || !player) throw new Error("Socket, room, and player required");
 
             const username = player.username;
-            await sendForfeit({ room, username });
+            await sendForfeit({ game, username });
             cleanup();
         } catch (error) {
             setErrorForfeit("Unable to forfeit. Please try again.");
@@ -68,7 +72,7 @@ export const useGameRoomManagement = ({
             setForfeitGame(false);
             setLoadingForfeit(false);
         }
-    }, [room, player, socketRef, sendForfeit, cleanup, setLoadingForfeit, setErrorForfeit, setForfeitGame]);
+    }, [game, player, socketRef, sendForfeit, cleanup, setLoadingForfeit, setErrorForfeit, setForfeitGame]);
 
     /**
      * Handles exiting the current game room by deleting the corresponding invitation document.
@@ -81,14 +85,11 @@ export const useGameRoomManagement = ({
         setErrorExit(null);
         
         try {
+            if(!game) throw Error("Game required to exit.");
             if (!opponent) throw new Error("Opponent required.");
-            
-            const userCollection = collection(db, "users");
-            const DocRef = doc(userCollection, opponent.opponentUserId);
-            const inviteCollection = collection(DocRef, "invites");
-            const DocRef2 = doc(inviteCollection, opponent.opponentInviteId);
-            
-            await deleteDoc(DocRef2);
+
+            await sendCloseRoom({ game: game, inviteCancelled: true, opponent: opponent });
+
             cleanup();
         } catch (error) {
             setErrorExit("Unable to exit. Please try again.");
@@ -96,62 +97,51 @@ export const useGameRoomManagement = ({
             setExitGame(false);
             setLoadingExit(false);
         }
-    }, [opponent, cleanup, setLoadingExit, setErrorExit, setExitGame]);
+    },  [setLoadingExit, setErrorExit, game, opponent, sendCloseRoom, cleanup, setExitGame]);
 
     /**
      * Sends an invitation to a potential opponent to join a game room.
      * 
      * @function
-     * @param {Room} room - The game room to invite the opponent to.
+     * @param {Game} game - The game to invite the opponent to.
      * @param {Player} potentialOpponent - The player object of the opponent to invite.
      * @returns {Promise<void>} - A promise that resolves when the invitation is complete.
      * @throws {Error} - Throws an error if the invitation fails.
      */
-    const invitePlayer = useCallback(async (room: Room, potentialOpponent: Player): Promise<void> => {
-    try {
-        if (!player) throw new Error("Player not found");
+    const invitePlayer = useCallback(async (game: Game, potentialOpponent: Player): Promise<void> => {
+        try {
+            if (!player) throw new Error("Player not found");
 
-        const userCollection = collection(db, 'users');
-        const docRefPlayer = doc(userCollection, potentialOpponent.userId);
-        const docSnap = await getDoc(docRefPlayer);
-        
-        if (!docSnap.exists()) throw new Error("Player not found");
+            const userCollection = collection(db, 'users');
+            const docRefPlayer = doc(userCollection, potentialOpponent.userId);
+            const docSnap = await getDoc(docRefPlayer);
+            
+            if (!docSnap.exists()) throw new Error("Player not found");
 
-        const inviteCollection = collection(docRefPlayer, 'invites');
+            const inviteCollection = collection(docRefPlayer, 'invites');
 
-        const roomData = {
-        roomId: room.roomId,
-        players: room.players.map(player => ({
-            id: player.id,
-            username: player.username
-        }))
-        };
+            const inviteDocRef = await addDoc(inviteCollection, {
+                requestUserId: player.userId,
+                requestUsername: player.username,
+                requestPlayerId: player.playerId,
+                requestGameId: game.gameId,
+                requestElo: player.elo,
+            });
 
-        const inviteDocRef = await addDoc(inviteCollection, {
-        requestUserID: player.userId,
-        requestUserName: player.username,
-        requestPlayerID: player.playerId,
-        requestRoom: roomData,
-        requestWin: player.win,
-        requestLoss: player.loss,
-        });
+            const newOpponent: Opponent = {
+                opponentUsername: docSnap.data()?.username,
+                opponentUserId: docSnap.id,
+                opponentPlayerId: docSnap.data()?.playerId,
+                opponentElo: docSnap.data()?.elo,
+                opponentInviteId: inviteDocRef.id,
+            };
 
-        const newOpponent: Opponent = {
-        opponentUsername: docSnap.data()?.username,
-        opponentUserId: docSnap.id,
-        opponentPlayerId: docSnap.data()?.playerID,
-        opponentWin: docSnap.data()?.win,
-        opponentLoss: docSnap.data()?.loss,
-        opponentInviteId: inviteDocRef.id,
-        };
-
-        setOpponent(newOpponent);
-        setRoom(room);
-    } catch (error) {
-        throw new Error("Invitation failed");
-    }
-    }, [player, setOpponent, setRoom]);
-
+            setOpponent(newOpponent);
+            setGame(game);
+        } catch (error) {
+            throw new Error("Invitation failed");
+        }
+    }, [player, setOpponent, setGame]);
 
     /**
      * Handles creating a new game room and sending an invitation to the selected opponent.
@@ -166,20 +156,38 @@ export const useGameRoomManagement = ({
         setSuccessCreateGame(null);
     
         try {
-            if (!socketRef.current) throw new Error("No room created.");
-    
-            const newRoom = await sendCreateRoom();
-            if (!newRoom) throw new Error("No room created.");
+            if (!socketRef.current || !player) throw new Error("No game created.");
+            
+            const playerA: InGamePlayer = {
+                userId: player.userId,
+                playerId: player.playerId,
+                username: player.username,
+                elo: player.elo,
+                connected: "pending",
+                orientation: "w",
+            };
+
+            const playerB: InGamePlayer = {
+                userId: potentialOpponent.userId,
+                playerId: potentialOpponent.playerId,
+                username: potentialOpponent.username,
+                elo: potentialOpponent.elo,
+                connected: "pending",
+                orientation: "b",
+            };
+
+            const newGame = await sendCreateRoom({playerA: playerA, playerB: playerB});
+            if (!newGame) throw new Error("No game created.");
             
             setOrientation("w");
-            await invitePlayer(newRoom.room, potentialOpponent);
+            await invitePlayer(newGame.game, potentialOpponent);
             setSuccessCreateGame("Game created successfully! Waiting on opponent: " + potentialOpponent.username);
         } catch (error) {
             setErrorCreateGame("Unable to create game. Please try again.");
         } finally {
             setLoadingCreateGameOpponentUserId(null);
         }
-    }, [socketRef, sendCreateRoom, setLoadingCreateGameOpponentUserId, setErrorCreateGame, setSuccessCreateGame, setOrientation, invitePlayer]);
+    }, [player, socketRef, sendCreateRoom, setLoadingCreateGameOpponentUserId, setErrorCreateGame, setSuccessCreateGame, setOrientation, invitePlayer]);
 
     /**
      * Handles joining a game room using the provided invitation.
@@ -196,9 +204,9 @@ export const useGameRoomManagement = ({
         try {
             if (!socketRef.current || !player) throw Error("Unable to join room");
 
-            const updatedRoom = await sendJoinRoom({ room: invite.requestRoom });
+            const updatedGame = await sendJoinRoom({ gameId: invite.requestGameId });
 
-            if (!updatedRoom) throw new Error("No updated room.");
+            if (!updatedGame) throw new Error("No updated room.");
             
             const userCollection = collection(db, 'users');
             const DocRef = doc(userCollection, player.userId);
@@ -210,20 +218,19 @@ export const useGameRoomManagement = ({
                 opponentUsername: invite.requestUsername,
                 opponentUserId: invite.requestUserId,
                 opponentPlayerId: invite.requestPlayerId,
-                opponentWin: invite.requestWin,
-                opponentLoss: invite.requestLoss
+                opponentElo: invite.requestElo,
             };
 
             setOpponent(newOpponent);
             setOrientation("b");
-            setRoom(updatedRoom.room);
+            setGame(updatedGame.game);
             setSuccessCreateGame("Game joined successfully! You are playing against: " + invite.requestUsername);
         } catch (error) {
             setErrorJoinGame("Unable to join game. Please try again.");
         } finally {
             setLoadingJoinGameOpponentUserId(null);
         }
-    }, [socketRef, player, sendJoinRoom, setLoadingJoinGameOpponentUserId, setErrorJoinGame, setSuccessJoinGame, setOpponent, setOrientation, setRoom, setSuccessCreateGame]);
+    }, [socketRef, player, sendJoinRoom, setLoadingJoinGameOpponentUserId, setErrorJoinGame, setSuccessJoinGame, setOpponent, setOrientation, setGame, setSuccessCreateGame]);
 
     /**
      * Handles closing the current game room and updating win/loss records if necessary.
@@ -238,23 +245,85 @@ export const useGameRoomManagement = ({
         const winner = findWinner();
         
         try {
-            if (winner !== "player" || !room) {
-                cleanup();
-                return;
+            if(!game || !winner){
+                throw new Error("Active game with winner required");
             }
+
+            const updatedGame: Game = { ...game, winner };
             
-            await handleWinLossChange(winner);
-            await sendCloseRoom({ room });
+            await sendCloseRoom({ game: updatedGame, inviteCancelled: false});
             
             cleanup();
 
         } catch (error) {
+            console.log(error);
             setErrorOver("Unable to close game. Please try again.");
         } finally {
             setLoadingOver(false);
         }
-    }, [findWinner, room, cleanup, handleWinLossChange, sendCloseRoom, setLoadingOver, setErrorOver]);
+    }, [findWinner, game, cleanup, sendCloseRoom, setLoadingOver, setErrorOver]);
 
+    /**
+     * Handles reconnecting to the current game.
+     * 
+     * @async
+     * @returns {Promise<void>} A promise that resolves when the room closing operation is complete.
+     */
+    const handleReconnectRoom = useCallback(async () => {
+        if (!game && player?.currentGameId) {
+            try {
+                const reconnectedGame = await sendReconnectRoom({ gameId: player.currentGameId });
+                
+                if (reconnectedGame?.game) {
+                    
+                    const isPlayerA = player.userId === reconnectedGame.game.playerA.userId;
+
+                    setOrientation(isPlayerA? reconnectedGame.game.playerA.orientation : reconnectedGame.game.playerB.orientation);
+                    
+                    setOpponent(isPlayerA? {
+                        opponentUsername: reconnectedGame.game.playerB.username,
+                        opponentUserId: reconnectedGame.game.playerB.userId,
+                        opponentPlayerId: reconnectedGame.game.playerB.playerId,
+                        opponentElo: reconnectedGame.game.playerB.elo
+                    } : {
+                        opponentUsername: reconnectedGame.game.playerA.username,
+                        opponentUserId: reconnectedGame.game.playerA.userId,
+                        opponentPlayerId: reconnectedGame.game.playerA.playerId,
+                        opponentElo: reconnectedGame.game.playerA.elo
+                    });
+                    
+                    setFen(reconnectedGame.game.fen);
+                    
+                    const deserializedHistory: Move[] = reconnectedGame.game.history?.map((moveString: string) => {
+                        try {
+                            return JSON.parse(moveString);
+                        } catch (error) {
+                            console.error("Failed to parse move:", moveString);
+                            return null;
+                        }
+                    }).filter((move) => move !== null);
+
+                    setPlayerTurn(reconnectedGame.game.currentTurn);
+                    setHistory(deserializedHistory || []);
+                    setGame(reconnectedGame.game);
+                    
+                    console.log("Reconnected to game:", reconnectedGame.game);
+                } else {
+                    console.warn("No game found to reconnect to.");
+                }
+            } catch (error) {
+                console.error("Failed to reconnect to game:", error);
+            }
+        }
+    }, [game, player, sendReconnectRoom, setGame, setOpponent, setOrientation, setFen, setHistory, setPlayerTurn]);
+    
+    /**
+     * Attempts to reconnect to a game when the component mounts or when `handleReconnectRoom` changes.
+     */
+    useEffect(() => {
+        handleReconnectRoom();
+    }, [handleReconnectRoom]);
+    
     return {
         handleForfeit,
         handleExitRoom,

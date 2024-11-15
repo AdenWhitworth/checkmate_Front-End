@@ -1,5 +1,3 @@
-import { Room } from "../GameProvider/GameProviderTypes";
-
 /**
  * Represents a player's information.
  * 
@@ -9,6 +7,9 @@ import { Room } from "../GameProvider/GameProviderTypes";
  * @property {string} username - The username of the player.
  * @property {number} [win] - Optional number of wins by the player.
  * @property {number} [loss] - Optional number of losses by the player.
+ * @property {number} [draw] - Optional number of draws by the player.
+ * @property {number} elo - Wlo rank of the player.
+ * @property {string} [currentGameId] - Optional gameId for an active game the player is in.
  */
 export interface Player {
     playerId: string;
@@ -16,6 +17,9 @@ export interface Player {
     username: string;
     win?: number;
     loss?: number;
+    draw?: number;
+    elo: number;
+    currentGameId?: string;
 }
 
 /**
@@ -46,20 +50,18 @@ export interface PlayerContextType {
  * Represents an invitation received by a player to join a game.
  * 
  * @interface Invite
- * @property {number} requestLoss - Number of losses of the requesting player.
  * @property {string} requestPlayerId - ID of the requesting player.
- * @property {Room} requestRoom - Information about the room that the invite pertains to.
+ * @property {Room} requestGameId - ID of the game that the invite pertains to.
  * @property {string} requestUserId - ID of the user who sent the invite.
  * @property {string} requestUsername - Username of the user who sent the invite.
- * @property {number} requestWin - Number of wins of the requesting player.
+ * @property {number} requestElo - Elo rank of the requesting player.
  * @property {string} inviteId - The unique ID of the invite.
  */
 export interface Invite {
-    requestLoss: number;
     requestPlayerId: string;
-    requestRoom: Room;
+    requestGameId: string;
     requestUserId: string;
     requestUsername: string;
-    requestWin: number;
+    requestElo: number;
     inviteId: string;
 }
