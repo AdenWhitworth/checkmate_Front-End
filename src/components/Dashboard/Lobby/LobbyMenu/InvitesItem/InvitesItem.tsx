@@ -39,7 +39,7 @@ export default function InvitesItem({invite, index}: InvitesItemProps): JSX.Elem
                     src={user_white}
                     alt={`${invite.requestUsername} avatar`}
                 ></img>
-                <h3 className="player-username">{invite.requestUsername}</h3>
+                <h3 className="player-username">{`${invite.requestUsername} (${invite.requestElo})`}</h3>
                 <button 
                     className="player-request" 
                     onClick={handleInviteClick}
