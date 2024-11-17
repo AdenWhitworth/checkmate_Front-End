@@ -46,13 +46,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
                 console.error("Invalid move format:", move);
             }
         }
-    
-        if (instance.fen() !== game.fen) {
-            console.warn("Game is out of sync");
-        } else {
-            console.log("Game is in sync");
-        }
-    
         return instance;
     }, [game]);
     const [fen, setFen] = useState<string>("start");
@@ -79,6 +72,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
     const [errorJoinGame, setErrorJoinGame] = useState<string | null>(null);
     const [successJoinGame, setSuccessJoinGame] = useState<string | null>(null);
 
+    const [isOpponentDisconnected, setIsOpponentDisconnected] = useState<string | null>(null);
+
     const { onDrop, findWinner } = useChessGame({
         game,
         setGame, 
@@ -91,7 +86,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
         setGameOver,
         opponent,
         setErrorMove,
-        setGameMoves 
+        setGameMoves,
+        setIsOpponentDisconnected
     });
 
     /**
@@ -188,7 +184,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
             errorMove,
             setErrorMove,
             gameMoves,
-            setGameMoves
+            setGameMoves,
+            isOpponentDisconnected, 
+            setIsOpponentDisconnected
         }}>
             {children}
         </GameContext.Provider>

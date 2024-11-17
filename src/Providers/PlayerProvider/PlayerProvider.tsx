@@ -20,6 +20,7 @@ const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
  */
 export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
     const { currentUser } = useAuth();
+    const [playerUserId, setPlayerUserId] = useState<string | null>(null);
     const [player, setPlayer] = useState<Player | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -29,6 +30,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
     const [invitesCount, setInvitesCount] = useState<number>(0);
     const [lobbySelection, setLobbySelection] = useState<boolean>(false);
 
+    const [playerUserIdLoaded, setPlayerUserIdLoaded] = useState<boolean>(false);
     const [playerLoaded, setPlayerLoaded] = useState<boolean>(false);
     const [playersLoaded, setPlayersLoaded] = useState<boolean>(false);
     const [invitesLoaded, setInvitesLoaded] = useState<boolean>(false);
@@ -39,39 +41,65 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
      * Checks if all loading states are complete and sets loading to false if so.
      */
     const checkAllLoaded = useCallback(() => {
-        if (playerLoaded && playersLoaded && invitesLoaded) {
+        if (playerUserIdLoaded && playerLoaded && playersLoaded && invitesLoaded) {
             setLoading(false);
         }
-    }, [playerLoaded, playersLoaded, invitesLoaded]);
+    }, [playerUserIdLoaded, playerLoaded, playersLoaded, invitesLoaded]);
 
     /**
-     * Fetches the current user's player data from Firestore.
-     * Sets the player state and playerLoaded flag when successful.
+     * Fetches the current user's userId from Firestore.
+     * Sets the player userId state and setPlayerUserIdLoaded flag when successful.
      */
-    const fetchPlayer = useCallback(async () => {
-        if (!currentUser) return;
-        
+    const fetchPlayerUserId = useCallback(async () => {
+        if (!currentUser || playerUserId) return;
+
         try {
             const q = query(collection(db, 'users'), where('uid', '==', currentUser.uid));
             const querySnapshot = await getDocs(q);
 
+            if (querySnapshot.size > 1) throw new Error("Multiple users found with the same UID.");
+
             querySnapshot.forEach((doc) => {
-                setPlayer({
-                    playerId: doc.data().playerId,
-                    userId: doc.id,
-                    username: doc.data().username,
-                    win: doc.data().win,
-                    loss: doc.data().loss,
-                    draw: doc.data().draw,
-                    elo: doc.data().elo,
-                    currentGameId: doc.data().currentGameId ?? undefined
-                });
+                setPlayerUserId(doc.id);
             });
-            setPlayerLoaded(true);
-        } catch (err) {
-            setError("Error fetching players and invites.");
+
+            setPlayerUserIdLoaded(true);
+        } catch (error) {
+            setError("Error fetching user ID.");
         }
-    }, [currentUser]);
+    }, [currentUser, playerUserId]);
+
+    /**
+     * Fetches the current user's player data from Firestore.
+     * Sets the player state and setPlayerLoaded flag when successful.
+     */
+    const fetchPlayer = useCallback(() => {
+        if (!playerUserId) return;
+    
+        const userDocRef = doc(db, "users", playerUserId);
+    
+        return onSnapshot(userDocRef, (snapshot) => {
+            try {
+                if (!snapshot.exists()) throw new Error("No such user with this userId");
+                const data = snapshot.data();
+
+                setPlayer({
+                    playerId: data?.playerId,
+                    userId: snapshot.id,
+                    username: data?.username,
+                    win: data?.win,
+                    loss: data?.loss,
+                    draw: data?.draw,
+                    elo: data?.elo,
+                    currentGameId: data?.currentGameId ?? undefined
+                });
+
+                setPlayerLoaded(true);
+            } catch (error) {
+                setError("Error fetching players and invites.");
+            }
+        });
+    }, [playerUserId, setPlayer]);
 
     /**
      * Fetches a list of players from Firestore excluding those with user IDs in the invites list or current player.
@@ -152,8 +180,17 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
      */
     useEffect(() => {
         if (!currentUser) return;
-        fetchPlayer();
-    }, [currentUser, fetchPlayer]);
+        fetchPlayerUserId();
+    }, [currentUser, fetchPlayerUserId]);
+
+    /**
+     * Subscribes to the users collection to fetch the player data.
+     * The fetchPlayers function is called whenever the player userId changes.
+     */
+    useEffect(() => {
+        const unsubscribePlayer = fetchPlayer();
+        return unsubscribePlayer;
+    }, [fetchPlayer]);
 
     /**
      * Subscribes to the players collection to fetch player data, excluding those already invited or the current user.

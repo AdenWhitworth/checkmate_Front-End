@@ -18,6 +18,7 @@ import { Move, Chess, Square } from "chess.js";
  * @property {Opponent | null} opponent - The current opponent's information, or null if no opponent is present.
  * @property {function} setErrorMove - Function to set the error message if a move fails.
  * @property {function} setGameMoves - Function to set the current state of game moves. Accepts a new array of moves or a function that returns an updated array.
+ * @property {function} setIsOpponentDisconnected - Function to set the disconnect/reconnect message.
  */
 export interface UseChessGameProps {
     game: Game | null;
@@ -32,6 +33,7 @@ export interface UseChessGameProps {
     opponent: Opponent | null;
     setErrorMove: (value: string | null) => void;
     setGameMoves: (value: GameMoves[] | ((prev: GameMoves[]) => GameMoves[])) => void;
+    setIsOpponentDisconnected: (value: string | null) => void;
 }
 
 /**

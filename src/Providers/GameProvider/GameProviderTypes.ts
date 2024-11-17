@@ -124,6 +124,7 @@ export interface Opponent {
  * @property {(value: string | null) => void} setErrorMove - Function to set error message for moves.
  * @property {GameMoves[]} gameMoves - List of game moves for displaying move history.
  * @property {(value: GameMoves[] | ((prev: GameMoves[]) => GameMoves[])) => void} setGameMoves - Function to update the game moves.
+ * @property {function} setIsOpponentDisconnected - Function to set the disconnect/reconnect message.
  */
 export interface GameContextType {
     playerTurn: "w" | "b";
@@ -172,4 +173,6 @@ export interface GameContextType {
     setErrorMove: (value: string | null) => void;
     gameMoves: GameMoves[];
     setGameMoves: (value: GameMoves[] | ((prev: GameMoves[]) => GameMoves[])) => void;
+    isOpponentDisconnected: string | null;
+    setIsOpponentDisconnected: (value: string | null) => void;
 }

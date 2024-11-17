@@ -23,7 +23,8 @@ export const useChessGame = ({
   setGameOver,
   opponent,
   setErrorMove,
-  setGameMoves
+  setGameMoves,
+  setIsOpponentDisconnected,
 }: UseChessGameProps): UseChessGameOutput => {
   const { sendMove, socketRef, handleCallback } = useSocket();
   
@@ -148,14 +149,11 @@ export const useChessGame = ({
     if (socketRef.current) {
       socketRef.current.off('playerDisconnected');
       socketRef.current.on('playerDisconnected', (disconnectArgs: DisconnectArgs) => {
-        if(disconnectArgs.game.playerA.userId === disconnectArgs.disconnectUserId){
-          console.log("Opponent Disconnected: ", disconnectArgs.game.playerA.username);
-        } else {
-          console.log("Opponent Disconnected: ", disconnectArgs.game.playerB.username);
-        }
+        const isPlayerA = disconnectArgs.game.playerA.userId === disconnectArgs.disconnectUserId;
+        setIsOpponentDisconnected(`${isPlayerA? disconnectArgs.game.playerA.username : disconnectArgs.game.playerB.username} has disconnected!`);
       });
     }
-  }, [socketRef]);
+  }, [socketRef, setIsOpponentDisconnected]);
 
   /**
    * Sets up event listeners for handling opponent reconnection.
@@ -164,16 +162,12 @@ export const useChessGame = ({
     if (socketRef.current) {
       socketRef.current.off('roomReconnected');
       socketRef.current.on('roomReconnected', (roomReconnectedArgs: RoomReconnectedArgs, callback: Function) => {
-        if(roomReconnectedArgs.game.playerA.userId === roomReconnectedArgs.connectUserId){
-          console.log("Opponent connected again: ", roomReconnectedArgs.game.playerA.username);
-        } else {
-          console.log("Opponent connected again: ", roomReconnectedArgs.game.playerB.username);
-        }
-
+        const isPlayerA = roomReconnectedArgs.game.playerA.userId === roomReconnectedArgs.connectUserId;
+        setIsOpponentDisconnected(`${isPlayerA? roomReconnectedArgs.game.playerA.username : roomReconnectedArgs.game.playerB.username} has reconnected to the game!`);
         handleCallback(callback, "Opponent connected again recieved.");
       });
     }
-  }, [socketRef, handleCallback]);
+  }, [socketRef, handleCallback, setIsOpponentDisconnected]);
 
   /**
    * Sets up event listeners for handling opponent forfeits.

@@ -256,7 +256,6 @@ export const useGameRoomManagement = ({
             cleanup();
 
         } catch (error) {
-            console.log(error);
             setErrorOver("Unable to close game. Please try again.");
         } finally {
             setLoadingOver(false);
@@ -274,43 +273,38 @@ export const useGameRoomManagement = ({
             try {
                 const reconnectedGame = await sendReconnectRoom({ gameId: player.currentGameId });
                 
-                if (reconnectedGame?.game) {
+                if (!reconnectedGame?.game) throw new Error("No game to reconnect to.")
                     
-                    const isPlayerA = player.userId === reconnectedGame.game.playerA.userId;
+                const isPlayerA = player.userId === reconnectedGame.game.playerA.userId;
 
-                    setOrientation(isPlayerA? reconnectedGame.game.playerA.orientation : reconnectedGame.game.playerB.orientation);
-                    
-                    setOpponent(isPlayerA? {
-                        opponentUsername: reconnectedGame.game.playerB.username,
-                        opponentUserId: reconnectedGame.game.playerB.userId,
-                        opponentPlayerId: reconnectedGame.game.playerB.playerId,
-                        opponentElo: reconnectedGame.game.playerB.elo
-                    } : {
-                        opponentUsername: reconnectedGame.game.playerA.username,
-                        opponentUserId: reconnectedGame.game.playerA.userId,
-                        opponentPlayerId: reconnectedGame.game.playerA.playerId,
-                        opponentElo: reconnectedGame.game.playerA.elo
-                    });
-                    
-                    setFen(reconnectedGame.game.fen);
-                    
-                    const deserializedHistory: Move[] = reconnectedGame.game.history?.map((moveString: string) => {
-                        try {
-                            return JSON.parse(moveString);
-                        } catch (error) {
-                            console.error("Failed to parse move:", moveString);
-                            return null;
-                        }
-                    }).filter((move) => move !== null);
+                setOrientation(isPlayerA? reconnectedGame.game.playerA.orientation : reconnectedGame.game.playerB.orientation);
+                
+                setOpponent(isPlayerA? {
+                    opponentUsername: reconnectedGame.game.playerB.username,
+                    opponentUserId: reconnectedGame.game.playerB.userId,
+                    opponentPlayerId: reconnectedGame.game.playerB.playerId,
+                    opponentElo: reconnectedGame.game.playerB.elo
+                } : {
+                    opponentUsername: reconnectedGame.game.playerA.username,
+                    opponentUserId: reconnectedGame.game.playerA.userId,
+                    opponentPlayerId: reconnectedGame.game.playerA.playerId,
+                    opponentElo: reconnectedGame.game.playerA.elo
+                });
+                
+                setFen(reconnectedGame.game.fen);
+                
+                const deserializedHistory: Move[] = reconnectedGame.game.history?.map((moveString: string) => {
+                    try {
+                        return JSON.parse(moveString);
+                    } catch (error) {
+                        console.error("Failed to parse move:", moveString);
+                        return null;
+                    }
+                }).filter((move) => move !== null);
 
-                    setPlayerTurn(reconnectedGame.game.currentTurn);
-                    setHistory(deserializedHistory || []);
-                    setGame(reconnectedGame.game);
-                    
-                    console.log("Reconnected to game:", reconnectedGame.game);
-                } else {
-                    console.warn("No game found to reconnect to.");
-                }
+                setPlayerTurn(reconnectedGame.game.currentTurn);
+                setHistory(deserializedHistory || []);
+                setGame(reconnectedGame.game);
             } catch (error) {
                 console.error("Failed to reconnect to game:", error);
             }
