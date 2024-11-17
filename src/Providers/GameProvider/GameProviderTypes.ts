@@ -1,5 +1,5 @@
 import { Move, Chess, Square } from "chess.js";
-import { Invite, Player } from "../PlayerProvider/PlayerProviderTypes";
+import { Invite, PlayerList } from "../PlayerProvider/PlayerProviderTypes";
 import { GameMoves } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
 import { Timestamp } from 'firebase/firestore';
 
@@ -111,7 +111,7 @@ export interface Opponent {
  * @property {(value: string | null) => void} setErrorCreateGame - Function to set the error message for game creation.
  * @property {string | null} successCreateGame - Success message for game creation.
  * @property {(value: string | null) => void} setSuccessCreateGame - Function to set the success message for game creation.
- * @property {(value: Player) => void} handleCreateRoom - Function to create a game room with an opponent.
+ * @property {(value: PlayerList) => void} handleCreateRoom - Function to create a game room with an opponent.
  * @property {string | null} loadingJoinGameOpponentUserId - Loading state for joining a game.
  * @property {string | null} errorJoinGame - Error message related to joining a game.
  * @property {(value: string | null) => void} setErrorJoinGame - Function to set error message for joining a game.
@@ -160,7 +160,7 @@ export interface GameContextType {
     setErrorCreateGame: (value: string | null) => void;
     successCreateGame: string | null;
     setSuccessCreateGame: (value: string | null) => void;
-    handleCreateRoom: (value: Player) => void;
+    handleCreateRoom: (value: PlayerList) => void;
     loadingJoinGameOpponentUserId: string | null;
     errorJoinGame: string | null;
     setErrorJoinGame: (value: string | null) => void;

@@ -1,7 +1,39 @@
 /**
- * Represents a player's information.
+ * Represents a player's static information.
  * 
- * @interface Player
+ * @interface PlayerStatic
+ * @property {string} playerId - The ID of the player.
+ * @property {string} userId - The ID of the user associated with the player.
+ * @property {string} username - The username of the player.
+ */
+export interface PlayerStatic {
+    playerId: string;
+    userId: string;
+    username: string;
+}
+
+/**
+ * Represents a player's dynamic information.
+ * 
+ * @interface PlayerDynamic
+ * @property {number} [win] - Optional number of wins by the player.
+ * @property {number} [loss] - Optional number of losses by the player.
+ * @property {number} [draw] - Optional number of draws by the player.
+ * @property {number} elo - Wlo rank of the player.
+ * @property {string} [currentGameId] - Optional gameId for an active game the player is in.
+ */
+export interface PlayerDynamic {
+    win?: number;
+    loss?: number;
+    draw?: number;
+    elo: number;
+    currentGameId?: string;
+}
+
+/**
+ * Represents a list player's information.
+ * 
+ * @interface PlayerList
  * @property {string} playerId - The ID of the player.
  * @property {string} userId - The ID of the user associated with the player.
  * @property {string} username - The username of the player.
@@ -11,15 +43,11 @@
  * @property {number} elo - Wlo rank of the player.
  * @property {string} [currentGameId] - Optional gameId for an active game the player is in.
  */
-export interface Player {
+export interface PlayerList {
     playerId: string;
     userId: string;
     username: string;
-    win?: number;
-    loss?: number;
-    draw?: number;
     elo: number;
-    currentGameId?: string;
 }
 
 /**
@@ -36,10 +64,12 @@ export interface Player {
  * @property {(value: boolean) => void} setLobbySelection - Function to update the lobby selection state.
  */
 export interface PlayerContextType {
-    player: Player | null;
+    playerStatic: PlayerStatic | null;
+    playerDynamic: PlayerDynamic | null;
+    setPlayerDynamic: (value: PlayerDynamic | null | ((prev: PlayerDynamic | null) => PlayerDynamic | null)) => void;
     loading: boolean;
     error: string | null;
-    players: Player[];
+    players: PlayerList[];
     invites: Invite[];
     invitesCount: number;
     lobbySelection: boolean;

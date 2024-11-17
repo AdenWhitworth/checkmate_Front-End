@@ -39,7 +39,7 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
   const socketRef = useRef<Socket | null>(null);
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
   const {currentUser, accessToken} = useAuth();
-  const { player } = usePlayer();
+  const { playerStatic } = usePlayer();
 
   /**
    * Handles executing a callback function with a given message and optional data.
@@ -258,7 +258,7 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
    * @param {string} accessToken - The access token used for authenticating the socket connection.
    */
   const connectSocket = useCallback((accessToken: string) => {
-    if (socketRef.current || !player) return;
+    if (socketRef.current || !playerStatic) return;
 
     const socketInstance = io(url, {
       auth: { token: accessToken },
@@ -272,8 +272,8 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
 
     socketInstance.on('connect', async () => {
       try {
-        if (!player) throw Error("Player required for adding username") 
-        await sendAddUser({ username: player.username, userId: player.userId});
+        if (!playerStatic) throw Error("Player required for adding username") 
+        await sendAddUser({ username: playerStatic.username, userId: playerStatic.userId});
         setIsConnected(true);
         setErrorSocket(null);
       } catch (error) {
@@ -310,7 +310,7 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
       console.error('Reconnection failed');
       setErrorReconnect(true);
     });
-  }, [url, player, sendAddUser]);
+  }, [url, playerStatic, sendAddUser]);
 
   /**
    * Disconnects the socket connection and clears the relevant states.
@@ -328,7 +328,7 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
    * Initializes and manages socket connections and disconnections based on user authentication and player data.
    */
   useEffect(() => {
-    if (currentUser && accessToken && player) {
+    if (currentUser && accessToken && playerStatic) {
       disconnectSocket();
       connectSocket(accessToken);
     }
@@ -336,7 +336,7 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
     return () => {
       disconnectSocket();
     };
-  }, [connectSocket, disconnectSocket, currentUser, player, accessToken]);
+  }, [connectSocket, disconnectSocket, currentUser, playerStatic, accessToken]);
 
   return (
     <SocketContext.Provider value={{

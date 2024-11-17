@@ -1,6 +1,6 @@
 import { Move } from 'chess.js';
 import { Opponent, Game } from '../../Providers/GameProvider/GameProviderTypes';
-import { Invite, Player } from '../../Providers/PlayerProvider/PlayerProviderTypes';
+import { Invite, PlayerList } from '../../Providers/PlayerProvider/PlayerProviderTypes';
 
 /**
  * Defines the properties required by the `useGameRoomManagement` hook.
@@ -69,14 +69,14 @@ export interface UseGameRoomManagementProps {
  * 
  * @property {() => void} handleForfeit - Function to handle forfeiting the current game.
  * @property {() => void} handleExitRoom - Function to handle exiting the current game room.
- * @property {(potentialOpponent: Player) => void} handleCreateRoom - Function to create a new game room with a selected opponent.
+ * @property {(potentialOpponent: PlayerList) => void} handleCreateRoom - Function to create a new game room with a selected opponent.
  * @property {(invite: Invite) => void} handleJoinRoom - Function to join a game room using an invitation.
  * @property {() => void} handleCloseRoom - Function to handle closing the current game room.
  */
 export interface UseGameRoomManagementOutput {
     handleForfeit: () => void;
     handleExitRoom: () => void;
-    handleCreateRoom: (potentialOpponent: Player) => void;
+    handleCreateRoom: (potentialOpponent: PlayerList) => void;
     handleJoinRoom: (invite: Invite) => void;
     handleCloseRoom: () => void;
 }

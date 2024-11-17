@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { db } from '../../firebase';
 import { collection, query, where, getDocs, onSnapshot, doc } from 'firebase/firestore';
 import { useAuth } from '../AuthProvider/AuthProvider';
-import { Player, PlayerContextType, Invite } from './PlayerProviderTypes';
+import { PlayerDynamic, PlayerList, PlayerContextType, Invite, PlayerStatic } from './PlayerProviderTypes';
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
@@ -21,11 +21,12 @@ const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
     const { currentUser } = useAuth();
     const [playerUserId, setPlayerUserId] = useState<string | null>(null);
-    const [player, setPlayer] = useState<Player | null>(null);
+    const [playerStatic, setPlayerStatic] = useState<PlayerStatic | null>(null);
+    const [playerDynamic, setPlayerDynamic] = useState<PlayerDynamic | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [players, setPlayers] = useState<Player[]>([]);
+    const [players, setPlayers] = useState<PlayerList[]>([]);
     const [invites, setInvites] = useState<Invite[]>([]);
     const [invitesCount, setInvitesCount] = useState<number>(0);
     const [lobbySelection, setLobbySelection] = useState<boolean>(false);
@@ -35,7 +36,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
     const [playersLoaded, setPlayersLoaded] = useState<boolean>(false);
     const [invitesLoaded, setInvitesLoaded] = useState<boolean>(false);
 
-    const invitesUserIDs = useMemo(() => invites.map(invite => invite.requestUserId).concat(player?.userId || ''), [invites, player]);
+    const invitesUserIDs = useMemo(() => invites.map(invite => invite.requestUserId).concat(playerStatic?.userId || ''), [invites, playerStatic]);
 
     /**
      * Checks if all loading states are complete and sets loading to false if so.
@@ -82,16 +83,38 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
             try {
                 if (!snapshot.exists()) throw new Error("No such user with this userId");
                 const data = snapshot.data();
+                if (!data) return;
 
-                setPlayer({
-                    playerId: data?.playerId,
+                const newPlayerStatic: PlayerStatic = {
+                    playerId: data.playerId,
                     userId: snapshot.id,
-                    username: data?.username,
-                    win: data?.win,
-                    loss: data?.loss,
-                    draw: data?.draw,
-                    elo: data?.elo,
-                    currentGameId: data?.currentGameId ?? undefined
+                    username: data.username,
+                };
+
+                const newPlayerDynamic: PlayerDynamic = {
+                    win: data.win ?? 0,
+                    loss: data.loss ?? 0,
+                    draw: data.draw ?? 0,
+                    elo: data.elo ?? 1200,
+                    currentGameId: data.currentGameId ?? undefined,
+                };
+
+                setPlayerStatic((prev) => {
+                    const hasChanged =
+                        prev?.playerId !== newPlayerStatic.playerId ||
+                        prev?.userId !== newPlayerStatic.userId ||
+                        prev?.username !== newPlayerStatic.username;
+                    return hasChanged ? newPlayerStatic : prev;
+                });
+
+                setPlayerDynamic((prev) => {
+                    const hasChanged = 
+                        prev?.win !== newPlayerDynamic.win ||
+                        prev?.loss !== newPlayerDynamic.loss ||
+                        prev?.draw !== newPlayerDynamic.draw ||
+                        prev?.elo !== newPlayerDynamic.elo ||
+                        prev?.currentGameId !== newPlayerDynamic.currentGameId
+                    return hasChanged? newPlayerDynamic : prev;
                 });
 
                 setPlayerLoaded(true);
@@ -99,14 +122,14 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                 setError("Error fetching players and invites.");
             }
         });
-    }, [playerUserId, setPlayer]);
+    }, [playerUserId, setPlayerDynamic, setPlayerStatic]);
 
     /**
      * Fetches a list of players from Firestore excluding those with user IDs in the invites list or current player.
      * Sets the players state and playersLoaded flag when successful.
      */
     const fetchPlayers = useCallback(() => {
-        if (!player || !player.userId) return;
+        if (!playerStatic || !playerStatic.userId) return;
 
         if (invitesUserIDs.length > 10) {
             setError("Error fetching players and invites.");
@@ -130,17 +153,17 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                 setError("Error fetching players and invites.");
             }
         });
-    }, [player, invitesUserIDs]);
+    }, [playerStatic, invitesUserIDs]);
 
     /**
      * Fetches a list of invites for the current user from Firestore.
      * Sets the invites state, invites count, and invitesLoaded flag when successful.
      */
     const fetchInvites = useCallback(() => {
-        if (!player || !player.userId) return;
+        if (!playerStatic || !playerStatic.userId) return;
 
         const userCollection = collection(db, 'users');
-        const DocRef = doc(userCollection, player.userId);
+        const DocRef = doc(userCollection, playerStatic.userId);
         const inviteCollection = collection(DocRef, 'invites');
         const q = query(inviteCollection);
 
@@ -164,7 +187,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                 setError("Error fetching players and invites.");
             }
         });
-    }, [player]);
+    }, [playerStatic]);
 
     /**
      * Checks if all required states (player, players, and invites) are loaded.
@@ -212,7 +235,9 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
 
     return (
         <PlayerContext.Provider value={{ 
-            player, 
+            playerStatic,
+            playerDynamic,
+            setPlayerDynamic, 
             loading, 
             error, 
             players, 

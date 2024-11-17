@@ -17,7 +17,7 @@ import { Game } from "../../../Providers/GameProvider/GameProviderTypes";
  */
 export default function InGameStats(): JSX.Element {
     const { orientation, playerTurn, opponent, game } = useGame();
-    const { player } = usePlayer();
+    const { playerStatic, playerDynamic } = usePlayer();
     const { playerPieces, opponentPieces } = useCapturedPieces();
 
     const isWhite = orientation === "w";
@@ -69,8 +69,8 @@ export default function InGameStats(): JSX.Element {
             <HistoryMoves />
 
             <GameStats 
-                username={player?.username || 'Player'} 
-                elo={player?.elo || 0}
+                username={playerStatic?.username || 'Player'} 
+                elo={playerDynamic?.elo || 0}
                 pieces={playerPieces} 
                 isTurn={isPlayerTurn} 
                 isLoading={false}

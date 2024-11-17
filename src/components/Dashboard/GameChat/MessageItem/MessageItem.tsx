@@ -23,9 +23,9 @@ export default function MessageItem({
     retrySendMessage
 }: MessageItemProps): JSX.Element {
 
-    const { player } = usePlayer();
+    const { playerStatic } = usePlayer();
 
-    const isPlayer = message.username === player?.username;
+    const isPlayer = message.username === playerStatic?.username;
     const messageClass = isPlayer ? "message-txt message-player" : "message-txt message-opponent";
     const fromClass = isPlayer ? "txt-player" : "txt-opponent";
 

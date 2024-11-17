@@ -5,7 +5,7 @@ import { UseGameRoomManagementOutput, UseGameRoomManagementProps } from './useGa
 import { useSocket } from '../../Providers/SocketProvider/SocketProvider';
 import { usePlayer } from '../../Providers/PlayerProvider/PlayerProvider';
 import { Game, Opponent, InGamePlayer } from '../../Providers/GameProvider/GameProviderTypes';
-import { Player, Invite } from '../../Providers/PlayerProvider/PlayerProviderTypes';
+import { PlayerList, Invite } from '../../Providers/PlayerProvider/PlayerProviderTypes';
 import { Move } from 'chess.js';
 
 /*
@@ -49,7 +49,7 @@ export const useGameRoomManagement = ({
         sendJoinRoom,
         sendReconnectRoom
     } = useSocket();
-    const { player } = usePlayer();
+    const { playerStatic, playerDynamic, setPlayerDynamic } = usePlayer();
 
     /**
      * Handles forfeiting the current game by notifying the server and resetting the state.
@@ -61,10 +61,18 @@ export const useGameRoomManagement = ({
         setLoadingForfeit(true);
         setErrorForfeit(null);
         try {
-            if (!socketRef.current || !game || !player) throw new Error("Socket, room, and player required");
+            if (!socketRef.current || !game || !playerStatic) throw new Error("Socket, room, and player required");
 
-            const username = player.username;
+            const username = playerStatic.username;
             await sendForfeit({ game, username });
+            setPlayerDynamic((prev) => {
+                if (!prev) return null;
+
+                return {
+                  ...prev,
+                  currentGameId: undefined,
+                };
+            });
             cleanup();
         } catch (error) {
             setErrorForfeit("Unable to forfeit. Please try again.");
@@ -72,7 +80,7 @@ export const useGameRoomManagement = ({
             setForfeitGame(false);
             setLoadingForfeit(false);
         }
-    }, [game, player, socketRef, sendForfeit, cleanup, setLoadingForfeit, setErrorForfeit, setForfeitGame]);
+    }, [game, playerStatic, socketRef, setPlayerDynamic, sendForfeit, cleanup, setLoadingForfeit, setErrorForfeit, setForfeitGame]);
 
     /**
      * Handles exiting the current game room by deleting the corresponding invitation document.
@@ -104,13 +112,13 @@ export const useGameRoomManagement = ({
      * 
      * @function
      * @param {Game} game - The game to invite the opponent to.
-     * @param {Player} potentialOpponent - The player object of the opponent to invite.
+     * @param {PlayerList} potentialOpponent - The PlayerList object of the opponent to invite.
      * @returns {Promise<void>} - A promise that resolves when the invitation is complete.
      * @throws {Error} - Throws an error if the invitation fails.
      */
-    const invitePlayer = useCallback(async (game: Game, potentialOpponent: Player): Promise<void> => {
+    const invitePlayer = useCallback(async (game: Game, potentialOpponent: PlayerList): Promise<void> => {
         try {
-            if (!player) throw new Error("Player not found");
+            if (!playerStatic || !playerDynamic) throw new Error("Player not found");
 
             const userCollection = collection(db, 'users');
             const docRefPlayer = doc(userCollection, potentialOpponent.userId);
@@ -121,11 +129,11 @@ export const useGameRoomManagement = ({
             const inviteCollection = collection(docRefPlayer, 'invites');
 
             const inviteDocRef = await addDoc(inviteCollection, {
-                requestUserId: player.userId,
-                requestUsername: player.username,
-                requestPlayerId: player.playerId,
+                requestUserId: playerStatic.userId,
+                requestUsername: playerStatic.username,
+                requestPlayerId: playerStatic.playerId,
                 requestGameId: game.gameId,
-                requestElo: player.elo,
+                requestElo: playerDynamic.elo,
             });
 
             const newOpponent: Opponent = {
@@ -141,28 +149,28 @@ export const useGameRoomManagement = ({
         } catch (error) {
             throw new Error("Invitation failed");
         }
-    }, [player, setOpponent, setGame]);
+    }, [playerStatic, playerDynamic, setOpponent, setGame]);
 
     /**
      * Handles creating a new game room and sending an invitation to the selected opponent.
      * 
-     * @param {Player} potentialOpponent - The player object of the opponent to invite.
+     * @param {PlayerList} potentialOpponent - The PlayerList object of the opponent to invite.
      * @async
      * @returns {Promise<void>} A promise that resolves when the room creation and invitation operations are complete.
      */
-    const handleCreateRoom = useCallback(async (potentialOpponent: Player): Promise<void> => {
+    const handleCreateRoom = useCallback(async (potentialOpponent: PlayerList): Promise<void> => {
         setLoadingCreateGameOpponentUserId(potentialOpponent.userId);
         setErrorCreateGame(null);
         setSuccessCreateGame(null);
     
         try {
-            if (!socketRef.current || !player) throw new Error("No game created.");
+            if (!socketRef.current || !playerStatic || !playerDynamic) throw new Error("No game created.");
             
             const playerA: InGamePlayer = {
-                userId: player.userId,
-                playerId: player.playerId,
-                username: player.username,
-                elo: player.elo,
+                userId: playerStatic.userId,
+                playerId: playerStatic.playerId,
+                username: playerStatic.username,
+                elo: playerDynamic.elo,
                 connected: "pending",
                 orientation: "w",
             };
@@ -187,7 +195,7 @@ export const useGameRoomManagement = ({
         } finally {
             setLoadingCreateGameOpponentUserId(null);
         }
-    }, [player, socketRef, sendCreateRoom, setLoadingCreateGameOpponentUserId, setErrorCreateGame, setSuccessCreateGame, setOrientation, invitePlayer]);
+    }, [playerStatic, playerDynamic, socketRef, sendCreateRoom, setLoadingCreateGameOpponentUserId, setErrorCreateGame, setSuccessCreateGame, setOrientation, invitePlayer]);
 
     /**
      * Handles joining a game room using the provided invitation.
@@ -202,14 +210,14 @@ export const useGameRoomManagement = ({
         setSuccessJoinGame(null);
         
         try {
-            if (!socketRef.current || !player) throw Error("Unable to join room");
+            if (!socketRef.current || !playerStatic) throw Error("Unable to join room");
 
             const updatedGame = await sendJoinRoom({ gameId: invite.requestGameId });
 
             if (!updatedGame) throw new Error("No updated room.");
             
             const userCollection = collection(db, 'users');
-            const DocRef = doc(userCollection, player.userId);
+            const DocRef = doc(userCollection, playerStatic.userId);
             const inviteCollection = collection(DocRef, 'invites');
             const DocRef2 = doc(inviteCollection, invite.inviteId);
             deleteDoc(DocRef2);
@@ -230,7 +238,7 @@ export const useGameRoomManagement = ({
         } finally {
             setLoadingJoinGameOpponentUserId(null);
         }
-    }, [socketRef, player, sendJoinRoom, setLoadingJoinGameOpponentUserId, setErrorJoinGame, setSuccessJoinGame, setOpponent, setOrientation, setGame, setSuccessCreateGame]);
+    }, [socketRef, playerStatic, sendJoinRoom, setLoadingJoinGameOpponentUserId, setErrorJoinGame, setSuccessJoinGame, setOpponent, setOrientation, setGame, setSuccessCreateGame]);
 
     /**
      * Handles closing the current game room and updating win/loss records if necessary.
@@ -252,7 +260,14 @@ export const useGameRoomManagement = ({
             const updatedGame: Game = { ...game, winner };
             
             await sendCloseRoom({ game: updatedGame, inviteCancelled: false});
-            
+            setPlayerDynamic((prev) => {
+                if (!prev) return null;
+
+                return {
+                  ...prev,
+                  currentGameId: undefined,
+                };
+            });
             cleanup();
 
         } catch (error) {
@@ -260,7 +275,7 @@ export const useGameRoomManagement = ({
         } finally {
             setLoadingOver(false);
         }
-    }, [findWinner, game, cleanup, sendCloseRoom, setLoadingOver, setErrorOver]);
+    }, [findWinner, game, cleanup, sendCloseRoom, setLoadingOver, setErrorOver, setPlayerDynamic]);
 
     /**
      * Handles reconnecting to the current game.
@@ -269,13 +284,13 @@ export const useGameRoomManagement = ({
      * @returns {Promise<void>} A promise that resolves when the room closing operation is complete.
      */
     const handleReconnectRoom = useCallback(async () => {
-        if (!game && player?.currentGameId) {
+        if (!game && playerDynamic?.currentGameId && playerStatic?.userId) {
             try {
-                const reconnectedGame = await sendReconnectRoom({ gameId: player.currentGameId });
+                const reconnectedGame = await sendReconnectRoom({ gameId: playerDynamic.currentGameId });
                 
                 if (!reconnectedGame?.game) throw new Error("No game to reconnect to.")
                     
-                const isPlayerA = player.userId === reconnectedGame.game.playerA.userId;
+                const isPlayerA = playerStatic.userId === reconnectedGame.game.playerA.userId;
 
                 setOrientation(isPlayerA? reconnectedGame.game.playerA.orientation : reconnectedGame.game.playerB.orientation);
                 
@@ -309,7 +324,7 @@ export const useGameRoomManagement = ({
                 console.error("Failed to reconnect to game:", error);
             }
         }
-    }, [game, player, sendReconnectRoom, setGame, setOpponent, setOrientation, setFen, setHistory, setPlayerTurn]);
+    }, [game, playerStatic, playerDynamic, sendReconnectRoom, setGame, setOpponent, setOrientation, setFen, setHistory, setPlayerTurn]);
     
     /**
      * Attempts to reconnect to a game when the component mounts or when `handleReconnectRoom` changes.
