@@ -21,9 +21,37 @@
 
 .moves-line h3{
     font-size: 14px;
-    flex: 1;
 }
 
 .move-number{
-    padding-left: 15%;
+    flex: 1;
+    text-align: center;
+}
+
+.move-white{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+    gap: 4px;
+}
+
+.move-white img{
+    height: 14px;
+    width: auto;
+}
+
+.move-black{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+    gap: 4px;
+}
+
+.move-black img{
+    height: 14px;
+    width: auto;
 }

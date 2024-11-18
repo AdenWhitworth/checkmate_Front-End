@@ -33,9 +33,15 @@ export default function HistoryMoves(): JSX.Element {
                 history.forEach((move, index) => {
                     const id = uuidv4();
                     if (index % 2 === 0) {
-                        updatedMoves.push({ id, rowMoves: { whiteMove: move.to, blackMove: "" } });
+                        updatedMoves.push({ id, rowMoves: { 
+                            whiteMove: move.to, 
+                            whitePiece: move.piece,
+                            blackMove: "",
+                            blackPiece: null,
+                        } });
                     } else {
                         updatedMoves[updatedMoves.length - 1].rowMoves.blackMove = move.to;
+                        updatedMoves[updatedMoves.length - 1].rowMoves.blackPiece = move.piece;
                     }
                 });
             } else {
@@ -50,9 +56,15 @@ export default function HistoryMoves(): JSX.Element {
                     const id = uuidv4();
     
                     if (existingMovesCount % 2 === 0) {
-                        updatedMoves.push({ id, rowMoves: { whiteMove: lastMove.to, blackMove: "" } });
+                        updatedMoves.push({ id, rowMoves: { 
+                            whiteMove: lastMove.to, 
+                            whitePiece: lastMove.piece,
+                            blackMove: "",
+                            blackPiece: null,
+                        } });
                     } else {
                         updatedMoves[updatedMoves.length - 1].rowMoves.blackMove = lastMove.to;
+                        updatedMoves[updatedMoves.length - 1].rowMoves.blackPiece = lastMove.piece;
                     }
                 }
             }

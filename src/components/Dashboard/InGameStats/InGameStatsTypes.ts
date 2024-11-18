@@ -3,11 +3,15 @@
  * 
  * @interface RowMoves
  * @property {string} whiteMove - The move made by the white player.
+ * @property {"p" | "n" | "b" | "r" | "q" | "k"} whitePiece - The piece moved by the white player.
  * @property {string} blackMove - The move made by the black player.
+ * @property {"p" | "n" | "b" | "r" | "q" | "k" | null} blackPiece - The piece moved by the black player or null as a placeholder for black's next move in this row.
  */
 export interface RowMoves {
     whiteMove: string;
+    whitePiece: "p" | "n" | "b" | "r" | "q" | "k";
     blackMove: string;
+    blackPiece: "p" | "n" | "b" | "r" | "q" | "k" | null;
 }
 
 /**
