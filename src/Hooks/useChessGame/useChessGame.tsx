@@ -202,19 +202,28 @@ export const useChessGame = ({
    */
   const findWinner = useCallback((): "playerA" | "playerB" | "draw" | null => {
     if (!gameOver) return null;
+    
+    const playerAColor = game?.playerA.orientation;
+    const isPlayerA = orientation === playerAColor;
 
     if (gameOver.includes("Black wins")) {
-      return orientation === "w" ? "playerB" : "playerA";
-    } else if (gameOver.includes("White wins")) {
-      return orientation === "w" ? "playerA" : "playerB";
-    } else if (gameOver === `${opponent?.opponentUsername} has Forfeited`) {
-      return orientation === "w" ? "playerA" : "playerB";
-    } else if (gameOver.includes("Draw")) {
+      return playerAColor === "b" ? "playerA" : "playerB";
+    }
+
+    if (gameOver.includes("White wins")) {
+      return playerAColor === "w" ? "playerA" : "playerB";
+    }
+
+    if (gameOver === `${opponent?.opponentUsername} has Forfeited`) {
+      return isPlayerA ? "playerA" : "playerB";
+    }
+
+    if (gameOver.includes("Draw")) {
       return "draw";
     }
 
     return null;
-  }, [gameOver, orientation, opponent]);
+  }, [game, gameOver, orientation, opponent]);
 
   /**
    * Initializes the socket event listeners when the hook mounts.
