@@ -14,10 +14,13 @@ import {
   InGameMessageArgs,
   MoveArgs,
   ForfeitArgs,
+  CreateRoomArgs,
+  ReconnectRoomArgs,
+  CallbackResponseReconnectRoom
 } from './SocketProviderTypes';
 import { usePlayer } from '../PlayerProvider/PlayerProvider';
 import { CallbackResponse } from './SocketProviderTypes';
-import { Room } from '../GameProvider/GameProviderTypes';
+import { Game } from '../GameProvider/GameProviderTypes';
 
 const SocketContext: React.Context<SocketContextType | undefined> = createContext<SocketContextType | undefined>(undefined);
 
@@ -36,7 +39,7 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
   const socketRef = useRef<Socket | null>(null);
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
   const {currentUser, accessToken} = useAuth();
-  const { player } = usePlayer();
+  const { playerStatic } = usePlayer();
 
   /**
    * Handles executing a callback function with a given message and optional data.
@@ -77,18 +80,19 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
   /**
    * Sends a request to create a game room via the socket.
    * 
-   * @returns {Promise<{ room: Room } | null>} A promise that resolves to an object with the created room information, or null on failure.
+   * @param {CreateRoomArgs} createRoomArgs - The arguments required to create a new game, including player details.
+   * @returns {Promise<{ room: Room } | null>} A promise that resolves to an object with the created game information, or null on failure.
    */
-  const sendCreateRoom = useCallback((): Promise<{ room: Room } | null> => {
+  const sendCreateRoom = useCallback((createRoomArgs: CreateRoomArgs): Promise<{ game: Game } | null> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
-        socketRef.current.emit("createRoom", (response: CallbackResponseCreateRoom) => {
+        socketRef.current.emit("createRoom", createRoomArgs, (response: CallbackResponseCreateRoom) => {
           if (response.error) {
             setResponseMessage(response.message);
             reject(new Error(response.message));
           } else {
             setResponseMessage(response.message);
-            resolve({ room: response.room });
+            resolve({ game: response.game });
           }
         });
       } else {
@@ -102,9 +106,9 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
    * Sends a request to join an existing game room via the socket.
    * 
    * @param {JoinRoomArgs} joinRoomArgs - The information required to join a room.
-   * @returns {Promise<{ room: Room } | null>} A promise that resolves to an object with the joined room information, or null on failure.
+   * @returns {Promise<{ game: Game } | null>} A promise that resolves to an object with the joined room information, or null on failure.
    */
-  const sendJoinRoom = useCallback((joinRoomArgs: JoinRoomArgs): Promise<{ room: Room } | null> => {
+  const sendJoinRoom = useCallback((joinRoomArgs: JoinRoomArgs): Promise<{ game: Game } | null> => {
     return new Promise((resolve, reject) => {
       if (socketRef.current && isConnected) {
         socketRef.current.emit("joinRoom", joinRoomArgs, (response: CallbackResponseJoinRoom) => {
@@ -113,7 +117,7 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
             reject(new Error(response.message));
           } else {
             setResponseMessage(response.message);
-            resolve({ room: response.room });
+            resolve({ game: response.game });
           }
         });
       } else {
@@ -139,6 +143,31 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
           } else {
             setResponseMessage(response.message);
             resolve(true);
+          }
+        });
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
+
+  /**
+   * Sends a request to rejoin an existing game room via the socket.
+   * 
+   * @param {ReconnectRoomArgs} reconnectRoomArgs - The information required to rejoin a room.
+   * @returns {Promise<{ game: Game } | null>} A promise that resolves to an object with the joined room information, or null on failure.
+   */
+  const sendReconnectRoom = useCallback((reconnectRoomArgs: ReconnectRoomArgs): Promise<{ game: Game }> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("reconnectRoom", reconnectRoomArgs, (response: CallbackResponseReconnectRoom) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(new Error(response.message));
+          } else {
+            setResponseMessage(response.message);
+            resolve({ game: response.game });
           }
         });
       } else {
@@ -229,7 +258,7 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
    * @param {string} accessToken - The access token used for authenticating the socket connection.
    */
   const connectSocket = useCallback((accessToken: string) => {
-    if (socketRef.current || !player) return;
+    if (socketRef.current || !playerStatic) return;
 
     const socketInstance = io(url, {
       auth: { token: accessToken },
@@ -243,8 +272,8 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
 
     socketInstance.on('connect', async () => {
       try {
-        if (!player) throw Error("Player required for adding username") 
-        await sendAddUser({ username: player.username});
+        if (!playerStatic) throw Error("Player required for adding username") 
+        await sendAddUser({ username: playerStatic.username, userId: playerStatic.userId});
         setIsConnected(true);
         setErrorSocket(null);
       } catch (error) {
@@ -281,7 +310,7 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
       console.error('Reconnection failed');
       setErrorReconnect(true);
     });
-  }, [url, player, sendAddUser, handleCallback]);
+  }, [url, playerStatic, sendAddUser]);
 
   /**
    * Disconnects the socket connection and clears the relevant states.
@@ -299,7 +328,7 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
    * Initializes and manages socket connections and disconnections based on user authentication and player data.
    */
   useEffect(() => {
-    if (currentUser && accessToken && player) {
+    if (currentUser && accessToken && playerStatic) {
       disconnectSocket();
       connectSocket(accessToken);
     }
@@ -307,13 +336,13 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
     return () => {
       disconnectSocket();
     };
-  }, [connectSocket, disconnectSocket, currentUser, player, accessToken]);
+  }, [connectSocket, disconnectSocket, currentUser, playerStatic, accessToken]);
 
   return (
     <SocketContext.Provider value={{
       isConnected, errorSocket, refresh, errorReconnect, setErrorReconnect, setRefresh,
       sendAddUser, sendCreateRoom, sendJoinRoom, sendCloseRoom, sendInGameMessage, connectSocket, 
-      disconnectSocket, sendMove, sendForfeit, responseMessage, socketRef, handleCallback
+      disconnectSocket, sendMove, sendForfeit, responseMessage, socketRef, handleCallback, sendReconnectRoom
     }}>
       {children}
     </SocketContext.Provider>

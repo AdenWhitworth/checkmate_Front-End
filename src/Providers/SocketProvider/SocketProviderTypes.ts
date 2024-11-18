@@ -1,8 +1,9 @@
 import React, { ReactNode, MutableRefObject } from 'react';
 import { Move } from "chess.js";
-import { SocketPlayer, Room } from '../GameProvider/GameProviderTypes';
+import { InGamePlayer, Opponent } from '../GameProvider/GameProviderTypes';
 import { Socket } from 'socket.io-client';
 import { Message } from '../../components/Dashboard/GameChat/GameChatTypes';
+import { Game } from '../GameProvider/GameProviderTypes';
 
 /**
  * Represents the context type for the Socket Provider.
@@ -25,6 +26,7 @@ import { Message } from '../../components/Dashboard/GameChat/GameChatTypes';
  * @property {string | null} responseMessage - Holds any response messages received from the server.
  * @property {MutableRefObject<Socket | null>} socketRef - A mutable reference object pointing to the active socket connection.
  * @property {Function} handleCallback - Handles the callback functions with a message and optional data.
+ * @property {Function} sendReconnectRoom - Sends a request to rejoin a game room.
  */
 export interface SocketContextType {
     isConnected: boolean;
@@ -36,8 +38,8 @@ export interface SocketContextType {
     sendAddUser: (addUserArgs: AddUserArgs) => Promise<boolean>;
     connectSocket: (accessToken: string) => void;
     disconnectSocket: () => void;
-    sendCreateRoom: () => Promise<{ room: Room } | null>;
-    sendJoinRoom: (joinRoomArgs: JoinRoomArgs) => Promise<{ room: Room } | null>;
+    sendCreateRoom: (createRoomArgs: CreateRoomArgs) => Promise<{ game: Game } | null>;
+    sendJoinRoom: (joinRoomArgs: JoinRoomArgs) => Promise<{ game: Game } | null>;
     sendCloseRoom: (closeRoomArgs: CloseRoomArgs) => Promise<boolean>;
     sendInGameMessage: (inGameMessageArgs: InGameMessageArgs) => Promise<boolean>;
     sendMove: (moveArgs: MoveArgs) => Promise<boolean>;
@@ -45,6 +47,7 @@ export interface SocketContextType {
     responseMessage: string | null;
     socketRef: MutableRefObject<Socket | null>;
     handleCallback: (callback: Function, message: string, data?: any) => void;
+    sendReconnectRoom: (reconnectRoomArgs: ReconnectRoomArgs) => Promise<{ game: Game } | null>;
 }
 
 /**
@@ -72,64 +75,110 @@ export interface CallbackResponse {
 /**
  * Represents the response received after creating a game room.
  * @interface CallbackResponseCreateRoom
- * @property {Room} room - The game room created.
+ * @property {Game} game - The game created.
  */
 export interface CallbackResponseCreateRoom extends CallbackResponse {
-    room: Room;
+    game: Game;
 }
 
 /**
  * Represents the response received after joining a game room.
  * @interface CallbackResponseJoinRoom
- * @property {Room} room - The game room joined.
+ * @property {Game} game - The game joined.
  */
 export interface CallbackResponseJoinRoom extends CallbackResponse {
-    room: Room;
+    game: Game;
 }
 
 /**
  * Represents the response received after making a move in a game.
  * @interface CallbackResponseMove
- * @property {Move} move - The move made in the game.
+ * @property {Game} game - The game which a move was made in.
  */
 export interface CallbackResponseMove extends CallbackResponse {
-    move: Move;
+    game: Game;
 }
 
 /**
  * Represents the response received after closing a game room.
  * @interface CallbackResponseCloseRoom
- * @property {Room} room - The game room that was closed.
+ * @property {Game} game - The game closed.
  */
 export interface CallbackResponseCloseRoom extends CallbackResponse {
-    room: Room;
+    game: Game;
+}
+
+/**
+ * Represents the response received after reconnecting to a game room.
+ * @interface CallbackResponseCloseRoom
+ * @property {Game} game - The game reconnected to.
+ */
+export interface CallbackResponseReconnectRoom extends CallbackResponse {
+    game: Game;
 }
 
 /**
  * Represents the arguments required to add a user to the socket.
  * @interface AddUserArgs
  * @property {string} username - The username of the player.
+ * @property {string} userId - The userId of the player.
  */
 export interface AddUserArgs {
-    username: string
+    username: string;
+    userId: string;
 };
+
+/**
+ * Represents the arguments required to create a new game room.
+ * 
+ * @interface CreateRoomArgs
+ * 
+ * @property {Player} playerA - The player who initiates the creation of the game room (Player A).
+ * @property {Player} playerB - The player who joins the game room (Player B).
+ */
+export interface CreateRoomArgs {
+    playerA: InGamePlayer,
+    playerB: InGamePlayer
+}
 
 /**
  * Represents the arguments required to join a game room.
  * @interface JoinRoomArgs
- * @property {Room} room - The game room to join.
+ * @property {string} gameId - The gameId of the game being joined.
  */
 export interface JoinRoomArgs {
-    room: Room
+    gameId: string;
 };
 
 /**
  * Represents the arguments required to close a game room.
  * @interface CloseRoomArgs
- * @property {Room} room - The game room to close.
+ * @property {Game} game - The game object containing details of the game room that needs to be closed.
+ * @property {boolean} inviteCancelled - Indicates whether the game was closed due to an invitation cancellation.
+ * @property {Opponent} [opponent] - Optional information about the opponent player involved in the game.
  */
 export interface CloseRoomArgs {
-    room: Room, 
+    game: Game;
+    inviteCancelled: boolean;
+    opponent?: Opponent;
+};
+
+/**
+ * Represents the arguments required to reconnect a player to an existing game room.
+ * @interface ReconnectRoomArgs
+ * @property {string} gameId - The unique identifier of the game that the player is attempting to reconnect to.
+ */
+export interface ReconnectRoomArgs {
+    gameId: string;
+};
+
+/**
+ * Represents the arguments required by the opponent joining the game.
+ * @interface CloseRoomArgs
+ * @property {Game} game - The game joined by the opponent.
+ */
+export interface OpponentJoinedArgs {
+    game: Game, 
 };
 
 /**
@@ -144,30 +193,49 @@ export interface InGameMessageArgs {
 /**
  * Represents the arguments required to make a move in a game.
  * @interface MoveArgs
- * @property {Room} room - The game room where the move is being made.
- * @property {Move} move - The move being made in the game.
+ * @property {Game} game - The game object containing details about the current game session, including player details, game state, and game ID.
+ * @property {Move} move - The move being made in the game. This includes information such as the piece being moved, its starting and ending squares, and any additional move details.
+ * @property {Move[]} history - The complete move history of the current game. Each move is represented as an object containing move details, stored in the format provided by chess.js.
+ * @property {string} fen - The current board position in FEN (Forsyth-Edwards Notation) format, representing the game state after the most recent move.
+ * @property {"w" | "b"} currentTurn - Indicates which player's turn it is to make a move: "w" for white or "b" for black.
  */
 export interface MoveArgs {
-    room: Room, 
-    move: Move
+    game: Game; 
+    move: Move;
+    history: Move[];
+    fen: string;
+    currentTurn: "w" | "b";
 };
 
 /**
  * Represents the arguments required to forfeit a game.
  * @interface ForfeitArgs
- * @property {Room} room - The game room being forfeited.
+ * @property {Game} game - The game room being forfeited.
  * @property {string} username - The username of the player forfeiting the game.
  */
 export interface ForfeitArgs {
-    room: Room, 
+    game: Game, 
     username: string
 };
 
 /**
  * Represents the arguments received when a player disconnects.
  * @interface DisconnectArgs
- * @property {SocketPlayer} player - The player who disconnected.
+ * @property {Game} game - The game object containing details about the current game session, including player information, game state, and game ID.
+ * @property {string} disconnectUserId - The unique identifier of the player who disconnected from the game.
  */
 export interface DisconnectArgs {
-    player: SocketPlayer
+    game: Game,
+    disconnectUserId: string;
+};
+
+/**
+ * Represents the arguments received when a player reconnects to an existing game.
+ * @interface RoomReconnectedArgs
+ * @property {Game} game - The game object containing details about the current game session, including player information, game state, and game ID.
+ * @property {string} connectUserId - The unique identifier of the player who has reconnected to the game.
+ */
+export interface RoomReconnectedArgs {
+    game: Game,
+    connectUserId: string;
 };

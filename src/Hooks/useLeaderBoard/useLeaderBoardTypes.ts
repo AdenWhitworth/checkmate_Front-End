@@ -3,15 +3,13 @@
  * 
  * @interface LeaderBoardPlayer
  * @property {string} username - The username of the player.
- * @property {number} win - The number of wins the player has achieved.
- * @property {number} loss - The number of losses the player has.
+ * @property {number} elo - The elo of the player
  * @property {string} id - The unique identifier for the player.
  */
 export interface LeaderBoardPlayer {
     username: string;
-    win: number;
-    loss: number;
     id: string;
+    elo: number;
 }
 
 /**

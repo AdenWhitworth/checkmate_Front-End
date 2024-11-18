@@ -12,6 +12,10 @@ import JoinRoomAlertBadge from '../AlertBadge/JoinRoomAlertBadge/JoinRoomAlertBa
 import GameOverModal from '../Modal/GameOverModal/GameOverModal';
 import GameChat from './GameChat/GameChat';
 import MoveAlertBadge from '../AlertBadge/MoveAlertBadge/MoveAlertBadge';
+import DisconnectModal from '../Modal/DisconnectModal/DisconnectModal';
+import ReconnectRoomBadge from '../AlertBadge/ReconnectRoomBadge/ReconnectRoomBadge';
+import ReconnectModal from '../Modal/ReconnectModal/ReconnectModal';
+import OpponentReconnectRoomBadge from '../AlertBadge/OpponentReconnectRoomBadge/OpponentReconnectRoomBadge';
 
 /**
  * Dashboard component that serves as the main container for the active game,
@@ -21,7 +25,7 @@ import MoveAlertBadge from '../AlertBadge/MoveAlertBadge/MoveAlertBadge';
  * @returns {JSX.Element} - The rendered Dashboard component.
  */
 export default function Dashboard(): JSX.Element {
-    const { room } = useGame();
+    const { game } = useGame();
 
     return (
         <>  
@@ -30,17 +34,21 @@ export default function Dashboard(): JSX.Element {
             <section className="dashboard">
                 <div className="dashboard-content">
                     <ActiveGame />
-                    {room ? <InGameStats /> : <Lobby />}
+                    {game ? <InGameStats /> : <Lobby />}
                 </div>
             </section>
 
-            {room && <GameChat></GameChat>}
+            {game && <GameChat></GameChat>}
             <ForfeitModal />
             <ExitModal />
             <GameOverModal />
+            <DisconnectModal />
+            <ReconnectModal />
             <CreateRoomAlertBadge />
             <JoinRoomAlertBadge />
             <MoveAlertBadge />
+            <ReconnectRoomBadge />
+            <OpponentReconnectRoomBadge />
         </>
     );
 }

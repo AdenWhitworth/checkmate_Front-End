@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { onAuthStateChanged, signOut, User, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, User } from 'firebase/auth';
 import { auth, db } from '../../firebase';
 import { collection, query, where, getDocs, doc, addDoc, setDoc } from 'firebase/firestore';
 import { AuthContextType } from './AuthProviderTypes';
@@ -138,15 +138,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
         username,
         email,
         uid,
-        playerID: playerDocRef.id,
+        playerId: playerDocRef.id,
         loss: 0,
         win: 0,
         rank: 0,
+        elo: 1200
       });
 
       await setDoc(playerDocRef, {
         username,
-        userID: usersRef.id,
+        userId: usersRef.id,
+        elo: 1200
       });
     } catch (e) {
       setCurrentUser(null);

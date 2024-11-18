@@ -18,23 +18,57 @@ export default function HistoryMoves(): JSX.Element {
 
     /**
      * Formats the game history to update the moves displayed in the history list.
+     * It checks if history needs to be repopulated after rejoining.
      * It checks the length of the history and adds the latest move to the gameMoves state.
      * If the move count is odd, it adds a white move. If even, it updates the last black move.
      */
     const formatHistory = useCallback(() => {
         if (history.length === 0) return;
-
+    
         setGameMoves((prevMoves) => {
             const updatedMoves = [...prevMoves];
-            const lastMove = history[history.length - 1].to;
-            const id = uuidv4();
-
-            if (history.length % 2 === 1) {
-                updatedMoves.push({ id, rowMoves: { whiteMove: lastMove, blackMove: "" } });
+    
+            // If gameMoves is empty, rebuild the entire history from scratch (e.g., after rejoining)
+            if (updatedMoves.length === 0) {
+                history.forEach((move, index) => {
+                    const id = uuidv4();
+                    if (index % 2 === 0) {
+                        updatedMoves.push({ id, rowMoves: { 
+                            whiteMove: move.to, 
+                            whitePiece: move.piece,
+                            blackMove: "",
+                            blackPiece: null,
+                        } });
+                    } else {
+                        updatedMoves[updatedMoves.length - 1].rowMoves.blackMove = move.to;
+                        updatedMoves[updatedMoves.length - 1].rowMoves.blackPiece = move.piece;
+                    }
+                });
             } else {
-                updatedMoves[updatedMoves.length - 1].rowMoves.blackMove = lastMove;
+                // Only add the latest move if gameMoves is already populated
+                const existingMovesCount = updatedMoves.reduce(
+                    (count, move) => count + (move.rowMoves.blackMove ? 2 : 1),
+                    0
+                );
+    
+                if (history.length > existingMovesCount) {
+                    const lastMove = history[existingMovesCount];
+                    const id = uuidv4();
+    
+                    if (existingMovesCount % 2 === 0) {
+                        updatedMoves.push({ id, rowMoves: { 
+                            whiteMove: lastMove.to, 
+                            whitePiece: lastMove.piece,
+                            blackMove: "",
+                            blackPiece: null,
+                        } });
+                    } else {
+                        updatedMoves[updatedMoves.length - 1].rowMoves.blackMove = lastMove.to;
+                        updatedMoves[updatedMoves.length - 1].rowMoves.blackPiece = lastMove.piece;
+                    }
+                }
             }
-
+    
             scrollToBottom();
             return updatedMoves;
         });
@@ -54,7 +88,7 @@ export default function HistoryMoves(): JSX.Element {
      */
     useEffect(() => {
         formatHistory();
-    }, [formatHistory]);
+    }, [history, formatHistory]);
 
     return (
         <>

@@ -23,8 +23,8 @@ export const useMessageHandler = (): UseMessageHandlerOutput => {
     const [messageStyle, setMessageStyle] = useState<string>(message_regular);
     const [messagesToggle, setMessagesToggle] = useState<boolean>(false);
 
-    const { player } = usePlayer();
-    const { room } = useGame();
+    const { playerStatic } = usePlayer();
+    const { game } = useGame();
     const { socketRef, sendInGameMessage, handleCallback } = useSocket();
 
     /**
@@ -58,14 +58,14 @@ export const useMessageHandler = (): UseMessageHandlerOutput => {
      * @param {Message} [retryMessage] - The message to retry if the initial attempt failed.
      */
     const handleSendMessage = useCallback(async (retryMessage?: Message) => {
-        if ((!textInput && !retryMessage) || !room || !player) return;
+        if ((!textInput && !retryMessage) || !game || !playerStatic) return;
       
         const newMessage: Message = retryMessage || {
             id: uuidv4(),
             message: textInput,
             time: formatTime(new Date()),
-            username: player.username,
-            room: room,
+            username: playerStatic.username,
+            game: game,
             status: "sending",
         };
       
@@ -80,7 +80,7 @@ export const useMessageHandler = (): UseMessageHandlerOutput => {
         } finally {
             setTextInput('');
         }
-    }, [textInput, room, player, sendInGameMessage, formatTime, updateMessageStatus]);
+    }, [textInput, game, playerStatic, sendInGameMessage, formatTime, updateMessageStatus]);
 
     /**
      * Removes the last message from the messages state.

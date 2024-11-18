@@ -5,6 +5,7 @@ import { useCapturedPieces } from "../../../Hooks/useCapturedPieces/useCapturedP
 import './InGameStats.css';
 import GameStats from "./GameStats/GameStats";
 import HistoryMoves from "./HistoryMoves/HistoryMoves";
+import { Game } from "../../../Providers/GameProvider/GameProviderTypes";
 
 /**
  * InGameStats component displays the current state of the game, including statistics for the player and opponent,
@@ -15,22 +16,22 @@ import HistoryMoves from "./HistoryMoves/HistoryMoves";
  * @returns {JSX.Element} The rendered InGameStats component.
  */
 export default function InGameStats(): JSX.Element {
-    const { orientation, playerTurn, opponent, room } = useGame();
-    const { player } = usePlayer();
+    const { orientation, playerTurn, opponent, game } = useGame();
+    const { playerStatic, playerDynamic } = usePlayer();
     const { playerPieces, opponentPieces } = useCapturedPieces();
 
     const isWhite = orientation === "w";
-    const isRoomFull = checkIfRoomIsFull(room);
+    const isRoomFull = checkIfRoomIsFull(game);
     const isPlayerTurn = checkIfPlayerTurn(isRoomFull, playerTurn, isWhite);
     const isOpponentTurn = checkIfOpponentTurn(isRoomFull, playerTurn, isWhite);
 
     /**
      * Checks if the room is full.
-     * @param {object | null} room - The room object.
-     * @returns {boolean} True if the room is full, otherwise false.
+     * @param {Game | null} game - The game object.
+     * @returns {boolean} True if the game is full, otherwise false.
      */
-    function checkIfRoomIsFull(room: any): boolean {
-        return !!(room && room.players.length >= 2);
+    function checkIfRoomIsFull(game: Game | null): boolean {
+        return !!(game && game.playerA.connected && game.playerB.connected);
     }
 
     /**
@@ -59,8 +60,7 @@ export default function InGameStats(): JSX.Element {
         <div className="game-card">
             <GameStats 
                 username={opponent?.opponentUsername || 'Opponent'} 
-                wins={opponent?.opponentWin || 0} 
-                losses={opponent?.opponentLoss || 0} 
+                elo={opponent?.opponentElo || 0} 
                 pieces={opponentPieces} 
                 isTurn={isOpponentTurn} 
                 isLoading={!isRoomFull}
@@ -69,9 +69,8 @@ export default function InGameStats(): JSX.Element {
             <HistoryMoves />
 
             <GameStats 
-                username={player?.username || 'Player'} 
-                wins={player?.win || 0} 
-                losses={player?.loss || 0} 
+                username={playerStatic?.username || 'Player'} 
+                elo={playerDynamic?.elo || 0}
                 pieces={playerPieces} 
                 isTurn={isPlayerTurn} 
                 isLoading={false}

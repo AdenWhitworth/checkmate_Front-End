@@ -21,7 +21,7 @@ export const useLeaderBoard = (): UseLeaderBoardOutput => {
     setLoadingLeaders(true);
     setLeadersError(null);
 
-    const q = query(collection(db, 'users'), orderBy('rank', 'desc'), limit(10));
+    const q = query(collection(db, 'users'), orderBy('elo', 'desc'), limit(10));
 
     const unsubscribe = onSnapshot(
       q,
@@ -29,8 +29,7 @@ export const useLeaderBoard = (): UseLeaderBoardOutput => {
         const players = snapshot.docs.map((doc) => ({
           id: doc.id,
           username: doc.data().username,
-          win: doc.data().win,
-          loss: doc.data().loss,
+          elo: doc.data().elo,
         }));
         setLeaderBoardPlayers(players);
         setLoadingLeaders(false);

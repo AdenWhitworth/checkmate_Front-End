@@ -39,17 +39,6 @@
     
 }
 
-.game-row-2{
-    display: flex;
-    flex-direction: row;
-    color: #FFFFFF;
-    text-align: left;
-    justify-content: left;
-    align-items: center;
-    gap: 15px;
-    
-}
-
 .game-icon{
     height: 30px;
     color: #FFCD05;
@@ -66,7 +55,7 @@
     flex: 1;
 }
 
-.game-row-3{
+.game-row-2{
     display: flex;
     flex-direction: row;
     text-align: left;

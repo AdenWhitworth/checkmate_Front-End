@@ -38,7 +38,7 @@ export default function PlayersItem({ potentialOpponent, index }: PlayersItemPro
                     src={user_white} 
                     alt={`${potentialOpponent.username} avatar`} 
                 />
-                <h3 className="player-username">{potentialOpponent.username}</h3>
+                <h3 className="player-username">{`${potentialOpponent.username} (${potentialOpponent.elo})`}</h3>
                 <button 
                     className="player-request" 
                     onClick={handleOppentClick}
