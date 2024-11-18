@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, User } from 'firebase/auth';
 import { auth, db } from '../../firebase';
-import { collection, query, where, getDocs, doc, addDoc, setDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, writeBatch } from 'firebase/firestore';
 import { AuthContextType } from './AuthProviderTypes';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -130,15 +130,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
    */
   const saveNewUser = async (uid: string, username: string, email: string) => {
     try {
-      const playersRef = collection(db, "players");
-      const usersRef = collection(db, "users");
+      const batch = writeBatch(db);
+      const userId = doc(collection(db, "users")).id;
+      const playerId = doc(collection(db, "players")).id;
+      const userDocRef = doc(db, "users", userId);
+      const playerDocRef = doc(db, "players", playerId);
 
-      const playerDocRef = doc(playersRef);
-      await addDoc(usersRef, {
+      batch.set(userDocRef, {
         username,
         email,
         uid,
-        playerId: playerDocRef.id,
+        playerId,
         loss: 0,
         win: 0,
         draw: 0,
@@ -146,11 +148,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
         elo: 1200
       });
 
-      await setDoc(playerDocRef, {
+      batch.set(playerDocRef, {
         username,
-        userId: usersRef.id,
+        userId,
         elo: 1200
       });
+      
+      await batch.commit();
     } catch (e) {
       setCurrentUser(null);
       setAccessToken(null);
