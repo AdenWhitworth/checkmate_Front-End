@@ -33,6 +33,9 @@ import { Invite, PlayerList } from '../../Providers/PlayerProvider/PlayerProvide
  * @property {(value: string | null) => void} setErrorJoinGame - Function to set the error message when joining a game.
  * @property {(value: string | null) => void} setSuccessJoinGame - Function to set the success message when joining a game.
  * @property {() => "playerA" | "playerB" | "draw" | null} findWinner - Function to determine the winner of the game.
+ * @property {(value: boolean) => void} setReconnectGame - Function to update the state when reconnecting to a game.
+ * @property {(value: boolean) => void} setLoadingReconnectGame - Function to set the loading state when reconnecting to a game.
+ * @property {(value: string | null) => void} setErrorReconnectGame - Function to set the error message when recibbectubg a game.
  */
 export interface UseGameRoomManagementProps {
     cleanup: () => void;
@@ -59,6 +62,9 @@ export interface UseGameRoomManagementProps {
     setErrorJoinGame: (value: string | null) => void;
     setSuccessJoinGame: (value: string | null) => void;
     findWinner: () => "playerA" | "playerB" | "draw" | null;
+    setReconnectGame: (value: boolean) => void;
+    setLoadingReconnectGame: (value: boolean) => void;
+    setErrorReconnectGame: (value: string | null) => void;
 }
 
 /**
@@ -72,6 +78,7 @@ export interface UseGameRoomManagementProps {
  * @property {(potentialOpponent: PlayerList) => void} handleCreateRoom - Function to create a new game room with a selected opponent.
  * @property {(invite: Invite) => void} handleJoinRoom - Function to join a game room using an invitation.
  * @property {() => void} handleCloseRoom - Function to handle closing the current game room.
+ * @property {() => void} handleReconnectRoom - Function to handle reconnecting to the current game room.
  */
 export interface UseGameRoomManagementOutput {
     handleForfeit: () => void;
@@ -79,4 +86,5 @@ export interface UseGameRoomManagementOutput {
     handleCreateRoom: (potentialOpponent: PlayerList) => void;
     handleJoinRoom: (invite: Invite) => void;
     handleCloseRoom: () => void;
+    handleReconnectRoom: () => void;
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { collection, deleteDoc, doc, addDoc, getDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, writeBatch, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { UseGameRoomManagementOutput, UseGameRoomManagementProps } from './useGameRoomManagementTypes';
 import { useSocket } from '../../Providers/SocketProvider/SocketProvider';
@@ -39,6 +39,9 @@ export const useGameRoomManagement = ({
     setErrorJoinGame,
     setSuccessJoinGame,
     findWinner,
+    setReconnectGame,
+    setLoadingReconnectGame,
+    setErrorReconnectGame
 }: UseGameRoomManagementProps): UseGameRoomManagementOutput => {
     
     const { 
@@ -95,9 +98,7 @@ export const useGameRoomManagement = ({
         try {
             if(!game) throw Error("Game required to exit.");
             if (!opponent) throw new Error("Opponent required.");
-
             await sendCloseRoom({ game: game, inviteCancelled: true, opponent: opponent });
-
             cleanup();
         } catch (error) {
             setErrorExit("Unable to exit. Please try again.");
@@ -118,36 +119,53 @@ export const useGameRoomManagement = ({
      */
     const invitePlayer = useCallback(async (game: Game, potentialOpponent: PlayerList): Promise<void> => {
         try {
-            if (!playerStatic || !playerDynamic) throw new Error("Player not found");
+            if (!playerStatic || !playerDynamic) {
+                throw new Error("Player not found");
+            }
 
             const userCollection = collection(db, 'users');
-            const docRefPlayer = doc(userCollection, potentialOpponent.userId);
-            const docSnap = await getDoc(docRefPlayer);
+            const gamesCollection = collection(db, 'games');
+            const docRefOpponent = doc(userCollection, potentialOpponent.userId);
             
-            if (!docSnap.exists()) throw new Error("Player not found");
+            const docSnap = await getDoc(docRefOpponent);
+            if (!docSnap.exists()) throw new Error("Opponent not found");
+    
+            const opponentData = docSnap.data();
+            if (!opponentData) throw new Error("Invalid opponent data");
+    
+            const newOpponent: Opponent = {
+                opponentUsername: opponentData.username,
+                opponentUserId: docSnap.id,
+                opponentPlayerId: opponentData.playerId,
+                opponentElo: opponentData.elo,
+            };
+    
+            setOpponent(newOpponent);
+            setGame(game);
 
-            const inviteCollection = collection(docRefPlayer, 'invites');
-
-            const inviteDocRef = await addDoc(inviteCollection, {
+            const batch = writeBatch(db);
+    
+            const inviteCollection = collection(docRefOpponent, 'invites');
+            const inviteDocRef = doc(inviteCollection);
+            batch.set(inviteDocRef, {
                 requestUserId: playerStatic.userId,
                 requestUsername: playerStatic.username,
                 requestPlayerId: playerStatic.playerId,
                 requestGameId: game.gameId,
                 requestElo: playerDynamic.elo,
             });
-
-            const newOpponent: Opponent = {
-                opponentUsername: docSnap.data()?.username,
-                opponentUserId: docSnap.id,
-                opponentPlayerId: docSnap.data()?.playerId,
-                opponentElo: docSnap.data()?.elo,
-                opponentInviteId: inviteDocRef.id,
-            };
-
-            setOpponent(newOpponent);
-            setGame(game);
+    
+            const docRefUser = doc(userCollection, playerStatic.userId);
+            batch.update(docRefUser, { currentGameId: game.gameId });
+    
+            const docRefGame = doc(gamesCollection, game.gameId);
+            batch.update(docRefGame, { "playerB.inviteId": inviteDocRef.id });
+    
+            await batch.commit();
         } catch (error) {
-            throw new Error("Invitation failed");
+            setOpponent(null);
+            setGame(null);
+            throw new Error("Invitation failed.");
         }
     }, [playerStatic, playerDynamic, setOpponent, setGame]);
 
@@ -285,10 +303,13 @@ export const useGameRoomManagement = ({
      */
     const handleReconnectRoom = useCallback(async () => {
         if (!game && playerDynamic?.currentGameId && playerStatic?.userId) {
+            setErrorReconnectGame(null);
+            setLoadingReconnectGame(true);
+            
             try {
                 const reconnectedGame = await sendReconnectRoom({ gameId: playerDynamic.currentGameId });
                 
-                if (!reconnectedGame?.game) throw new Error("No game to reconnect to.")
+                if (!reconnectedGame?.game) throw new Error("No game to reconnect to.");
                     
                 const isPlayerA = playerStatic.userId === reconnectedGame.game.playerA.userId;
 
@@ -298,7 +319,8 @@ export const useGameRoomManagement = ({
                     opponentUsername: reconnectedGame.game.playerB.username,
                     opponentUserId: reconnectedGame.game.playerB.userId,
                     opponentPlayerId: reconnectedGame.game.playerB.playerId,
-                    opponentElo: reconnectedGame.game.playerB.elo
+                    opponentElo: reconnectedGame.game.playerB.elo,
+                    opponentInviteId: reconnectedGame.game.playerB.inviteId || undefined
                 } : {
                     opponentUsername: reconnectedGame.game.playerA.username,
                     opponentUserId: reconnectedGame.game.playerA.userId,
@@ -312,19 +334,23 @@ export const useGameRoomManagement = ({
                     try {
                         return JSON.parse(moveString);
                     } catch (error) {
-                        console.error("Failed to parse move:", moveString);
-                        return null;
+                        throw new Error("Unable to parse move");
                     }
                 }).filter((move) => move !== null);
 
                 setPlayerTurn(reconnectedGame.game.currentTurn);
                 setHistory(deserializedHistory || []);
                 setGame(reconnectedGame.game);
+                setReconnectGame(true);
             } catch (error) {
-                console.error("Failed to reconnect to game:", error);
+                setOpponent(null);
+                setFen("start");
+                setErrorReconnectGame("Failed to reconnect to the active game. Please try again.")
+            } finally {
+                setLoadingReconnectGame(false);
             }
         }
-    }, [game, playerStatic, playerDynamic, sendReconnectRoom, setGame, setOpponent, setOrientation, setFen, setHistory, setPlayerTurn]);
+    }, [game, playerDynamic, playerStatic, setErrorReconnectGame, setLoadingReconnectGame, setReconnectGame, sendReconnectRoom, setOrientation, setOpponent, setFen, setPlayerTurn, setHistory, setGame]);
     
     /**
      * Attempts to reconnect to a game when the component mounts or when `handleReconnectRoom` changes.
@@ -339,5 +365,6 @@ export const useGameRoomManagement = ({
         handleCreateRoom,
         handleJoinRoom,
         handleCloseRoom,
+        handleReconnectRoom,
     };
 };

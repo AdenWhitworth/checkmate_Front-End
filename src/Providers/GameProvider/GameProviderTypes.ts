@@ -23,6 +23,7 @@ export interface InGamePlayer{
     elo: number;
     connected: boolean | "pending";
     orientation: "w" | "b";
+    inviteId?: string;
 }
 
 /**
@@ -125,6 +126,10 @@ export interface Opponent {
  * @property {GameMoves[]} gameMoves - List of game moves for displaying move history.
  * @property {(value: GameMoves[] | ((prev: GameMoves[]) => GameMoves[])) => void} setGameMoves - Function to update the game moves.
  * @property {function} setIsOpponentDisconnected - Function to set the disconnect/reconnect message.
+ * @property {(value: boolean) => void} setReconnectGame - Function to update the state when reconnecting to a game.
+ * @property {(value: boolean) => void} setLoadingReconnectGame - Function to set the loading state when reconnecting to a game.
+ * @property {(value: string | null) => void} setErrorReconnectGame - Function to set the error message when recibbectubg a game.
+ * @property {() => void} handleReconnectRoom - Function to handle reconnecting to the current game room.
  */
 export interface GameContextType {
     playerTurn: "w" | "b";
@@ -175,4 +180,9 @@ export interface GameContextType {
     setGameMoves: (value: GameMoves[] | ((prev: GameMoves[]) => GameMoves[])) => void;
     isOpponentDisconnected: string | null;
     setIsOpponentDisconnected: (value: string | null) => void;
+    reconnectGame: boolean
+    setReconnectGame: (value: boolean) => void;
+    loadingReconnectGame: boolean;
+    errorReconnectGame: string | null;
+    handleReconnectRoom: () => void;
 }

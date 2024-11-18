@@ -4,38 +4,38 @@ import { useGame } from '../../../Providers/GameProvider/GameProvider';
 import { AlertColor } from '@mui/material/Alert';
 
 /**
- * ReconnectRoomBadge Component
+ * OpponentReconnectRoomBadge Component
  *
- * Displays an alert badge when the player successfully rejoins the game.
+ * Displays an alert badge when the opponent successfully rejoins the game.
  *
  * @component
  * @returns {JSX.Element} The rendered ReconnectRoomBadge component.
  */
-export default function ReconnectRoomBadge(): JSX.Element {
-    const { reconnectGame, setReconnectGame } = useGame();
+export default function OpponentReconnectRoomBadge(): JSX.Element {
+    const { isOpponentDisconnected, setIsOpponentDisconnected } = useGame();
     const [open, setOpen] = useState<boolean>(false);
     const [severity, setSeverity] = useState<AlertColor>('info');
     const [alertText, setAlertText] = useState<string>('');
 
     /**
-     * Closes the alert badge and resets reconnect game state in the GameProvider.
+     * Closes the alert badge and resets opponent disconnected state in the GameProvider.
      */
     const handleCloseBadge = () => {
-        setReconnectGame(false);
+        setIsOpponentDisconnected(null);
     }
 
     /**
      * UseEffect hook to open/close the badge and assign variables
      */
     useEffect(() => {
-        if(reconnectGame){
+        if(isOpponentDisconnected && isOpponentDisconnected.includes("reconnected")){
             setSeverity('success');
-            setAlertText("Successfully reconnected to the active game.");
+            setAlertText(isOpponentDisconnected);
             setOpen(true);
         } else {
             setOpen(false);
         }
-    }, [reconnectGame]);
+    }, [isOpponentDisconnected]);
 
     return (
         <AlertBadge 

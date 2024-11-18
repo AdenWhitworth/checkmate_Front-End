@@ -74,6 +74,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
 
     const [isOpponentDisconnected, setIsOpponentDisconnected] = useState<string | null>(null);
 
+    const [reconnectGame, setReconnectGame] = useState<boolean>(false);
+    const [loadingReconnectGame, setLoadingReconnectGame] = useState<boolean>(false);
+    const [errorReconnectGame, setErrorReconnectGame] = useState<string | null>(null);
+
     const { onDrop, findWinner } = useChessGame({
         game,
         setGame, 
@@ -109,7 +113,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
         handleJoinRoom, 
         handleExitRoom, 
         handleCloseRoom, 
-        handleForfeit 
+        handleForfeit,
+        handleReconnectRoom 
     } = useGameRoomManagement({
         cleanup,
         opponent,
@@ -135,6 +140,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
         setErrorJoinGame,
         setSuccessJoinGame,
         findWinner,
+        setReconnectGame,
+        setLoadingReconnectGame,
+        setErrorReconnectGame
     });
 
     return (
@@ -186,7 +194,12 @@ export const GameProvider = ({ children }: { children: React.ReactNode }): JSX.E
             gameMoves,
             setGameMoves,
             isOpponentDisconnected, 
-            setIsOpponentDisconnected
+            setIsOpponentDisconnected,
+            reconnectGame,
+            setReconnectGame,
+            loadingReconnectGame,
+            errorReconnectGame,
+            handleReconnectRoom,
         }}>
             {children}
         </GameContext.Provider>
