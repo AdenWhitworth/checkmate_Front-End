@@ -141,7 +141,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
         playerId: playerDocRef.id,
         loss: 0,
         win: 0,
-        rank: 0,
+        draw: 0,
+        gamesPlayed: 0,
         elo: 1200
       });
 
