@@ -99,6 +99,14 @@ export const useGameRoomManagement = ({
             if(!game) throw Error("Game required to exit.");
             if (!opponent) throw new Error("Opponent required.");
             await sendCloseRoom({ game: game, inviteCancelled: true, opponent: opponent });
+            setPlayerDynamic((prev) => {
+                if (!prev) return null;
+
+                return {
+                  ...prev,
+                  currentGameId: undefined,
+                };
+            });
             cleanup();
         } catch (error) {
             setErrorExit("Unable to exit. Please try again.");
@@ -106,7 +114,7 @@ export const useGameRoomManagement = ({
             setExitGame(false);
             setLoadingExit(false);
         }
-    },  [setLoadingExit, setErrorExit, game, opponent, sendCloseRoom, cleanup, setExitGame]);
+    },  [setLoadingExit, setErrorExit, game, opponent, sendCloseRoom, cleanup, setExitGame, setPlayerDynamic]);
 
     /**
      * Sends an invitation to a potential opponent to join a game room.
@@ -126,27 +134,30 @@ export const useGameRoomManagement = ({
             const userCollection = collection(db, 'users');
             const gamesCollection = collection(db, 'games');
             const docRefOpponent = doc(userCollection, potentialOpponent.userId);
-            
+
             const docSnap = await getDoc(docRefOpponent);
             if (!docSnap.exists()) throw new Error("Opponent not found");
-    
+
             const opponentData = docSnap.data();
             if (!opponentData) throw new Error("Invalid opponent data");
-    
+
+            const inviteCollection = collection(docRefOpponent, 'invites');
+            const inviteId = doc(inviteCollection).id;
+
             const newOpponent: Opponent = {
                 opponentUsername: opponentData.username,
                 opponentUserId: docSnap.id,
                 opponentPlayerId: opponentData.playerId,
                 opponentElo: opponentData.elo,
+                opponentInviteId: inviteId,
             };
-    
+
             setOpponent(newOpponent);
             setGame(game);
 
             const batch = writeBatch(db);
-    
-            const inviteCollection = collection(docRefOpponent, 'invites');
-            const inviteDocRef = doc(inviteCollection);
+            const inviteDocRef = doc(inviteCollection, inviteId);
+
             batch.set(inviteDocRef, {
                 requestUserId: playerStatic.userId,
                 requestUsername: playerStatic.username,
@@ -154,13 +165,13 @@ export const useGameRoomManagement = ({
                 requestGameId: game.gameId,
                 requestElo: playerDynamic.elo,
             });
-    
+
             const docRefUser = doc(userCollection, playerStatic.userId);
             batch.update(docRefUser, { currentGameId: game.gameId });
-    
+
             const docRefGame = doc(gamesCollection, game.gameId);
-            batch.update(docRefGame, { "playerB.inviteId": inviteDocRef.id });
-    
+            batch.update(docRefGame, { "playerB.inviteId": inviteId });
+
             await batch.commit();
         } catch (error) {
             setOpponent(null);
@@ -314,7 +325,7 @@ export const useGameRoomManagement = ({
                 const isPlayerA = playerStatic.userId === reconnectedGame.game.playerA.userId;
 
                 setOrientation(isPlayerA? reconnectedGame.game.playerA.orientation : reconnectedGame.game.playerB.orientation);
-                
+
                 setOpponent(isPlayerA? {
                     opponentUsername: reconnectedGame.game.playerB.username,
                     opponentUserId: reconnectedGame.game.playerB.userId,
