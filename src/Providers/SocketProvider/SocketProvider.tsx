@@ -325,6 +325,26 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
   }, []);
 
   /**
+   * Listens for user navigation away and back to checkmate play, and attempts to reconnect socket if it has gone stale. 
+   */
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && currentUser && accessToken && playerStatic && !isConnected) {
+        disconnectSocket();
+        connectSocket(accessToken);
+      }
+    };
+  
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+  
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+    };
+  }, [connectSocket, disconnectSocket, currentUser, playerStatic, accessToken, isConnected]);
+
+  /**
    * Initializes and manages socket connections and disconnections based on user authentication and player data.
    */
   useEffect(() => {
