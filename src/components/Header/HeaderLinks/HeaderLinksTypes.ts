@@ -9,6 +9,7 @@
  * @property {() => void} handleSignupClick - Function to be called when the user clicks the signup button.
  * @property {() => void} handleArrowClick - Function to be called when the exit arrow button is clicked.
  * @property {() => void} handleFlagClick - Function to be called when the forfeit flag button is clicked.
+ * @property {() => void} handleProfileClick - Function to be called when the profile circle is clicked.
  * @property {boolean} isMenuOpen - Boolean indicating whether the navigation menu is open or closed.
  */
 export interface HeaderLinksProps{
@@ -18,5 +19,6 @@ export interface HeaderLinksProps{
     handleSignupClick: () => void;
     handleArrowClick: () => void;
     handleFlagClick: () => void;
+    handleProfileClick: () => void;
     isMenuOpen: boolean;
 }

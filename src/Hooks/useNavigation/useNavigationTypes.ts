@@ -9,6 +9,7 @@
  * @property {function} handleSignupClick - Opens the signup page, closes the menu, and selects the signup form.
  * @property {function} handleArrowClick - Closes the menu and sets the state to exit the game.
  * @property {function} handleFlagClick - Closes the menu and sets the state to forfeit the game.
+ * @property {function} handleProfileClick - Function to be called when the profile circle is clicked.
  * @property {function} toggleMenu - Toggles the state of the navigation menu.
  * @property {boolean} isMenuOpen - A boolean indicating whether the navigation menu is currently open or closed.
  * @property {function} handleSendToDashboard - Navigates the user to the dashboard page.
@@ -21,6 +22,7 @@ export interface UseNavigationOutput {
     handleSignupClick: () => void;
     handleArrowClick: () => void;
     handleFlagClick: () => void;
+    handleProfileClick:  () => void;
     toggleMenu: () => void;
     isMenuOpen: boolean;
     handleSendToDashboard: () => void;

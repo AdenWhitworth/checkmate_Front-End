@@ -18,7 +18,8 @@ export default function Header(): JSX.Element {
         handleFlagClick, 
         handleLoginClick, 
         handleLogoutClick, 
-        handleSignupClick, 
+        handleSignupClick,
+        handleProfileClick, 
         isMenuOpen,
         toggleMenu,
         handleKingClick
@@ -41,6 +42,7 @@ export default function Header(): JSX.Element {
                         handleLoginClick={handleLoginClick}
                         handleLogoutClick={handleLogoutClick}
                         handleSignupClick={handleSignupClick}
+                        handleProfileClick={handleProfileClick}
                         isMenuOpen={isMenuOpen}
                     />
                 </div>

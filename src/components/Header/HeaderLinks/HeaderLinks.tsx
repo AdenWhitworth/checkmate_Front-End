@@ -8,6 +8,7 @@ import { useAuth } from '../../../Providers/AuthProvider/AuthProvider';
 import { useGame } from '../../../Providers/GameProvider/GameProvider';
 import { usePlayer } from '../../../Providers/PlayerProvider/PlayerProvider';
 import { HeaderLinksProps } from './HeaderLinksTypes';
+import ProfileCircle from './ProfileCircle/ProfileCircle';
 
 /**
  * HeaderLinks component displays navigation links and buttons for user interactions
@@ -24,6 +25,7 @@ export default function HeaderLinks({
     handleLoginClick, 
     handleLogoutClick, 
     handleSignupClick,
+    handleProfileClick,
     isMenuOpen 
 }: HeaderLinksProps): JSX.Element {
     const { currentUser, loadingAuth } = useAuth();
@@ -51,10 +53,10 @@ export default function HeaderLinks({
     );
 
     /**
-     * Renders the buttons for a logged-out state, including the logout button and notifications badge.
+     * Renders the buttons for a logged-in state, including the logout button, profile circle, and notifications badge.
      * @returns {JSX.Element} The rendered JSX for the logged-out buttons
      */
-    const renderLoggedOutButtons = (): JSX.Element => (
+    const renderLoggedInButtons = (): JSX.Element => (
         <>
             {isNoActiveRoom && (
                 <>
@@ -77,6 +79,11 @@ export default function HeaderLinks({
                         >
                             <img src={bell} alt="Notifications" />
                         </Badge>
+                    </li>
+                    <li>
+                        <ProfileCircle
+                            onClick={handleProfileClick}
+                        ></ProfileCircle>
                     </li>
                 </>
             )}
@@ -119,7 +126,7 @@ export default function HeaderLinks({
         <nav className={`nav-links ${isMenuOpen ? 'nav-open' : ''}`}>
             <ul>
                 {renderAuthButtons()}
-                {renderLoggedOutButtons()}
+                {renderLoggedInButtons()}
                 {renderInGameButtons()}
             </ul>
         </nav>
