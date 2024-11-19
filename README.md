@@ -139,7 +139,7 @@ This setup allows you to simulate a game between two players on separate browser
 
 ## Database Structure
 
-The application uses Firebase Firestore to store user data and game information. Below is the structure of the **users** and **players** collections:
+The application uses Firebase Firestore to store user data and game information. Below is the structure of the **users**, **players**, and **games** collections:
 
 ```json
 {
