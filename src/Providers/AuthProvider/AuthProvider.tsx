@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, User } from 'firebase/auth';
 import { auth, db } from '../../firebase';
-import { collection, query, where, getDocs, doc, writeBatch } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, writeBatch, Timestamp } from 'firebase/firestore';
 import { AuthContextType } from './AuthProviderTypes';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -145,7 +145,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
         win: 0,
         draw: 0,
         gamesPlayed: 0,
-        elo: 1200
+        elo: 1200,
+        createdAt: Timestamp.now(),
       });
 
       batch.set(playerDocRef, {
