@@ -1,5 +1,5 @@
 import React from 'react';
-import "./GameInfo.css";
+import "./GamesInfo.css";
 import { useTrackGames } from '../../../Hooks/useTrackGames/useTrackGames';
 import LoadingSpinner from '../../LoadingSpinner/LoadingSpinner';
 import ErrorLoading from '../../ErrorLoading/ErrorLoading';
@@ -15,12 +15,12 @@ import GamesItem from './GamesItem/GamesItem';
  *
  * @returns {JSX.Element} The rendered GameInfo component.
  */
-export default function GameInfo(): JSX.Element {
+export default function GamesInfo(): JSX.Element {
 
     const { playedGames, loadingPlayedGames, playedGamesError } = useTrackGames();
 
     return (
-        <div className="game-info">
+        <div className="games-info">
             {loadingPlayedGames ? (
                 <LoadingSpinner />
             ) : playedGamesError ? (

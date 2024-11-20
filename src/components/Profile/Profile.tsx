@@ -2,7 +2,8 @@ import React from 'react';
 import "./Profile.css";
 import Header from '../Header/Header';
 import UserInfo from './UserInfo/UserInfo';
-import GameInfo from './GameInfo/GameInfo';
+import GamesInfo from './GamesInfo/GamesInfo';
+
 
 /**
  * Profile component that serves as the main container for all the user information.
@@ -19,7 +20,7 @@ export default function Profile(): JSX.Element {
             <section className="profile">
                 <div className="profile-content">
                     <UserInfo />
-                    <GameInfo />
+                    <GamesInfo />
                 </div>
             </section>
         </>
