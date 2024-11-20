@@ -3,6 +3,7 @@ import InputField from '../../InputField/InputField';
 import Button from '../../Button/Button';
 import { LoginFormProps } from './LoginFormTypes';
 import { useAuth } from '../../../Providers/AuthProvider/AuthProvider';
+import { useNavigation } from '../../../Hooks/useNavigation/useNavigation';
 
 /**
  * LoginForm component allows users to enter their email and password to sign in.
@@ -21,6 +22,7 @@ export default function LoginForm({
     handleSubmit
 }: LoginFormProps): JSX.Element {
     const { loadingAuth, error, setIsLoginSelected } = useAuth();
+    const { handleForgotPasswordClick } = useNavigation();
 
     /**
      * Switches the form view to the signup form.
@@ -50,6 +52,8 @@ export default function LoginForm({
                 label="Password"
                 isSpellCheck={false}
             />
+
+            <p><span onClick={handleForgotPasswordClick} className="auth-selection">Forgot Password?</span></p>
 
             <Button type="submit" disabled={loadingAuth} styleType="primary">
                 {loadingAuth ? 'Signing In...' : 'Sign In'}

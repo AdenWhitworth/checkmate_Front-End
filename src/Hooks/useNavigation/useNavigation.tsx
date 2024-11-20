@@ -90,6 +90,13 @@ export const useNavigation = (): UseNavigationOutput => {
     },[navigate]);
 
     /**
+     * Navigates to the forgot password component.
+     */
+    const handleForgotPasswordClick = useCallback(() => {
+        navigate('/forgotPassword', { replace: true });
+    },[navigate]);
+
+    /**
      * Toggles the state of the navigation menu.
      */
     const toggleMenu = useCallback(() => {
@@ -107,6 +114,7 @@ export const useNavigation = (): UseNavigationOutput => {
         handleProfileClick,
         toggleMenu, 
         isMenuOpen,
-        handleSendToDashboard
+        handleSendToDashboard,
+        handleForgotPasswordClick
     };
 };

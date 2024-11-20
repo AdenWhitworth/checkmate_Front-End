@@ -3,7 +3,7 @@ import { onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWith
 import { auth, db } from '../../firebase';
 import { collection, query, where, getDocs, doc, writeBatch, Timestamp, updateDoc } from 'firebase/firestore';
 import { AuthContextType } from './AuthProviderTypes';
-import { updateEmail, verifyBeforeUpdateEmail } from "firebase/auth";
+import { updateEmail, verifyBeforeUpdateEmail, sendPasswordResetEmail } from "firebase/auth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -202,6 +202,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
   };
 
   /**
+   * Sends a password reset email to the given address.
+   *
+   * @param {string} email - The email address of the user.
+   * @returns {Promise<void>} Resolves if the email is successfully sent, rejects otherwise.
+   */
+  const forgotPassword = async (email: string): Promise<void> => {
+    setError(null);
+    if (!validateInputs([email])) return;
+    setLoadingAuth(true);
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error: any) {
+      setError("Failed to send password reset email. Please try again.");
+    } finally {
+      setLoadingAuth(false);
+    }
+  };
+
+  /**
    * Resets the error state.
    */
   const resetError = useCallback(() => {
@@ -209,7 +229,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, loadingAuth, logout, login, signup, error, resetError, isLoginSelected, setIsLoginSelected, accessToken, updateUserEmail }}>
+    <AuthContext.Provider value={{ currentUser, loadingAuth, logout, login, signup, error, resetError, isLoginSelected, setIsLoginSelected, accessToken, updateUserEmail, forgotPassword }}>
       {children}
     </AuthContext.Provider>
   );

@@ -10,6 +10,7 @@ import Authentication from './components/Authentication/Authentication';
 import Dashboard from './components/Dashboard/Dashboard';
 import { GameProvider } from './Providers/GameProvider/GameProvider';
 import Profile from './components/Profile/Profile';
+import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 
 /**
  * The main App component that sets up the routing and providers for the application.
@@ -43,6 +44,7 @@ function App(): JSX.Element {
                 <Route path='/auth' element={<Authentication></Authentication>}></Route>
                 <Route path='/dashboard' element={<PrivateRoute><Dashboard></Dashboard></PrivateRoute>}></Route>
                 <Route path='/profile' element={<PrivateRoute><Profile></Profile></PrivateRoute>}></Route>
+                <Route path='/forgotPassword' element={<ForgotPassword></ForgotPassword>}></Route>
               </Routes>
             </GameProvider>
           </SocketProvider>

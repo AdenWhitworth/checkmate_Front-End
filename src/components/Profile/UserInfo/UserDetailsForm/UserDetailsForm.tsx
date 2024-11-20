@@ -7,6 +7,7 @@ import pencil from "../../../../Images/pencil-paper.svg";
 import circleCheck from "../../../../Images/circle-check white.svg";
 import { useAuth } from '../../../../Providers/AuthProvider/AuthProvider';
 import LoadingSpinner from '../../../LoadingSpinner/LoadingSpinner';
+import { useNavigation } from '../../../../Hooks/useNavigation/useNavigation';
 
 /**
  * UserDetailsForm component to manage and display user details, including editing email functionality.
@@ -19,6 +20,7 @@ export default function UserDetailsForm(): JSX.Element {
     const { playerDynamic, playerStatic } = usePlayer();
     const { updateUserEmail } = useAuth();
     const [loadingEditForm, setLoadingEditForm] = useState<boolean>(false);
+    const { handleForgotPasswordClick } = useNavigation();
 
     /**
      * Handles form submission for editing the user's email.
@@ -111,6 +113,7 @@ export default function UserDetailsForm(): JSX.Element {
                     <p>
                         <span
                             className='forgot'
+                            onClick={handleForgotPasswordClick}
                         >
                             Forgot Password?
                         </span>
