@@ -29,11 +29,11 @@ export default function ProfileCircle({
      * @returns {string} The generated initials for the player.
      */
     const getProfileInitials = useCallback((): string => {
-        if (!playerStatic) return "??";
+        if (!playerStatic) return "";
         const sanitized = playerStatic.username.trim().toUpperCase();
         const words = sanitized.split(/[^A-Z0-9]/).filter(Boolean);
 
-        if (words.length === 0) return "??";
+        if (words.length === 0) return "";
         if (words.length === 1) return words[0].slice(0, 2).padEnd(2, words[0][0]);
 
         return words[0][0] + words[1][0];

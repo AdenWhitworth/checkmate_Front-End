@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user){
-        setCurrentUser(user);
+        setCurrentUser((prev) => (prev !== user ? user : prev));
         if (user) {
           const token = await user.getIdToken();
           setAccessToken(token);
@@ -41,6 +41,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
       }
     });
     return () => unsubscribe();
+  }, []);
+
+  /**
+   * Effect to handle token refresh using `onIdTokenChanged`.
+   */
+  useEffect(() => {
+    const unsubscribeTokenRefresh = auth.onIdTokenChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken(true);
+        setAccessToken(token);
+        setCurrentUser((prev) => (prev !== user ? user : prev));
+      }
+    });
+
+    return () => unsubscribeTokenRefresh();
   }, []);
 
   /**
