@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 /**
  * Represents a player's static information.
  * 
@@ -10,6 +12,7 @@ export interface PlayerStatic {
     playerId: string;
     userId: string;
     username: string;
+    createdAt: Timestamp;
 }
 
 /**
@@ -28,6 +31,8 @@ export interface PlayerDynamic {
     draw?: number;
     elo: number;
     currentGameId?: string;
+    email: string;
+    gamesPlayed: number;
 }
 
 /**

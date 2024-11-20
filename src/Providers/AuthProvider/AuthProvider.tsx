@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { onAuthStateChanged, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, User } from 'firebase/auth';
 import { auth, db } from '../../firebase';
-import { collection, query, where, getDocs, doc, writeBatch, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, writeBatch, Timestamp, updateDoc } from 'firebase/firestore';
 import { AuthContextType } from './AuthProviderTypes';
+import { updateEmail, verifyBeforeUpdateEmail } from "firebase/auth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -164,6 +165,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
   };
 
   /**
+   * Updates the email address of the current user.
+   *
+   * @param {string} newEmail - The new email address to set for the user.
+   */
+  const updateUserEmail = async (newEmail: string, userId: string): Promise<boolean> => {
+    if (!currentUser || !newEmail || newEmail.trim() === "" || !userId) {
+      return Promise.reject(new Error("Invalid email, userId, or unauthenticated user."));
+    }
+  
+    try {
+      await verifyBeforeUpdateEmail(currentUser,newEmail);
+      await updateEmail(currentUser, newEmail);
+      const userDocRef = doc(db, "users", userId);
+      await updateDoc(userDocRef, { email: newEmail });
+      setCurrentUser((prev) => (prev ? { ...prev, email: newEmail } : prev));
+      return true;
+    } catch (error) {
+      return Promise.reject(error || new Error("Failed to update email."));
+    }
+  };
+
+  /**
    * Resets the error state.
    */
   const resetError = useCallback(() => {
@@ -171,7 +194,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
   }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, loadingAuth, logout, login, signup, error, resetError, isLoginSelected, setIsLoginSelected, accessToken }}>
+    <AuthContext.Provider value={{ currentUser, loadingAuth, logout, login, signup, error, resetError, isLoginSelected, setIsLoginSelected, accessToken, updateUserEmail }}>
       {children}
     </AuthContext.Provider>
   );

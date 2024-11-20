@@ -89,6 +89,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                     playerId: data.playerId,
                     userId: snapshot.id,
                     username: data.username,
+                    createdAt: data.createdAt
                 };
 
                 const newPlayerDynamic: PlayerDynamic = {
@@ -97,6 +98,8 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                     draw: data.draw ?? 0,
                     elo: data.elo ?? 1200,
                     currentGameId: data.currentGameId ?? undefined,
+                    email: data.email,
+                    gamesPlayed: data.gamesPlayed ?? 0,
                 };
 
                 setPlayerStatic((prev) => {

@@ -34,5 +34,6 @@ export interface AuthContextType {
     isLoginSelected: boolean;
     setIsLoginSelected: (value: boolean) => void;
     accessToken: string | null;
+    updateUserEmail: (newEmail: string, userId: string) => Promise<boolean>;
 }
 

@@ -42,6 +42,16 @@ h4{
     font-weight: normal;
 }
 
+h5{
+    font-size: 18px;
+    font-weight: normal;
+}
+
+h6{
+    font-size: 14px;
+    font-weight: normal;
+}
+
 p{
     font-size: 18px;
     font-weight: normal;

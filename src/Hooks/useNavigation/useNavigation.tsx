@@ -83,11 +83,11 @@ export const useNavigation = (): UseNavigationOutput => {
     }, [setForfeitGame]);
 
     /**
-     * Navigates to the profile.
+     * Navigates to the profile component.
      */
     const handleProfileClick = useCallback(() => {
-        console.log("profile click");
-    },[]);
+        navigate('/profile', { replace: true });
+    },[navigate]);
 
     /**
      * Toggles the state of the navigation menu.

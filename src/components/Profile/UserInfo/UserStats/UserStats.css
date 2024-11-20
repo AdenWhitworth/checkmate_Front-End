@@ -1,0 +1,41 @@
+
+
+.stats{
+    flex: 1;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+}
+
+.stats h5{
+    margin: 0;
+    padding: 0;
+    color: #FFFFFF;
+}
+
+.stats-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-row-left{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-icon{
+    width: 18px;
+    height: 18px;
+}
+
+.stat-icon img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
