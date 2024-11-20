@@ -7,6 +7,7 @@ import { usePlayer } from '../../Providers/PlayerProvider/PlayerProvider';
 import { Game, Opponent, InGamePlayer } from '../../Providers/GameProvider/GameProviderTypes';
 import { PlayerList, Invite } from '../../Providers/PlayerProvider/PlayerProviderTypes';
 import { Move } from 'chess.js';
+import { useNavigate } from "react-router-dom";
 
 /*
  * Custom hook for managing game room actions including creating, joining, forfeiting, exiting, and closing game rooms.
@@ -53,6 +54,7 @@ export const useGameRoomManagement = ({
         sendReconnectRoom
     } = useSocket();
     const { playerStatic, playerDynamic, setPlayerDynamic } = usePlayer();
+    const navigate = useNavigate();
 
     /**
      * Handles forfeiting the current game by notifying the server and resetting the state.
@@ -353,6 +355,7 @@ export const useGameRoomManagement = ({
                 setHistory(deserializedHistory || []);
                 setGame(reconnectedGame.game);
                 setReconnectGame(true);
+                navigate('/dashboard', { replace: true });
             } catch (error) {
                 setOpponent(null);
                 setFen("start");
@@ -361,7 +364,7 @@ export const useGameRoomManagement = ({
                 setLoadingReconnectGame(false);
             }
         }
-    }, [game, playerDynamic, playerStatic, setErrorReconnectGame, setLoadingReconnectGame, setReconnectGame, sendReconnectRoom, setOrientation, setOpponent, setFen, setPlayerTurn, setHistory, setGame]);
+    }, [game, playerDynamic, playerStatic, setErrorReconnectGame, setLoadingReconnectGame, setReconnectGame, sendReconnectRoom, setOrientation, setOpponent, setFen, setPlayerTurn, setHistory, setGame, navigate]);
     
     /**
      * Attempts to reconnect to a game when the component mounts or when `handleReconnectRoom` changes.
