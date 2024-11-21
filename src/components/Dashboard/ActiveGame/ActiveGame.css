@@ -16,25 +16,25 @@
     }
 }
 
-@media (min-width: 1700px) {
+@media (min-width: 1400px) {
     .board {
         max-width: 35vw;
     }
 }
 
-@media (min-width: 2000px) {
+@media (min-width: 1600px) {
     .board {
         max-width: 30vw;
     }
 }
 
-@media (min-width: 2200px) {
+@media (min-width: 1800px) {
     .board {
         max-width: 25vw;
     }
 }
 
-@media (min-width: 2500px) {
+@media (min-width: 2200px) {
     .board {
         max-width: 20vw;
     }

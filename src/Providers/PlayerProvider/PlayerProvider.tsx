@@ -52,7 +52,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
      * Sets the player userId state and setPlayerUserIdLoaded flag when successful.
      */
     const fetchPlayerUserId = useCallback(async () => {
-        if (!currentUser || playerUserId) return;
+        if (!currentUser) return;
 
         try {
             const q = query(collection(db, 'users'), where('uid', '==', currentUser.uid));
@@ -68,7 +68,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
         } catch (error) {
             setError("Error fetching user ID.");
         }
-    }, [currentUser, playerUserId]);
+    }, [currentUser]);
 
     /**
      * Fetches the current user's player data from Firestore.
@@ -89,6 +89,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                     playerId: data.playerId,
                     userId: snapshot.id,
                     username: data.username,
+                    createdAt: data.createdAt
                 };
 
                 const newPlayerDynamic: PlayerDynamic = {
@@ -97,6 +98,8 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                     draw: data.draw ?? 0,
                     elo: data.elo ?? 1200,
                     currentGameId: data.currentGameId ?? undefined,
+                    email: data.email,
+                    gamesPlayed: data.gamesPlayed ?? 0,
                 };
 
                 setPlayerStatic((prev) => {
@@ -232,6 +235,19 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
         const unsubscribeInvites = fetchInvites();
         return unsubscribeInvites;
     }, [fetchInvites]);
+
+    /**
+     * Reset the player, players, and invites when user changes
+     */
+    useEffect(() => {
+        if(!currentUser){
+            setPlayerUserId(null);
+            setPlayerStatic(null);
+            setPlayerDynamic(null);
+            setPlayers([]);
+            setInvites([]);
+        }
+    },[currentUser])
 
     return (
         <PlayerContext.Provider value={{ 

@@ -1,0 +1,64 @@
+.games-info{
+    background-color: #181818;
+    text-align: center;
+    border-radius: 20px;
+    height: 100%;
+    width: 50vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.games-info h2{
+    color: #FFE769;
+    margin-top: 5%;
+    padding: 0;
+}
+
+.games-list{
+    text-align: left;
+    height: 100%;
+    width: 90%;
+    overflow: auto;
+    box-sizing: border-box;
+    margin-left: 5%;
+    margin-bottom: 5%;
+    border-radius: 10px;
+    border: 2px solid #444444;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  
+    flex: 1;
+    margin-top: 10px;
+    padding: 0;
+}
+
+.games-list::-webkit-scrollbar { 
+    background: transparent; 
+    display: none;
+}
+
+.games-list::-webkit-scrollbar-thumb { 
+    background-color: transparent; 
+    -webkit-border-radius: 1ex; 
+}
+
+.games-title{
+    display: flex;
+    flex-direction: row;
+    color: #FFFFFF;
+    justify-content: space-evenly;
+    width: 90%;
+    margin-left: 5%;
+    height: 30px;
+    align-items: center;
+}
+
+.games-title h5{
+    padding: 0;
+    margin: 0;
+}
+
+@media(max-width: 900px){
+    .games-info{
+        width: 100%;
+        height: 70vh;
+    }
+}

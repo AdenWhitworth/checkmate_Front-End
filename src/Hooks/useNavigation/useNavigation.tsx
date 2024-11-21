@@ -83,6 +83,20 @@ export const useNavigation = (): UseNavigationOutput => {
     }, [setForfeitGame]);
 
     /**
+     * Navigates to the profile component.
+     */
+    const handleProfileClick = useCallback(() => {
+        navigate('/profile', { replace: true });
+    },[navigate]);
+
+    /**
+     * Navigates to the forgot password component.
+     */
+    const handleForgotPasswordClick = useCallback(() => {
+        navigate('/forgotPassword', { replace: true });
+    },[navigate]);
+
+    /**
      * Toggles the state of the navigation menu.
      */
     const toggleMenu = useCallback(() => {
@@ -97,8 +111,10 @@ export const useNavigation = (): UseNavigationOutput => {
         handleSignupClick,
         handleArrowClick,
         handleFlagClick,
+        handleProfileClick,
         toggleMenu, 
         isMenuOpen,
-        handleSendToDashboard
+        handleSendToDashboard,
+        handleForgotPasswordClick
     };
 };
