@@ -8,6 +8,7 @@ import { User } from 'firebase/auth';
  * @property {User | null} currentUser - The currently authenticated user, or `null` if not authenticated.
  * @property {boolean} loadingAuth - Indicates whether authentication-related operations are in progress.
  * @property {string | null} error - The error message related to authentication operations, or `null` if there is no error.
+ * 
  * @property {Function} login - Logs in a user with the provided email and password.
  * @param {string} email - The user's email address.
  * @param {string} password - The user's password.
@@ -36,11 +37,17 @@ import { User } from 'firebase/auth';
  * @property {Function} updateUserEmail - Updates the email address of the authenticated user.
  * @param {string} newEmail - The new email address to update.
  * @param {string} userId - The user's unique identifier.
- * @returns {Promise<boolean>} A promise that resolves to `true` if the email update succeeds, otherwise `false`.
+ * @returns {Promise<boolean>} A promise that resolves to `true` if the email update succeeds, otherwise rejects with an error.
  * 
  * @property {Function} forgotPassword - Sends a password reset email to the user.
  * @param {string} email - The email address of the user to send the reset instructions.
  * @returns {Promise<void>} A promise that resolves when the reset email has been sent.
+ * 
+ * @property {Function} resetPassword - Resets the user's password with a confirmation code and new credentials.
+ * @param {string} oobCode - The out-of-band code from the password reset email.
+ * @param {string} password - The new password to set for the user.
+ * @param {string} confirmPassword - Confirmation of the new password to ensure they match.
+ * @returns {Promise<void>} A promise that resolves when the password has been successfully reset, otherwise rejects with an error.
  */
 export interface AuthContextType {
     currentUser: User | null;
@@ -54,6 +61,6 @@ export interface AuthContextType {
     setIsLoginSelected: (value: boolean) => void;
     accessToken: string | null;
     updateUserEmail: (newEmail: string, userId: string) => Promise<boolean>;
-    forgotPassword: (email: string) => Promise<void>; 
+    forgotPassword: (email: string) => Promise<void>;
+    resetPassword: (oobCode: string, password: string, confirmPassword: string) => Promise<void>;
 }
-

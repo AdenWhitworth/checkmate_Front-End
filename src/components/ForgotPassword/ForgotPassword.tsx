@@ -45,11 +45,15 @@ export default function ForgotPassword(): JSX.Element {
      */
     const handleForgotPasswordSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await forgotPassword(formData.email || '');
-        if(currentUser){
-            logout();
+        try {
+            await forgotPassword(formData.email || '');
+            if(currentUser){
+                logout();
+            }
+            setEmailSent(true);
+        } catch (error){
+            console.error("Error occured with forgot password:", error);
         }
-        setEmailSent(true);
     }, [currentUser, forgotPassword, formData, logout]);
 
     return (

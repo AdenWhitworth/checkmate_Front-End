@@ -31,7 +31,7 @@ export default function SentEmailForm({
 
             <p>Please check the email address for instructions to reset your password.</p>
 
-            <Button className='fixed-width-icon-button' type="submit" disabled={loadingAuth} styleType="primary" imgSrc={plane} imgAlt='Send plane'>
+            <Button className='full-button' type="submit" disabled={loadingAuth} styleType="primary" imgSrc={plane} imgAlt='Send plane'>
                 {loadingAuth ? 'Resending...' : 'Resend Email'}
             </Button>
 

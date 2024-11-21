@@ -11,6 +11,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import { GameProvider } from './Providers/GameProvider/GameProvider';
 import Profile from './components/Profile/Profile';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
+import ResetPassword from './components/ResetPassword/ResetPassword';
 
 /**
  * The main App component that sets up the routing and providers for the application.
@@ -28,7 +29,7 @@ import ForgotPassword from './components/ForgotPassword/ForgotPassword';
  * 
  * @remarks
  * - The App uses `Routes` and `Route` from `react-router-dom` to define the routes of the application.
- * - The `/dashboard` route is protected by `PrivateRoute`, which checks if a user is authenticated before allowing access.
+ * - The `/dashboard` and `profile` routes are protected by `PrivateRoute`, which checks if a user is authenticated before allowing access.
  * - Environment variable `REACT_APP_BASE_URL` is used for the SocketProvider's URL.
  */
 function App(): JSX.Element {
@@ -45,6 +46,7 @@ function App(): JSX.Element {
                 <Route path='/dashboard' element={<PrivateRoute><Dashboard></Dashboard></PrivateRoute>}></Route>
                 <Route path='/profile' element={<PrivateRoute><Profile></Profile></PrivateRoute>}></Route>
                 <Route path='/forgotPassword' element={<ForgotPassword></ForgotPassword>}></Route>
+                <Route path='/resetPassword' element={<ResetPassword></ResetPassword>}></Route>
               </Routes>
             </GameProvider>
           </SocketProvider>

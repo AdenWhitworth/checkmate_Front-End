@@ -41,7 +41,7 @@ export default function ForgotPasswordForm({
                 isSpellCheck={false}
             />
 
-            <Button className='fixed-width-icon-button' type="submit" disabled={loadingAuth} styleType="primary" imgSrc={plane} imgAlt='Send plane'>
+            <Button className='full-button' type="submit" disabled={loadingAuth} styleType="primary" imgSrc={plane} imgAlt='Send plane'>
                 {loadingAuth ? 'Sending...' : 'Send Email'}
             </Button>
 
