@@ -42,7 +42,7 @@ Try out the app using the following demo accounts:
 - **Real-Time Gameplay**: Challenge your friends in a multiplayer chess game with real-time move updates.
 - **In-Game Chat**: Communicate with your opponent during the game with the built-in chat feature.
 - **ELO Ranking System**: Track your performance and compare rankings with friends.
-- **In-Game Statistics**: Monitor game statistics as you play.
+- **In-Game Statistics**: Track real-time game stats during play and review detailed outcomes of past games.
 - **Responsive Design**: Optimized for desktop and mobile devices, ensuring a great user experience on any screen size.
 - **Game Persistence**: Stay in the game, even if you loose connection, with a reliable rejoin feature.
 
@@ -90,6 +90,7 @@ Create a `.env` file in the root directory and define the following variables:
   ```plain text
   # Application Configuration
   REACT_APP_BASE_URL=your_back-end_url  # url for the server application
+  REACT_APP_BASE_URL_FRONT=your_front-end_url  # url for the frontend application
   REACT_APP_PORT=your_port # port for local development
 
   #Firebase Configuration
