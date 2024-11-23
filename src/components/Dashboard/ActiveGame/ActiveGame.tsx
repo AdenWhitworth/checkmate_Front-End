@@ -5,7 +5,7 @@ import { ActiveGameProps } from "./ActiveGameTypes";
 
 /**
  * ActiveGame component renders a chessboard with current game state and allows users to interact with it.
- * It utilizes the `useGame` provider to get the current state of the chess game, including the FEN string,
+ * It utilizes the Active Game Props to get the current state of the chess game, including the FEN string,
  * the player's orientation, and the function to handle piece drops.
  *
  * @component
