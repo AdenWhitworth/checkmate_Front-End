@@ -1,7 +1,7 @@
 import React from "react";
 import { Chessboard } from "react-chessboard";
-import { useGame } from "../../../Providers/GameProvider/GameProvider";
 import "./ActiveGame.css";
+import { ActiveGameProps } from "./ActiveGameTypes";
 
 /**
  * ActiveGame component renders a chessboard with current game state and allows users to interact with it.
@@ -11,8 +11,11 @@ import "./ActiveGame.css";
  * @component
  * @returns {JSX.Element} - A component that renders the chessboard and game interactions.
  */
-export default function ActiveGame(): JSX.Element {
-  const { orientation, fen, onDrop } = useGame();
+export default function ActiveGame({
+  fen,
+  onDrop,
+  orientation,
+}: ActiveGameProps): JSX.Element {
 
   return (
     <div className="active-game">
