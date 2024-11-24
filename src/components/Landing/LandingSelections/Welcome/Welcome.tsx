@@ -20,7 +20,7 @@ import WelcomeCard from './WelcomeCard/WelcomeCard';
  */
 export default function Welcome(): JSX.Element {
     
-    const { handleSendToDashboard } = useNavigation();
+    const { handleSendToDashboard, handleSendToBotDashboard } = useNavigation();
     
     return (
         <div className="welcome">
@@ -42,7 +42,7 @@ export default function Welcome(): JSX.Element {
                 imgSrc={bot} 
                 title='Play Bots' 
                 text='Practice versus selectable training bots'
-                onClick={() => console.log("Bots")}
+                onClick={handleSendToBotDashboard}
             ></WelcomeCard>
         </div>          
     );
