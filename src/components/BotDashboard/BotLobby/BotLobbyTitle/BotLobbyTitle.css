@@ -1,0 +1,26 @@
+.bot-lobby-title {
+    width: 100%;
+    height: 125px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    color: #FFFFFF;
+    justify-content: center;
+    align-items: center;
+}
+
+.bot-lobby-title-img {
+    height: 40px;
+    width: 40px;
+}
+
+.bot-lobby-title-img img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+.bot-lobby-title h4 {
+    padding: 0;
+    margin: 0;
+}

@@ -1,8 +1,10 @@
 import React from 'react';
 import Header from '../Header/Header';
 import "./BotDashboard.css";
-import { useGame } from '../../Providers/GameProvider/GameProvider';
 import ActiveGame from '../Dashboard/ActiveGame/ActiveGame';
+import BotLobby from './BotLobby/BotLobby';
+import { useBot } from '../../Providers/BotProvider/BotProvider';
+import InGameStats from '../Dashboard/InGameStats/InGameStats';
 
 /**
  * BotDashboard component that serves as the main container for the active game,
@@ -12,19 +14,21 @@ import ActiveGame from '../Dashboard/ActiveGame/ActiveGame';
  * @returns {JSX.Element} - The rendered Dashboard component.
  */
 export default function BotDashboard(): JSX.Element {
-    const { game, orientation, fen, onDrop } = useGame();
+    const { game, orientation, fen, onDrop } = useBot();
 
     return (
         <>  
             <Header />
 
-            <section className="dashboard">
-                <div className="dashboard-content">
+            <section className="bot-dashboard">
+                <div className="bot-dashboard-content">
                     <ActiveGame 
                         orientation={orientation}
                         fen={fen}
                         onDrop={onDrop}
                     />
+
+                    {game ? <InGameStats /> : <BotLobby />}
                 </div>
             </section>
         </>

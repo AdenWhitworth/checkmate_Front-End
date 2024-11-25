@@ -13,6 +13,7 @@ import Profile from './components/Profile/Profile';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import ResetPassword from './components/ResetPassword/ResetPassword';
 import BotDashboard from './components/BotDashboard/BotDashboard';
+import { BotProvider } from './Providers/BotProvider/BotProvider';
 
 /**
  * The main App component that sets up the routing and providers for the application.
@@ -41,15 +42,17 @@ function App(): JSX.Element {
         <PlayerProvider>
           <SocketProvider url={process.env.REACT_APP_BASE_URL as string}>
             <GameProvider>
-              <Routes>
-                <Route path='/' element={<Landing></Landing>}></Route>
-                <Route path='/auth' element={<Authentication></Authentication>}></Route>
-                <Route path='/dashboard' element={<PrivateRoute><Dashboard></Dashboard></PrivateRoute>}></Route>
-                <Route path='/profile' element={<PrivateRoute><Profile></Profile></PrivateRoute>}></Route>
-                <Route path='/forgotPassword' element={<ForgotPassword></ForgotPassword>}></Route>
-                <Route path='/resetPassword' element={<ResetPassword></ResetPassword>}></Route>
-                <Route path='/botDashboard' element={<PrivateRoute><BotDashboard></BotDashboard></PrivateRoute>}></Route>
-              </Routes>
+              <BotProvider>
+                <Routes>
+                  <Route path='/' element={<Landing></Landing>}></Route>
+                  <Route path='/auth' element={<Authentication></Authentication>}></Route>
+                  <Route path='/dashboard' element={<PrivateRoute><Dashboard></Dashboard></PrivateRoute>}></Route>
+                  <Route path='/profile' element={<PrivateRoute><Profile></Profile></PrivateRoute>}></Route>
+                  <Route path='/forgotPassword' element={<ForgotPassword></ForgotPassword>}></Route>
+                  <Route path='/resetPassword' element={<ResetPassword></ResetPassword>}></Route>
+                  <Route path='/botDashboard' element={<PrivateRoute><BotDashboard></BotDashboard></PrivateRoute>}></Route>
+                </Routes>
+              </BotProvider>
             </GameProvider>
           </SocketProvider>
         </PlayerProvider>

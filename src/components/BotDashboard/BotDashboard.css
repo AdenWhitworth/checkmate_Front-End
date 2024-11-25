@@ -1,0 +1,31 @@
+.bot-dashboard{
+    width: 100%;
+    height: 100%;
+}
+
+.bot-dashboard-content{
+    margin-top: 4vh;
+    width: 100%;
+    height: 78vh;
+    display: flex;
+    flex-direction: row;
+    gap: 10%;
+    align-items: center;
+    justify-content: center;
+}
+
+@media(max-width: 900px){
+    .bot-dashboard{
+        height: auto;
+        margin-top: 18vh;
+        padding-bottom: 4vh;
+    }
+
+    .bot-dashboard-content{
+        flex-direction: column;
+        padding-left: 10%;
+        width: 80%;
+        height: 100%;
+        gap: 4vh;
+    }
+}

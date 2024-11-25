@@ -1,0 +1,47 @@
+.bot-orientation{
+    display: flex;
+    width: 90%;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.bot-orientation h3{
+    font-size: 18px;
+    padding: 0;
+    margin: 0;
+    color: #FFFFFF;
+}
+
+.bot-orientation-option{
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.orientation-selected{
+    border: 0.5px solid #FFCD05;
+}
+
+.solid-color{
+    background-color: #3D3D3D;
+}
+
+.split-color{
+    background: linear-gradient(to right, white 50%, black 50%);
+}
+
+.bot-orientation-option-img{
+    width: 20px;
+    height: 20px;
+}
+
+.bot-orientation-option-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
