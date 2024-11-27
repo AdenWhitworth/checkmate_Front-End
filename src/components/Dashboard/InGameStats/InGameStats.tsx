@@ -16,9 +16,9 @@ import { Game } from "../../../Providers/GameProvider/GameProviderTypes";
  * @returns {JSX.Element} The rendered InGameStats component.
  */
 export default function InGameStats(): JSX.Element {
-    const { orientation, playerTurn, opponent, game } = useGame();
+    const { orientation, playerTurn, opponent, game, history, gameMoves, setGameMoves } = useGame();
     const { playerStatic, playerDynamic } = usePlayer();
-    const { playerPieces, opponentPieces } = useCapturedPieces();
+    const { playerPieces, opponentPieces } = useCapturedPieces({orientation, history});
 
     const isWhite = orientation === "w";
     const isRoomFull = checkIfRoomIsFull(game);
@@ -66,7 +66,11 @@ export default function InGameStats(): JSX.Element {
                 isLoading={!isRoomFull}
             />
 
-            <HistoryMoves />
+            <HistoryMoves 
+                history={history}
+                gameMoves={gameMoves}
+                setGameMoves={setGameMoves}
+            />
 
             <GameStats 
                 username={playerStatic?.username || 'Player'} 

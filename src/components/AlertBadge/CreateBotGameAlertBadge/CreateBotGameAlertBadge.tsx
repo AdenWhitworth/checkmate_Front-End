@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import AlertBadge from '../AlertBadge';
-import { useGame } from '../../../Providers/GameProvider/GameProvider';
 import { AlertColor } from '@mui/material/Alert';
+import { useBot } from '../../../Providers/BotProvider/BotProvider';
 
 /**
- * MoveAlertBadge Component
+ * CreateBotGameAlertBadge Component
  *
- * Displays an alert badge when there is an error message related to moving a chess piece during a game.
- * Uses the `useGame` provider to obtain the error state related to move.
+ * Displays an alert badge when there is an error or success message related to creating a game against a bot.
+ * Uses the `useGame` provider to obtain the error and success state related to room creation.
  *
  * @component
- * @returns {JSX.Element} The rendered CreateRoomAlertBadge component.
+ * @returns {JSX.Element} The rendered CreateBotGameAlertBadge component.
  */
-export default function MoveAlertBadge(): JSX.Element {
-    const { errorMove, setErrorMove } = useGame();
+export default function CreateBotGameAlertBadge(): JSX.Element {
+    const { errorCreateGame, successCreateGame, setErrorCreateGame, setSuccessCreateGame } = useBot();
     
     const [open, setOpen] = useState<boolean>(false);
     const [severity, setSeverity] = useState<AlertColor>('info');
@@ -23,21 +23,26 @@ export default function MoveAlertBadge(): JSX.Element {
      * Closes the alert badge and resets error and success state in the GameProvider.
      */
     const handleCloseBadge = () => {
-        setErrorMove(null);
+        setErrorCreateGame(null);
+        setSuccessCreateGame(null);
     }
 
     /**
      * UseEffect hook to open/close the badge and assign variables
      */
     useEffect(() => {
-        if (errorMove) {
+        if (errorCreateGame) {
             setSeverity('error');
-            setAlertText(errorMove);
+            setAlertText(errorCreateGame);
+            setOpen(true);
+        } else if (successCreateGame) {
+            setSeverity('success');
+            setAlertText(successCreateGame);
             setOpen(true);
         } else {
             setOpen(false);
         }
-    }, [errorMove]);
+    }, [errorCreateGame, successCreateGame]);
 
     return (
         <AlertBadge 

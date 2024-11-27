@@ -1,38 +1,48 @@
-import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
-import { BotContextType } from './BotProviderTypes';
+import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
+import { BotContextType, BotGame } from './BotProviderTypes';
 import { GameMoves } from '../../components/Dashboard/InGameStats/InGameStatsTypes';
-import { Game } from '../GameProvider/GameProviderTypes';
-import { Move, Chess } from 'chess.js';
+import { Move, Chess, Square } from 'chess.js';
 import { useBotChessGame } from '../../Hooks/useBotChessGame/useBotChessGame';
+import { useBotGameManagement } from '../../Hooks/useBotGameManagement/useBotGameManagement';
 
 const BotContext = createContext<BotContextType | undefined>(undefined);
 
+const helpSettings = {
+    assisted: Infinity,
+    friendly: 3,
+    challenge: 0
+};
+
 /**
- * Provides the bot context to its child components, managing the state and logic for bot games and moves.
+ * BotProvider component manages the state and logic for bot games, providing context to its child components.
+ * It handles difficulty levels, game states, player actions, undo functionality, hints, and game cleanup.
  *
  * @component
  * @param {Object} props - The props object.
- * @param {ReactNode} props.children - The child components to receive the game context.
- * @returns {JSX.Element} The rendered BotProvider component.
+ * @param {React.ReactNode} props.children - The child components that will receive the bot context.
+ * @returns {JSX.Element} The rendered BotProvider component with its context.
  */
 export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
 
-    const [difficulty, setDifficulty] = useState<"novice" | "intermediate" | "advanced" | "master" >("novice");
+    const [difficulty, setDifficulty] = useState<"novice" | "intermediate" | "advanced" | "master">("novice");
     const [help, setHelp] = useState<"assisted" | "friendly" | "challenge">("friendly");
+    const [remainingUndos, setRemainingUndos] = useState<number>(helpSettings[help]);
+    const [remainingHints, setRemainingHints] = useState<number>(helpSettings[help]);
+    const [hint, setHint] = useState<[Square,Square] | null>(null);
     const [orientation, setOrientation] = useState<"w" | "b">("w");
     const [playerTurn, setPlayerTurn] = useState<"w" | "b">("w");
     const [history, setHistory] = useState<Move[]>([]);
-    const [game, setGame] = useState<Game | null>(null);
+    const [botGame, setBotGame] = useState<BotGame | null>(null);
     const chess = useMemo(() => {
         const instance = new Chess();
     
-        if (!game?.history || game.history.length === 0) {
+        if (!botGame?.history || botGame.history.length === 0) {
             return instance;
         }
     
         instance.reset();
     
-        for (const moveString of game.history) {
+        for (const moveString of botGame.history) {
             let move = typeof moveString === "string" ? JSON.parse(moveString) : moveString;
     
             if (move && move.from && move.to) {
@@ -47,15 +57,30 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
             }
         }
         return instance;
-    }, [game]);
+    }, [botGame]);
     const [fen, setFen] = useState<string>("start");
     const [errorMove, setErrorMove] = useState<string | null>(null);
     const [gameMoves, setGameMoves] = useState<GameMoves[]>([]);
-    const [gameOver, setGameOver] = useState<string | null>(null);
 
-    const { onDrop } = useBotChessGame({
-        game,
-        setGame, 
+    const [loadingCreateGame, setLoadingCreateGame] = useState<boolean>(false);
+    const [errorCreateGame, setErrorCreateGame] = useState<string | null>(null);
+    const [successCreateGame, setSuccessCreateGame] = useState<string | null>(null);
+
+    const [gameOver, setGameOver] = useState<string | null>(null);
+    const [loadingOver, setLoadingOver] = useState<boolean>(false);
+    const [errorOver, setErrorOver] = useState<string | null>(null);
+
+    const [forfeitBotGame, setForfeitBotGame] = useState<boolean>(false);
+    const [loadingForfeit, setLoadingForfeit] = useState<boolean>(false);
+    const [errorForfeit, setErrorForfeit] = useState<string | null>(null);
+
+    const [reconnectGame, setReconnectGame] = useState<boolean>(false);
+    const [loadingReconnectGame, setLoadingReconnectGame] = useState<boolean>(false);
+    const [errorReconnectGame, setErrorReconnectGame] = useState<string | null>(null);
+
+    const { onDrop, undoPreviousMove, requestHint, findWinner } = useBotChessGame({
+        botGame,
+        setBotGame, 
         setHistory, 
         setPlayerTurn, 
         orientation, 
@@ -64,7 +89,13 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
         gameOver, 
         setGameOver,
         setErrorMove,
-        setGameMoves,        
+        setGameMoves,
+        difficulty,
+        remainingUndos,
+        setRemainingUndos,
+        remainingHints,
+        setRemainingHints,
+        setHint     
     });
 
     /**
@@ -72,13 +103,51 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
      */
     const cleanup = useCallback(() => {
         setFen("start");
-        setGame(null);
+        setBotGame(null);
         setOrientation("w");
         setHistory([]);
         setGameMoves([]);
         setPlayerTurn("w");
         setGameOver(null);
     }, []);
+
+    /**
+     * Reset state when the `help` setting changes.
+     */
+    useEffect(() => {
+        setRemainingUndos(helpSettings[help]);
+        setRemainingHints(helpSettings[help]);
+        setHint(null);
+    }, [help]);
+
+    const { 
+        handleCreateBotGame,
+        handleForfeit,
+        handleCloseBotGame 
+    } = useBotGameManagement({
+        cleanup,
+        botGame,
+        setBotGame,
+        setFen,
+        setHistory,
+        setOrientation,
+        setPlayerTurn,
+        setLoadingCreateGame,
+        setErrorCreateGame,
+        setSuccessCreateGame,
+        orientation,
+        difficulty,
+        help,
+        setLoadingForfeit,
+        setErrorForfeit,
+        setForfeitBotGame,
+        setErrorOver,
+        setLoadingOver,
+        findWinner,
+        setErrorReconnectGame,
+        setLoadingReconnectGame,
+        setReconnectGame,
+    });
 
     return (
         <BotContext.Provider value={{
@@ -88,8 +157,8 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
             setHelp,
             orientation,
             setOrientation,
-            game,
-            setGame, 
+            botGame,
+            setBotGame, 
             fen,
             setFen,
             gameOver,
@@ -104,7 +173,26 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
             setErrorMove,
             gameMoves,
             setGameMoves,
-            onDrop
+            onDrop,
+            handleCreateBotGame,
+            loadingCreateGame,
+            errorCreateGame,
+            successCreateGame,
+            remainingUndos,
+            undoPreviousMove,
+            hint,
+            requestHint,
+            remainingHints,
+            forfeitBotGame,
+            setForfeitBotGame,
+            handleForfeit,
+            loadingForfeit,
+            errorForfeit,
+            handleCloseBotGame,
+            loadingOver,
+            errorOver,
+            setErrorCreateGame,
+            setSuccessCreateGame,
         }}>
             {children}
         </BotContext.Provider>
@@ -112,10 +200,10 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
 };
 
 /**
- * Custom hook to access the game context and ensure it's used within a BotProvider.
+ * Custom hook to access the bot context. Ensures the `BotProvider` wraps the component tree.
  *
  * @returns {BotContextType} The current bot game context value.
- * @throws Will throw an error if used outside of a BotProvider.
+ * @throws Will throw an error if called outside of a `BotProvider`.
  */
 export const useBot = (): BotContextType => {
     const context = useContext(BotContext);

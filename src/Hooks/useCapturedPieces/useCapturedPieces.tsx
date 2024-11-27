@@ -32,8 +32,7 @@ import queen_black from "../../Images/Queen Black.svg";
 import king_black from "../../Images/King Black.svg";
 import React, {useState, useEffect, useCallback} from "react";
 import { PieceType, CapturedPiece, PieceState, PieceImages } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
-import { useGame } from "../../Providers/GameProvider/GameProvider";
-import { UseCapturedPiecesOutput } from "./useCapturedPiecesTypes";
+import { UseCapturedPiecesOutput, UseCapturedPiecesProps } from "./useCapturedPiecesTypes";
 
 const pieceImages: PieceImages[] = [
     {
@@ -62,9 +61,7 @@ const pieceTypes: PieceType[] = ["p", "n", "b", "r", "q", "k"];
  * @function useCapturedPieces
  * @returns {UseCapturedPiecesOutput} The captured pieces, player and opponent pieces state, and functions to update pieces.
  */
-export const useCapturedPieces = (): UseCapturedPiecesOutput => {
-    const { orientation, history } = useGame();
-
+export const useCapturedPieces = ({orientation, history}: UseCapturedPiecesProps): UseCapturedPiecesOutput => {
     const [capturedPieces, setCapturedPieces] = useState<CapturedPiece[]>([
         { player: "w", p: 0, n: 0, b: 0, r: 0, q: 0, k: 0 },
         { player: "b", p: 0, n: 0, b: 0, r: 0, q: 0, k: 0 },

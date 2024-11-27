@@ -16,11 +16,20 @@ import {
   ForfeitArgs,
   CreateRoomArgs,
   ReconnectRoomArgs,
-  CallbackResponseReconnectRoom
+  CallbackResponseReconnectRoom,
+  GetBotMoveArgs,
+  CallbackResponseGetBotMove,
+  CreateBotGameArgs,
+  CallbackResponseCreateBotGame,
+  CallbackResponseGetMoveHint,
+  GetMoveHintArgs,
+  CloseBotGameArgs
 } from './SocketProviderTypes';
 import { usePlayer } from '../PlayerProvider/PlayerProvider';
 import { CallbackResponse } from './SocketProviderTypes';
 import { Game } from '../GameProvider/GameProviderTypes';
+import { Move } from 'chess.js';
+import { BotGame } from '../BotProvider/BotProviderTypes';
 
 const SocketContext: React.Context<SocketContextType | undefined> = createContext<SocketContextType | undefined>(undefined);
 
@@ -253,6 +262,111 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
   }, [isConnected]);
 
   /**
+   * Sends a request to create a bot game via the socket connection.
+   *
+   * @param {CreateBotGameArgs} createBotGameArgs - The arguments required to create a bot game, such as player details and game settings.
+   * @returns {Promise<{ botGame: BotGame } | null>} A promise that resolves with the created bot game details, or rejects with an error if the request fails.
+   * @throws {Error} If the socket is not connected or the server returns an error during the bot game creation.
+   */
+  const sendCreateBotGame = useCallback((createBotGameArgs: CreateBotGameArgs): Promise<{ botGame: BotGame } | null> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("createBotGame", createBotGameArgs, (response: CallbackResponseCreateBotGame) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(new Error(response.message));
+          } else {
+            setResponseMessage(response.message);
+            resolve({ botGame: response.botGame });
+          }
+        });
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(new Error('Socket is not connected'));
+      }
+    });
+  }, [isConnected]);
+
+
+  /**
+   * Sends a request to close a bot game via the socket connection.
+   *
+   * @param {CloseBotGameArgs} closeBotGameArgs - The arguments required to close a bot game, including the game ID and any additional details.
+   * @returns {Promise<boolean>} A promise that resolves to `true` if the game was successfully closed, or rejects with `false` if an error occurs.
+   * @throws {Error} If the socket is not connected or the server returns an error while closing the bot game.
+   */
+  const sendCloseBotGame = useCallback((closeBotGameArgs: CloseBotGameArgs): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("closeBotGame", closeBotGameArgs, (response: CallbackResponseCreateBotGame) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(false);
+          } else {
+            setResponseMessage(response.message);
+            resolve(true);
+          }
+        });
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
+  
+  /**
+   * Sends a request to fetch the bot's move via the socket connection.
+   *
+   * @param {GetBotMoveArgs} getBotMoveArgs - The arguments required to determine the bot's next move, including the current game state.
+   * @returns {Promise<{ botMove: Move }>} A promise that resolves with the bot's next move, or rejects with an error if the request fails.
+   * @throws {Error} If the socket is not connected or the server returns an error during the move calculation.
+   */
+  const sendGetBotMove = useCallback((getBotMoveArgs: GetBotMoveArgs): Promise<{botMove: Move}> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("getBotMove", getBotMoveArgs, (response: CallbackResponseGetBotMove) => {
+          if (response.error || !response.botMove) {
+            setResponseMessage(response.message);
+            reject(new Error(response.message));
+          } else {
+            setResponseMessage(response.message);
+            resolve({botMove: response.botMove});
+          }
+        });
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
+
+  /**
+   * Sends a request to fetch a move hint via the socket connection.
+   *
+   * @param {GetMoveHintArgs} getMoveHintArgs - The arguments required to generate a move hint, including the current game state.
+   * @returns {Promise<{ move: Move }>} A promise that resolves with the suggested move as a hint, or rejects with an error if the request fails.
+   * @throws {Error} If the socket is not connected or the server returns an error during hint generation.
+   */
+  const sendGetMoveHint = useCallback((getMoveHintArgs: GetMoveHintArgs): Promise<{move: Move}> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("moveHint", getMoveHintArgs, (response: CallbackResponseGetMoveHint) => {
+          if (response.error || !response.move) {
+            setResponseMessage(response.message);
+            reject(new Error(response.message));
+          } else {
+            setResponseMessage(response.message);
+            resolve({move: response.move});
+          }
+        });
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
+
+  /**
    * Establishes a socket connection using the provided access token.
    * 
    * @param {string} accessToken - The access token used for authenticating the socket connection.
@@ -362,7 +476,8 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
     <SocketContext.Provider value={{
       isConnected, errorSocket, refresh, errorReconnect, setErrorReconnect, setRefresh,
       sendAddUser, sendCreateRoom, sendJoinRoom, sendCloseRoom, sendInGameMessage, connectSocket, 
-      disconnectSocket, sendMove, sendForfeit, responseMessage, socketRef, handleCallback, sendReconnectRoom
+      disconnectSocket, sendMove, sendForfeit, responseMessage, socketRef, handleCallback, sendReconnectRoom, 
+      sendGetBotMove, sendCreateBotGame, sendGetMoveHint, sendCloseBotGame
     }}>
       {children}
     </SocketContext.Provider>

@@ -22,7 +22,8 @@ export default function Header(): JSX.Element {
         handleProfileClick, 
         isMenuOpen,
         toggleMenu,
-        handleKingClick
+        handleKingClick,
+        handleBotFlagClick
     } = useNavigation();
 
     return (
@@ -43,6 +44,7 @@ export default function Header(): JSX.Element {
                         handleLogoutClick={handleLogoutClick}
                         handleSignupClick={handleSignupClick}
                         handleProfileClick={handleProfileClick}
+                        handleBotFlagClick={handleBotFlagClick}
                         isMenuOpen={isMenuOpen}
                     />
                 </div>

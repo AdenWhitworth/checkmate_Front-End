@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import AlertBadge from '../AlertBadge';
-import { useGame } from '../../../Providers/GameProvider/GameProvider';
 import { AlertColor } from '@mui/material/Alert';
+import { useBot } from '../../../Providers/BotProvider/BotProvider';
 
 /**
- * MoveAlertBadge Component
+ * BotMoveAlertBadge Component
  *
  * Displays an alert badge when there is an error message related to moving a chess piece during a game.
- * Uses the `useGame` provider to obtain the error state related to move.
+ * Uses the `useBot` provider to obtain the error state related to move.
  *
  * @component
- * @returns {JSX.Element} The rendered CreateRoomAlertBadge component.
+ * @returns {JSX.Element} The rendered BotMoveAlertBadge component.
  */
-export default function MoveAlertBadge(): JSX.Element {
-    const { errorMove, setErrorMove } = useGame();
+export default function BotMoveAlertBadge(): JSX.Element {
+    const { errorMove, setErrorMove } = useBot();
     
     const [open, setOpen] = useState<boolean>(false);
     const [severity, setSeverity] = useState<AlertColor>('info');
     const [alertText, setAlertText] = useState<string>('');
 
     /**
-     * Closes the alert badge and resets error and success state in the GameProvider.
+     * Closes the alert badge and resets error and success state in the BotProvider.
      */
     const handleCloseBadge = () => {
         setErrorMove(null);

@@ -1,4 +1,19 @@
-import { PieceType, CapturedPiece, PieceState, PieceImages } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
+import { Move } from "chess.js";
+import { PieceType, CapturedPiece, PieceState } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
+
+/**
+ * Interface defining the properties required by the `useCapturedPieces` hook.
+ *
+ * @interface UseCapturedPiecesProps
+ * @property {"w" | "b"} orientation - The player's orientation in the game ("w" for white, "b" for black).
+ *                                     Determines which pieces are considered captured by the player or opponent.
+ * @property {Move[]} history - An array of moves representing the game's move history. Used to track captured pieces
+ *                              throughout the game.
+ */
+export interface UseCapturedPiecesProps{
+    orientation: "w" | "b";
+    history: Move[];
+}
 
 /**
  * Interface representing the properties and functions returned by the useCapturedPieces hook.

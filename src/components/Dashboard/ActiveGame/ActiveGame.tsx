@@ -4,19 +4,24 @@ import "./ActiveGame.css";
 import { ActiveGameProps } from "./ActiveGameTypes";
 
 /**
- * ActiveGame component renders a chessboard with current game state and allows users to interact with it.
- * It utilizes the Active Game Props to get the current state of the chess game, including the FEN string,
- * the player's orientation, and the function to handle piece drops.
+ * ActiveGame component renders a chessboard with the current game state and allows users to interact with it.
+ * It supports customizations such as orientation, hints, and styles. The component integrates with the
+ * `react-chessboard` library to display the chessboard and manage interactions like piece drops.
  *
  * @component
- * @returns {JSX.Element} - A component that renders the chessboard and game interactions.
+ * @param {ActiveGameProps} props - The properties required for the ActiveGame component.
+ * @param {string} props.fen - The current FEN (Forsyth-Edwards Notation) string representing the game state.
+ * @param {(sourceSquare: string, targetSquare: string) => boolean} props.onDrop - Callback function triggered when a piece is dropped. Receives source and target squares as arguments.
+ * @param {"w" | "b"} props.orientation - The orientation of the chessboard ("w" for white, "b" for black).
+ * @param {[string, string] | null} [props.hint] - An optional hint represented as a tuple of start and end squares. If provided, an arrow is displayed on the board to show the hint.
+ * @returns {JSX.Element} - The rendered ActiveGame component.
  */
 export default function ActiveGame({
   fen,
   onDrop,
   orientation,
+  hint
 }: ActiveGameProps): JSX.Element {
-
   return (
     <div className="active-game">
       <div className="board">
@@ -30,6 +35,7 @@ export default function ActiveGame({
           }}
           customDarkSquareStyle={{ backgroundColor: '#AAAAAA' }}
           customLightSquareStyle={{ backgroundColor: '#FFFFFF' }}
+          customArrows={hint ? [[hint[0], hint[1], "rgb(255, 205, 5)"]] : []}
         />
       </div>
     </div>

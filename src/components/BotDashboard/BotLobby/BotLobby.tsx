@@ -4,27 +4,37 @@ import BotLobbyTitle from './BotLobbyTitle/BotLobbyTitle';
 import BotOptionList from './BotOptionList/BotOptionList';
 import BotSettings from './BotSettings/BotSettings';
 import Button from '../../Button/Button';
+import { useBot } from '../../../Providers/BotProvider/BotProvider';
+import LoadingDots from '../../LoadingDots/LoadingDots';
 
 /**
- * A React functional component representing the bot lobby interface for selecting game settings.
- * 
- * The `BotLobby` component combines multiple child components to provide the following features:
- * - A title section (`BotLobbyTitle`).
- * - A list of bot difficulty options (`BotOptionList`).
- * - Game settings configuration (`BotSettings`).
- * - A play button to start the game.
- * 
+ * Renders the bot lobby interface for selecting game options, settings, and starting a new bot game.
+ *
  * @component
- * @returns {JSX.Element} The JSX representation of the bot lobby interface.
+ * @returns {JSX.Element} - The rendered BotLobby component.
  */
 export default function BotLobby(): JSX.Element {
+    const { handleCreateBotGame, loadingCreateGame } = useBot();
+
+    /**
+     * Handles the Play button click event to initiate a new bot game.
+     */
+    const handlePlayClick = () => {
+        handleCreateBotGame();
+    }
+    
     return (
         <div className="bot-lobby">
             <BotLobbyTitle />
             <BotOptionList />
             <BotSettings />
             <div className='bot-options-btn'>
-                <Button styleType='primary' className='full-button'>Play</Button>
+                <Button 
+                    onClick={handlePlayClick} 
+                    styleType='primary' 
+                    className='full-button' 
+                    disabled={loadingCreateGame}
+                >{loadingCreateGame? <LoadingDots position={'center'} color={'black'} size={'small'} />: "Play"}</Button>
             </div>
         </div>
     );

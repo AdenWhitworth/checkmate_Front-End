@@ -3,7 +3,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 import HistoryItem from "./HistoryItem/HistoryItem";
 import './HistoryMoves.css';
-import { useGame } from "../../../../Providers/GameProvider/GameProvider";
+import { HistorMovesProps } from "./HistoryMovesTypes";
 
 /**
  * HistoryMoves component displays a list of chess moves in the current game.
@@ -12,8 +12,7 @@ import { useGame } from "../../../../Providers/GameProvider/GameProvider";
  * @component
  * @returns {JSX.Element} The rendered HistoryMoves component.
  */
-export default function HistoryMoves(): JSX.Element {
-    const { history, gameMoves, setGameMoves } = useGame();
+export default function HistoryMoves({history, gameMoves, setGameMoves}: HistorMovesProps): JSX.Element {
     const historyMovesContainerRef = useRef<HTMLUListElement>(null);
 
     /**
