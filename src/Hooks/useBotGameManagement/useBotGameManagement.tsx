@@ -4,6 +4,7 @@ import { UseBotGameManagementOutput, UseBotGameManagementProps } from './useBotG
 import { useSocket } from '../../Providers/SocketProvider/SocketProvider';
 import { usePlayer } from '../../Providers/PlayerProvider/PlayerProvider';
 import { BotGame } from '../../Providers/BotProvider/BotProviderTypes';
+import { Move } from 'chess.js';
 
 /**
  * Custom hook for managing a bot chess game. Provides functionality to create, forfeit, and close bot games.
@@ -49,13 +50,17 @@ export const useBotGameManagement = ({
     setForfeitBotGame,
     setErrorOver,
     setLoadingOver,
-    findWinner
+    findWinner,
+    setReconnectGame,
+    setLoadingReconnectGame,
+    setErrorReconnectGame
 }: UseBotGameManagementProps): UseBotGameManagementOutput => {
     
     const { 
         socketRef, 
         sendCreateBotGame,
         sendCloseBotGame,
+        sendReconnectBotGame
     } = useSocket();
     const { playerStatic, playerDynamic, setPlayerDynamic } = usePlayer();
 
@@ -93,6 +98,7 @@ export const useBotGameManagement = ({
 
             const newGame = await sendCreateBotGame({playerA: playerA, playerB: playerB, difficulty, help});
             if (!newGame) throw new Error("No game created.");
+
             setBotGame(newGame.botGame);
             setSuccessCreateGame(`Game created successfully against ${difficulty} BOT!`);
         } catch (error) {
@@ -173,37 +179,32 @@ export const useBotGameManagement = ({
         }
     }, [setErrorOver, setLoadingOver, findWinner, botGame, sendCloseBotGame, setPlayerDynamic, cleanup]);
     
-    /*
-    const handleReconnectRoom = useCallback(async () => {
-        if (!game && playerDynamic?.currentGameId && playerStatic?.userId) {
+    /**
+     * Handles reconnecting to an active bot game.
+     *
+     * This function attempts to re-establish a connection to an ongoing bot game
+     * using the player's current game ID. It fetches the game's data, updates
+     * the game state, and restores the board, history, and player settings.
+     * 
+     * @returns {Promise<void>} - A promise that resolves when the reconnection process is complete.
+     * 
+     * @throws {Error} If the game cannot be reconnected due to invalid data or missing game details.
+     */
+    const handleReconnectBotGame = useCallback(async (): Promise<void> => {
+        if (!botGame && playerDynamic?.currentBotGameId && playerStatic?.userId) {
             setErrorReconnectGame(null);
             setLoadingReconnectGame(true);
             
             try {
-                const reconnectedGame = await sendReconnectRoom({ gameId: playerDynamic.currentGameId });
+                const reconnectedGame = await sendReconnectBotGame({ gameId: playerDynamic.currentBotGameId });
                 
-                if (!reconnectedGame?.game) throw new Error("No game to reconnect to.");
-                    
-                const isPlayerA = playerStatic.userId === reconnectedGame.game.playerA.userId;
+                if (!reconnectedGame?.botGame) throw new Error("No game to reconnect to.");
 
-                setOrientation(isPlayerA? reconnectedGame.game.playerA.orientation : reconnectedGame.game.playerB.orientation);
-
-                setOpponent(isPlayerA? {
-                    opponentUsername: reconnectedGame.game.playerB.username,
-                    opponentUserId: reconnectedGame.game.playerB.userId,
-                    opponentPlayerId: reconnectedGame.game.playerB.playerId,
-                    opponentElo: reconnectedGame.game.playerB.elo,
-                    opponentInviteId: reconnectedGame.game.playerB.inviteId || undefined
-                } : {
-                    opponentUsername: reconnectedGame.game.playerA.username,
-                    opponentUserId: reconnectedGame.game.playerA.userId,
-                    opponentPlayerId: reconnectedGame.game.playerA.playerId,
-                    opponentElo: reconnectedGame.game.playerA.elo
-                });
+                setOrientation(reconnectedGame.botGame.playerA.orientation);
                 
-                setFen(reconnectedGame.game.fen);
+                setFen(reconnectedGame.botGame.fen);
                 
-                const deserializedHistory: Move[] = reconnectedGame.game.history?.map((moveString: string) => {
+                const deserializedHistory: Move[] = reconnectedGame.botGame.history?.map((moveString: string) => {
                     try {
                         return JSON.parse(moveString);
                     } catch (error) {
@@ -211,24 +212,23 @@ export const useBotGameManagement = ({
                     }
                 }).filter((move) => move !== null);
 
-                setPlayerTurn(reconnectedGame.game.currentTurn);
+                setPlayerTurn(reconnectedGame.botGame.currentTurn);
                 setHistory(deserializedHistory || []);
-                setGame(reconnectedGame.game);
+                setBotGame(reconnectedGame.botGame);
                 setReconnectGame(true);
-                navigate('/dashboard', { replace: true });
             } catch (error) {
-                setOpponent(null);
                 setFen("start");
                 setErrorReconnectGame("Failed to reconnect to the active game. Please try again.")
             } finally {
                 setLoadingReconnectGame(false);
             }
         }
-    }, [game, playerDynamic, playerStatic, setErrorReconnectGame, setLoadingReconnectGame, setReconnectGame, sendReconnectRoom, setOrientation, setOpponent, setFen, setPlayerTurn, setHistory, setGame, navigate]);
-    */
+    }, [botGame, playerDynamic, playerStatic, setErrorReconnectGame, setLoadingReconnectGame, sendReconnectBotGame, setOrientation, setFen, setPlayerTurn, setHistory, setBotGame, setReconnectGame]);
+    
     return {
         handleCreateBotGame,
         handleCloseBotGame,
         handleForfeit,
+        handleReconnectBotGame
     };
 };

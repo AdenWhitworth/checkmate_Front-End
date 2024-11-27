@@ -98,7 +98,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                     draw: data.draw ?? 0,
                     elo: data.elo ?? 1200,
                     currentGameId: data.currentGameId ?? undefined,
-                    currentBotGameId: data.currentGameId ?? undefined,
+                    currentBotGameId: data.currentBotGameId ?? undefined,
                     email: data.email,
                     gamesPlayed: data.gamesPlayed ?? 0,
                 };

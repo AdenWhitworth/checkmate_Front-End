@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from '../Header/Header';
 import "./BotDashboard.css";
 import ActiveGame from '../Dashboard/ActiveGame/ActiveGame';
@@ -9,6 +9,8 @@ import ForfeitBotModal from '../Modal/ForfeitBotModal/ForfeitBotModal';
 import BotGameOverModal from '../Modal/BotGameOverModal/BotGameOverModal';
 import CreateBotGameAlertBadge from '../AlertBadge/CreateBotGameAlertBadge/CreateBotGameAlertBadge';
 import BotMoveAlertBadge from '../AlertBadge/BotMoveAlertBadge/BotMoveAlertBadge';
+import ReconnectBotGameModal from '../Modal/ReconnectBotGameModel/ReconnectBotGameModel';
+import ReconnectBotGameBadge from '../AlertBadge/ReconnectBotGameBadge/ReconnectBotGameBadge';
 
 /**
  * BotDashboard component that serves as the main container for the active game,
@@ -18,7 +20,11 @@ import BotMoveAlertBadge from '../AlertBadge/BotMoveAlertBadge/BotMoveAlertBadge
  * @returns {JSX.Element} - The rendered Dashboard component.
  */
 export default function BotDashboard(): JSX.Element {
-    const { botGame, orientation, fen, onDrop, hint, onSquareClick, highlightedSquares, onPromotionPieceSelect } = useBot();
+    const { botGame, orientation, fen, onDrop, hint, onSquareClick, highlightedSquares, onPromotionPieceSelect, handleReconnectBotGame } = useBot();
+
+    useEffect(() => {
+        handleReconnectBotGame();
+    },[handleReconnectBotGame])
 
     return (
         <>  
@@ -42,8 +48,10 @@ export default function BotDashboard(): JSX.Element {
 
             <ForfeitBotModal />
             <BotGameOverModal />
+            <ReconnectBotGameModal />
             <CreateBotGameAlertBadge />
             <BotMoveAlertBadge />
+            <ReconnectBotGameBadge />
         </>
     );
 }

@@ -6,32 +6,33 @@ import { UseBotChessGameOutput, UseBotChessGameProps } from "./useBotChessGameTy
 import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
 
 /**
- * Custom hook for managing a bot chess game using socket connections. 
- * Handles game logic, bot interactions, player moves, undo functionality, and game hints.
+ * Custom hook for managing a bot chess game using socket connections.
+ * Handles game logic, bot interactions, player moves, undo functionality, hints, highlighting squares, and promotions.
  *
  * @param {UseBotChessGameProps} props - The properties required by the `useBotChessGame` hook.
- * @param {Object} props.botGame - The bot game object containing game state and player details.
- * @param {Function} props.setBotGame - Function to update the bot game state.
- * @param {Function} props.setHistory - Function to update the move history.
- * @param {Function} props.setPlayerTurn - Function to update the current player's turn.
+ * @param {BotGame | null} props.botGame - The bot game object containing game state and player details.
+ * @param {(value: Move[]) => void} props.setHistory - Function to update the move history.
+ * @param {(value: "w" | "b") => void} props.setPlayerTurn - Function to update the current player's turn.
  * @param {"w" | "b"} props.orientation - The player's orientation, either "w" (white) or "b" (black).
- * @param {Object} props.chess - The chess.js instance used to manage game state.
- * @param {Function} props.setFen - Function to update the FEN (Forsyth-Edwards Notation) string.
- * @param {string | null} props.gameOver - Indicates the end state of the game if it's over, otherwise null.
- * @param {Function} props.setGameOver - Function to update the game-over state.
- * @param {Function} props.setErrorMove - Function to handle errors related to invalid moves.
- * @param {Function} props.setGameMoves - Function to update the structured game moves for UI purposes.
+ * @param {Chess} props.chess - The chess.js instance used to manage the game state and logic.
+ * @param {(value: string) => void} props.setFen - Function to update the FEN (Forsyth-Edwards Notation) string representing the current game state.
+ * @param {string | null} props.gameOver - The end state of the game (e.g., "checkmate") or null if the game is ongoing.
+ * @param {(value: string | null) => void} props.setGameOver - Function to update the game-over status message.
+ * @param {(value: string | null) => void} props.setErrorMove - Function to set an error message for invalid moves.
+ * @param {(value: GameMoves[] | ((prev: GameMoves[]) => GameMoves[])) => void} props.setGameMoves - Function to update the structured game moves.
  * @param {"novice" | "intermediate" | "advanced" | "master"} props.difficulty - The difficulty level of the bot.
  * @param {number} props.remainingUndos - The number of undos left for the player.
- * @param {Function} props.setRemainingUndos - Function to update the remaining undos count.
+ * @param {(value: number | ((prev: number) => number)) => void} props.setRemainingUndos - Function to update the remaining undo count.
  * @param {number} props.remainingHints - The number of hints left for the player.
- * @param {Function} props.setRemainingHints - Function to update the remaining hints count.
- * @param {Function} props.setHint - Function to set the hint for the player's next move.
+ * @param {(value: number | ((prev: number) => number)) => void} props.setRemainingHints - Function to update the remaining hints count.
+ * @param {(value: [Square, Square] | null) => void} props.setHint - Function to set or clear the hint for the player's next move.
+ * @param {(value: Record<string, any>) => void} props.setHighlightedSquares - Function to update the highlighted squares on the chessboard.
+ * @param {"assisted" | "friendly" | "challenge"} props.help - The level of assistance during the game.
+ * @param {boolean} props.reconnectGame - Whether the player is reconnecting to an active game.
  * @returns {UseBotChessGameOutput} - The returned functions and properties for managing the bot chess game.
  */
 export const useBotChessGame = ({ 
-  botGame,
-  setBotGame, 
+  botGame, 
   setHistory,
   setPlayerTurn, 
   orientation, 
@@ -48,7 +49,8 @@ export const useBotChessGame = ({
   setRemainingHints,
   setHint,
   setHighlightedSquares,
-  help
+  help,
+  reconnectGame
 }: UseBotChessGameProps): UseBotChessGameOutput => {
   const { sendGetBotMove, sendGetMoveHint } = useSocket();
 
@@ -156,6 +158,15 @@ export const useBotChessGame = ({
       makeBotMove();
     }
   }, [orientation, chess, makeBotMove]);
+
+  /**
+   * Ensures the bot makes the first move if necessary when rejoining a game
+   */
+  useEffect(() => {
+    if (reconnectGame && chess.turn() !== orientation) {
+      makeBotMove();
+    }
+  }, [orientation, chess, makeBotMove, reconnectGame]);
 
   /**
    * Handles undo functionality, allowing the player to undo their last move and the bot's response.

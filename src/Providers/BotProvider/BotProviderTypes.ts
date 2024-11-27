@@ -8,7 +8,7 @@ import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
  *
  * The `BotContextType` encapsulates all the state variables, methods, and utilities required for
  * managing a chess game involving a bot, including game setup, move management, hints, undo functionality,
- * promotions, and game lifecycle management.
+ * promotions, reconnections, and game lifecycle management.
  *
  * @interface BotContextType
  * @property {"novice" | "intermediate" | "advanced" | "master"} difficulty - The bot's difficulty level.
@@ -57,6 +57,11 @@ import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
  * @property {(value: Record<string, any>) => void} setHighlightedSquares - Updates the highlighted squares on the board.
  * @property {(square: Square) => void} onSquareClick - Handles clicks on squares to show available moves or other game actions.
  * @property {(piece?: PromotionPieceOption, promoteFromSquare?: Square, promoteToSquare?: Square) => boolean} onPromotionPieceSelect - Handles pawn promotions. Accepts the promotion piece and promotion squares. Returns `true` if the promotion is successful, otherwise `false`.
+ * @property {() => Promise<void>} handleReconnectBotGame - Function to reconnect to an active bot game. Fetches the game state and updates the board locally.
+ * @property {boolean} reconnectGame - Indicates whether the player is reconnecting to an existing bot game.
+ * @property {(reconnectGame: boolean) => void} setReconnectGame - Updates the reconnect game state.
+ * @property {boolean} loadingReconnectGame - Indicates whether the reconnection process is ongoing.
+ * @property {string | null} errorReconnectGame - Error message when reconnecting to a bot game fails.
  */
 export interface BotContextType {
     difficulty: "novice" | "intermediate" | "advanced" | "master";
@@ -105,6 +110,11 @@ export interface BotContextType {
     setHighlightedSquares: (value: Record<string, any>) => void;
     onSquareClick: (square: Square) => void;
     onPromotionPieceSelect: (piece?: PromotionPieceOption, promoteFromSquare?: Square, promoteToSquare?: Square) => boolean;
+    handleReconnectBotGame: () => Promise<void>;
+    reconnectGame: boolean;
+    setReconnectGame: (reconnectGame: boolean) => void;
+    loadingReconnectGame: boolean;
+    errorReconnectGame: string | null;
 }
 
 /**

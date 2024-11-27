@@ -81,8 +81,7 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
     const [highlightedSquares, setHighlightedSquares] = useState<Record<string, any>>({});
 
     const { onDrop, undoPreviousMove, requestHint, findWinner, onSquareClick, onPromotionPieceSelect } = useBotChessGame({
-        botGame,
-        setBotGame, 
+        botGame, 
         setHistory, 
         setPlayerTurn, 
         orientation, 
@@ -99,7 +98,8 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
         setRemainingHints,
         setHint,
         setHighlightedSquares,
-        help   
+        help,
+        reconnectGame 
     });
 
     /**
@@ -128,7 +128,8 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
     const { 
         handleCreateBotGame,
         handleForfeit,
-        handleCloseBotGame 
+        handleCloseBotGame,
+        handleReconnectBotGame
     } = useBotGameManagement({
         cleanup,
         botGame,
@@ -201,7 +202,12 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
             highlightedSquares, 
             setHighlightedSquares,
             onSquareClick,
-            onPromotionPieceSelect
+            onPromotionPieceSelect,
+            handleReconnectBotGame,
+            reconnectGame,
+            setReconnectGame,
+            loadingReconnectGame,
+            errorReconnectGame
         }}>
             {children}
         </BotContext.Provider>

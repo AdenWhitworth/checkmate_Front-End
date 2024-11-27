@@ -60,9 +60,13 @@ export interface UseBotGameManagementProps {
  * @property {() => Promise<void>} handleCreateBotGame - Function to create a new bot game. Sets up the game state and communicates with the server.
  * @property {() => Promise<void>} handleCloseBotGame - Function to close the current bot game. Determines the winner and updates the game state.
  * @property {() => Promise<void>} handleForfeit - Function to forfeit the current bot game. Updates the server and resets the game state locally.
+ * @property {() => Promise<void>} handleReconnectBotGame - Function to reconnect to an active bot game.
+ *                                                    Fetches the current game state, restores the board, and updates the game state locally.
+ *                                                    Useful for resuming games after disconnection or refreshing the application.
  */
 export interface UseBotGameManagementOutput {
     handleCreateBotGame: () => Promise<void>;
-    handleCloseBotGame: () => Promise<void>
-    handleForfeit: () => Promise<void>
+    handleCloseBotGame: () => Promise<void>;
+    handleForfeit: () => Promise<void>;
+    handleReconnectBotGame: () => Promise<void>;
 }

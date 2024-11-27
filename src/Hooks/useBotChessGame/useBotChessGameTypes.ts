@@ -8,7 +8,6 @@ import { Move, Chess, Square } from "chess.js";
  *
  * @interface UseBotChessGameProps
  * @property {BotGame | null} botGame - The current bot game object containing game state and player details.
- * @property {(botGame: BotGame | null) => void} setBotGame - Function to update the current bot game state.
  * @property {(value: Move[]) => void} setHistory - Function to update the move history of the game.
  * @property {(value: "w" | "b") => void} setPlayerTurn - Function to set the current player's turn ("w" for white, "b" for black).
  * @property {"w" | "b"} orientation - The orientation of the player ("w" for white, "b" for black).
@@ -26,10 +25,10 @@ import { Move, Chess, Square } from "chess.js";
  * @property {(hint: [Square, Square] | null) => void} setHint - Function to set or clear the hint for the player's next move.
  * @property {(value: Record<string, any>) => void} setHighlightedSquares - Function to set custom square styles for highlighting possible moves or other states on the board.
  * @property {"assisted" | "friendly" | "challenge"} help - The level of assistance provided to the player during the game.
+ * @property {boolean} reconnectGame - The flag for when a game is reconnected to.
  */
 export interface UseBotChessGameProps {
     botGame: BotGame | null;
-    setBotGame: (botGame: BotGame | null) => void;
     setHistory: (value: Move[]) => void;
     setPlayerTurn: (value: "w" | "b") => void;
     orientation: "w" | "b";
@@ -47,6 +46,7 @@ export interface UseBotChessGameProps {
     setHint: (hint: [Square, Square] | null) => void;
     setHighlightedSquares: (value: Record<string, any>) => void;
     help: "assisted" | "friendly" | "challenge";
+    reconnectGame: boolean;
 }
 
 /**

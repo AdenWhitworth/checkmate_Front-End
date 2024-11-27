@@ -66,6 +66,9 @@ import { BotGame } from '../BotProvider/BotProviderTypes';
  * @property {Function} sendCloseBotGame - Sends a request to close a bot game.
  * @param {CloseBotGameArgs} closeBotGameArgs - Arguments required to close a bot game.
  * @returns {Promise<boolean>} Resolves to `true` if the bot game was successfully closed, otherwise `false`.
+ * @param {ReconnectBotGameArgs} reconnectBotGameArgs - The arguments required to reconnect to the bot game, including the game ID.
+ * @returns {Promise<{ botGame: BotGame } | null>} A promise that resolves with the reconnected bot game details if successful, 
+ *                                                 or `null` if the reconnection fails.
  */
 export interface SocketContextType {
     isConnected: boolean;
@@ -91,6 +94,7 @@ export interface SocketContextType {
     sendCreateBotGame: ( createBotGameArgs: CreateBotGameArgs) => Promise<{ botGame: BotGame } | null>;
     sendGetMoveHint: (getMoveHintArgs: GetMoveHintArgs) => Promise<{ move: Move }>;
     sendCloseBotGame: (closeBotGameArgs: CloseBotGameArgs) => Promise<boolean>;
+    sendReconnectBotGame: (reconnectBotGameArgs: ReconnectBotGameArgs) => Promise<{ botGame: BotGame } | null>;
 }
 
 /**
@@ -206,6 +210,17 @@ export interface CallbackResponseCloseBotGame extends CallbackResponse {
  */
 export interface CallbackResponseGetMoveHint extends CallbackResponse {
     move: Move
+}
+
+/**
+ * Represents the response received after attempting to reconnect to a bot game.
+ *
+ * @interface CallbackResponseReconnectBotGame
+ * @extends CallbackResponse
+ * @property {BotGame} botGame - The bot game object containing the game state and details of the reconnected game.
+ */
+export interface CallbackResponseReconnectBotGame extends CallbackResponse {
+    botGame: BotGame;
 }
 
 /**
@@ -385,4 +400,14 @@ export interface CloseBotGameArgs {
 export interface GetMoveHintArgs {
     fen: string;
     currentTurn: "w" | "b";
+}
+
+/**
+ * Represents the arguments required to reconnect to an existing bot game.
+ *
+ * @interface ReconnectBotGameArgs
+ * @property {string} gameId - The unique identifier of the bot game to reconnect to.
+ */
+export interface ReconnectBotGameArgs {
+    gameId: string;
 }
