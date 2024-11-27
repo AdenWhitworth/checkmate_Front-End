@@ -78,7 +78,9 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
     const [loadingReconnectGame, setLoadingReconnectGame] = useState<boolean>(false);
     const [errorReconnectGame, setErrorReconnectGame] = useState<string | null>(null);
 
-    const { onDrop, undoPreviousMove, requestHint, findWinner } = useBotChessGame({
+    const [highlightedSquares, setHighlightedSquares] = useState<Record<string, any>>({});
+
+    const { onDrop, undoPreviousMove, requestHint, findWinner, onSquareClick, onPromotionPieceSelect } = useBotChessGame({
         botGame,
         setBotGame, 
         setHistory, 
@@ -95,7 +97,9 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
         setRemainingUndos,
         remainingHints,
         setRemainingHints,
-        setHint     
+        setHint,
+        setHighlightedSquares,
+        help   
     });
 
     /**
@@ -109,6 +113,7 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
         setGameMoves([]);
         setPlayerTurn("w");
         setGameOver(null);
+        setHighlightedSquares({});
     }, []);
 
     /**
@@ -193,6 +198,10 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
             errorOver,
             setErrorCreateGame,
             setSuccessCreateGame,
+            highlightedSquares, 
+            setHighlightedSquares,
+            onSquareClick,
+            onPromotionPieceSelect
         }}>
             {children}
         </BotContext.Provider>

@@ -18,7 +18,7 @@ import BotMoveAlertBadge from '../AlertBadge/BotMoveAlertBadge/BotMoveAlertBadge
  * @returns {JSX.Element} - The rendered Dashboard component.
  */
 export default function BotDashboard(): JSX.Element {
-    const { botGame, orientation, fen, onDrop, hint } = useBot();
+    const { botGame, orientation, fen, onDrop, hint, onSquareClick, highlightedSquares, onPromotionPieceSelect } = useBot();
 
     return (
         <>  
@@ -31,6 +31,9 @@ export default function BotDashboard(): JSX.Element {
                         fen={fen}
                         onDrop={onDrop}
                         hint={hint}
+                        onSquareClick={onSquareClick}
+                        highlightedSquares={highlightedSquares}
+                        onPromotionPieceSelect={onPromotionPieceSelect}
                     />
 
                     {botGame ? <BotInGameStats /> : <BotLobby />}

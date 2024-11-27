@@ -1,8 +1,9 @@
 import { useCallback, useEffect } from "react";
-import { Move, Square } from "chess.js";
+import { Move, PieceSymbol, Square } from "chess.js";
 import { useSocket } from "../../Providers/SocketProvider/SocketProvider";
 import { GameMoves } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
 import { UseBotChessGameOutput, UseBotChessGameProps } from "./useBotChessGameTypes";
+import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
 
 /**
  * Custom hook for managing a bot chess game using socket connections. 
@@ -45,7 +46,9 @@ export const useBotChessGame = ({
   setRemainingUndos,
   remainingHints,
   setRemainingHints,
-  setHint 
+  setHint,
+  setHighlightedSquares,
+  help
 }: UseBotChessGameProps): UseBotChessGameOutput => {
   const { sendGetBotMove, sendGetMoveHint } = useSocket();
 
@@ -61,6 +64,7 @@ export const useBotChessGame = ({
       setFen(chess.fen());
       setHistory(chess.history({ verbose: true }));
       setPlayerTurn(chess.turn());
+      setHighlightedSquares({});
 
       if (chess.isGameOver()) {
         if (chess.isCheckmate()) {
@@ -75,7 +79,7 @@ export const useBotChessGame = ({
     } catch (e) {
       return null;
     }
-  }, [chess, setFen, setHistory, setPlayerTurn, setGameOver]);
+  }, [chess, setFen, setHistory, setPlayerTurn, setHighlightedSquares, setGameOver]);
 
   /**
    * Fetches and executes the bot's next move asynchronously.
@@ -83,13 +87,28 @@ export const useBotChessGame = ({
   const makeBotMove = useCallback(async () => {
     try {
       if (!botGame) return;
-      const result = await sendGetBotMove({ botGame, difficulty, fen: chess.fen(), currentTurn: chess.turn(), history: chess.history({verbose: true})});
+
+      const result = await sendGetBotMove({
+        botGame,
+        difficulty,
+        fen: chess.fen(),
+        currentTurn: chess.turn(),
+        history: chess.history({ verbose: true }),
+      });
+
       const botMove = result.botMove;
+
       const checkMove = makeAMove(botMove);
-      if (!checkMove) throw new Error("Unable to make the bot move.");
+
+      if (!checkMove && !chess.isGameOver()) {
+        throw new Error("Unable to make the bot move.");
+      }
     } catch (error) {
-      setErrorMove("Bot move failed. Please try again.");
-      console.error(error);
+      if (chess.isGameOver()) {
+        console.warn("Bot move skipped as the game is over.");
+      } else {
+        setErrorMove("Bot move failed. Please try again.");
+      }
     }
   }, [botGame, difficulty, chess, sendGetBotMove, makeAMove, setErrorMove]);
 
@@ -104,12 +123,17 @@ export const useBotChessGame = ({
     if (chess.turn() !== orientation) return false;
     if (!botGame || !botGame.playerA.connected || !botGame.playerB.connected) return false;
 
+    const promotionRank = targetSquare[1] === "8" || targetSquare[1] === "1";
+    const isPawn = chess.get(sourceSquare)?.type === "p";
+
+    if (isPawn && promotionRank) return false;
+
     const moveData: Move = {
       from: sourceSquare,
       to: targetSquare,
       color: chess.turn(),
       piece: chess.get(sourceSquare)?.type || "",
-      promotion: targetSquare.endsWith("8") || targetSquare.endsWith("1") ? "q" : undefined,
+      promotion: undefined,
       flags: "",
       san: "",
       lan: "",
@@ -230,10 +254,84 @@ export const useBotChessGame = ({
     return null;
   }, [botGame, gameOver]);
 
+  /**
+   * Highlights possible moves for a clicked piece.
+   *
+   * @param {Square} square - The clicked square.
+   */
+  const onSquareClick = useCallback((square: Square) => {
+    if (chess.turn() !== orientation || help !== "assisted") return setHighlightedSquares({});
+    if (!botGame || !botGame.playerA.connected || !botGame.playerB.connected) return setHighlightedSquares({});
+
+    const possibleMoves = chess.moves({ square, verbose: true });
+
+    if (possibleMoves.length > 0) {
+      const squares = possibleMoves.reduce((acc, move) => {
+        acc[move.to] = {
+          background: chess.get(move.to)
+            ? "radial-gradient(circle, rgba(0,0,0,.1) 85%, transparent 85%)"
+            : "radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)",
+          borderRadius: "50%",
+        };
+        return acc;
+      }, {} as Record<string, any>);
+
+      squares[square] = {
+        background: "rgba(255, 255, 0, 0.4)",
+      };
+
+      setHighlightedSquares(squares);
+    } else {
+      setHighlightedSquares({});
+    }
+  },[botGame, chess, help, orientation, setHighlightedSquares]);
+
+  /**
+ * Handles the selection of a promotion piece during a pawn promotion. 
+ * Validates the promotion move and executes it if valid.
+ *
+ * @param {PromotionPieceOption} [piece] - The selected promotion piece (e.g., "wQ" for white queen, "bR" for black rook).
+ * @param {Square} [promoteFromSquare] - The square from which the pawn is being promoted.
+ * @param {Square} [promoteToSquare] - The square to which the pawn is being promoted.
+ * @returns {boolean} - Returns `true` if the promotion move is valid and executed successfully; otherwise, returns `false`.
+ */
+  const onPromotionPieceSelect = useCallback((
+    piece?: PromotionPieceOption,
+    promoteFromSquare?: Square,
+    promoteToSquare?: Square
+  ): boolean => {
+    if (chess.turn() !== orientation) return false;
+    if (!botGame || !botGame.playerA.connected || !botGame.playerB.connected) return false;
+    if (!piece || !promoteFromSquare || !promoteToSquare) return false;
+  
+    const promotionPieceType = piece.slice(1).toLowerCase() as PieceSymbol;
+  
+    const moveData: Move = {
+      from: promoteFromSquare,
+      to: promoteToSquare,
+      color: chess.turn(),
+      piece: chess.get(promoteFromSquare)?.type || "",
+      promotion: promotionPieceType,
+      flags: "",
+      san: "",
+      lan: "",
+      before: "",
+      after: ""
+    };
+  
+    const move = makeAMove(moveData);
+    if (!move) return false;
+    setHint(null);
+    makeBotMove();
+    return true;
+  }, [botGame, chess, makeAMove, makeBotMove, orientation, setHint]);
+  
   return {
     onDrop,
     undoPreviousMove,
     requestHint,
     findWinner,
+    onSquareClick,
+    onPromotionPieceSelect
   };
 };
