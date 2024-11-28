@@ -26,6 +26,8 @@ import { Move, Chess, Square } from "chess.js";
  * @property {(value: Record<string, any>) => void} setHighlightedSquares - Function to set custom square styles for highlighting possible moves or other states on the board.
  * @property {"assisted" | "friendly" | "challenge"} help - The level of assistance provided to the player during the game.
  * @property {boolean} reconnectGame - The flag for when a game is reconnected to.
+ * @property {(value: string | null) => void} setErrorUndo - Function to set an error message when an undo action fails.
+ * @property {(value: string | null) => void} setErrorHint - Function to set an error message when fetching a hint fails.
  */
 export interface UseBotChessGameProps {
     botGame: BotGame | null;
@@ -47,6 +49,8 @@ export interface UseBotChessGameProps {
     setHighlightedSquares: (value: Record<string, any>) => void;
     help: "assisted" | "friendly" | "challenge";
     reconnectGame: boolean;
+    setErrorUndo: (value: string | null) => void;
+    setErrorHint: (value: string | null) => void;
 }
 
 /**

@@ -62,6 +62,10 @@ import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
  * @property {(reconnectGame: boolean) => void} setReconnectGame - Updates the reconnect game state.
  * @property {boolean} loadingReconnectGame - Indicates whether the reconnection process is ongoing.
  * @property {string | null} errorReconnectGame - Error message when reconnecting to a bot game fails.
+ * @property {string | null} errorHint - Error message for failed hint requests.
+ * @property {(value: string | null) => void} setErrorHint - Updates the error message for hint requests.
+ * @property {string | null} errorUndo - Error message for failed undo actions.
+ * @property {(value: string | null) => void} setErrorUndo - Updates the error message for undo actions.
  */
 export interface BotContextType {
     difficulty: "novice" | "intermediate" | "advanced" | "master";
@@ -115,6 +119,10 @@ export interface BotContextType {
     setReconnectGame: (reconnectGame: boolean) => void;
     loadingReconnectGame: boolean;
     errorReconnectGame: string | null;
+    errorHint: string | null;
+    setErrorHint: (value: string | null) => void;
+    errorUndo: string | null;
+    setErrorUndo: (value: string | null) => void;
 }
 
 /**

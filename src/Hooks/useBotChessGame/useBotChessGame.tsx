@@ -52,7 +52,9 @@ export const useBotChessGame = ({
   setHint,
   setHighlightedSquares,
   help,
-  reconnectGame
+  reconnectGame,
+  setErrorUndo,
+  setErrorHint,
 }: UseBotChessGameProps): UseBotChessGameOutput => {
   const { sendGetBotMove, sendGetMoveHint } = useSocket();
 
@@ -216,9 +218,9 @@ export const useBotChessGame = ({
       setPlayerTurn(chess.turn());
 
     } catch (error) {
-      console.error(error);
+      setErrorUndo("Undo move failed. Please try again.");
     }
-  }, [botGame, chess, orientation, remainingUndos, setFen, setGameMoves, setHistory, setPlayerTurn, setRemainingUndos]);
+  }, [botGame, chess, orientation, remainingUndos, setErrorUndo, setFen, setGameMoves, setHistory, setPlayerTurn, setRemainingUndos]);
 
   /**
    * Fetches a hint for the player's next move from the bot.
@@ -242,9 +244,9 @@ export const useBotChessGame = ({
       setHint([move.from as Square, move.to as Square]);
       setRemainingHints(updatedRemainingHints);
     } catch (error) {
-      console.error("Error fetching hint:", error);
+      setErrorHint("Move hint failed. Please try again.");
     }
-}, [botGame, chess, remainingHints, remainingUndos, sendGetMoveHint, setHint, setRemainingHints]);
+}, [botGame, chess, remainingHints, remainingUndos, sendGetMoveHint, setErrorHint, setHint, setRemainingHints]);
 
   /**
    * Determines the winner of the game based on the game state.
