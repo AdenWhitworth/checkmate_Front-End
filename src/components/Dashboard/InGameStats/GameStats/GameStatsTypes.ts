@@ -10,6 +10,7 @@ import { PieceType, PieceState } from "../InGameStatsTypes";
  * @property {Record<PieceType, PieceState>} pieces - An object containing captured pieces, where each key is a piece type and each value represents the state of the piece.
  * @property {boolean} isTurn - A boolean indicating whether it is currently the player's turn.
  * @property {boolean} isLoading - A boolean indicating whether the captured pieces data is still loading.
+ * @property {boolean} isBot - A boolean indicating whether the player whose stats are being displayed is a bot.
  */
 export interface GameStatsProps {
     username: string;
@@ -17,4 +18,5 @@ export interface GameStatsProps {
     pieces: Record<PieceType, PieceState>;
     isTurn: boolean;
     isLoading: boolean;
+    isBot: boolean;
 }

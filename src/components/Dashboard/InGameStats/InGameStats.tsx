@@ -64,6 +64,7 @@ export default function InGameStats(): JSX.Element {
                 pieces={opponentPieces} 
                 isTurn={isOpponentTurn} 
                 isLoading={!isRoomFull}
+                isBot={false}
             />
 
             <HistoryMoves 
@@ -78,6 +79,7 @@ export default function InGameStats(): JSX.Element {
                 pieces={playerPieces} 
                 isTurn={isPlayerTurn} 
                 isLoading={false}
+                isBot={false}
             />
         </div>
     );
