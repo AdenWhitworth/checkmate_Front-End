@@ -26,8 +26,14 @@ export const useGlobalStats = (): UseGlobalStatsOutput => {
 
     try {
       const gamesCollection = collection(db, 'games');
-      const snapshot = await getCountFromServer(gamesCollection);
-      setGlobalGamesCount(snapshot.data().count);
+      const snapshotGames = await getCountFromServer(gamesCollection);
+      const gamesCount = snapshotGames.data().count;
+
+      const botGamesCollection = collection(db, 'botGames');
+      const snapshotBotGames = await getCountFromServer(botGamesCollection);
+      const botGamesCount = snapshotBotGames.data().count;
+      const totalGames = gamesCount + botGamesCount;
+      setGlobalGamesCount(totalGames);
     } catch (error) {
       setGlobalGamesCountError(error instanceof Error ? error.message : 'Error counting the global games');
     } finally {
