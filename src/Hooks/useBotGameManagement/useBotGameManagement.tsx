@@ -53,7 +53,11 @@ export const useBotGameManagement = ({
     findWinner,
     setReconnectGame,
     setLoadingReconnectGame,
-    setErrorReconnectGame
+    setErrorReconnectGame,
+    setRemainingUndos,
+    setRemainingHints,
+    setHelp,
+    setDifficulty
 }: UseBotGameManagementProps): UseBotGameManagementOutput => {
     
     const { 
@@ -100,13 +104,15 @@ export const useBotGameManagement = ({
             if (!newGame) throw new Error("No game created.");
 
             setBotGame(newGame.botGame);
+            setRemainingHints(newGame.botGame.remainingHints);
+            setRemainingUndos(newGame.botGame.remainingUndos);
             setSuccessCreateGame(`Game created successfully against ${difficulty} BOT!`);
         } catch (error) {
             setErrorCreateGame("Unable to create game. Please try again.");
         } finally {
             setLoadingCreateGame(false);
         }
-    }, [setErrorCreateGame, setSuccessCreateGame, setLoadingCreateGame, socketRef, playerStatic, playerDynamic, orientation, sendCreateBotGame, difficulty, help, setBotGame]);
+    }, [setErrorCreateGame, setSuccessCreateGame, setLoadingCreateGame, socketRef, playerStatic, playerDynamic, orientation, sendCreateBotGame, difficulty, help, setBotGame, setRemainingHints, setRemainingUndos]);
     
     /**
      * Handles forfeiting the current bot chess game. Updates the server and resets the local game state.
@@ -211,9 +217,12 @@ export const useBotGameManagement = ({
                         throw new Error("Unable to parse move");
                     }
                 }).filter((move) => move !== null);
-
                 setPlayerTurn(reconnectedGame.botGame.currentTurn);
                 setHistory(deserializedHistory || []);
+                setRemainingHints(reconnectedGame.botGame.remainingHints);
+                setRemainingUndos(reconnectedGame.botGame.remainingUndos);
+                setHelp(reconnectedGame.botGame.help);
+                setDifficulty(reconnectedGame.botGame.difficulty);
                 setBotGame(reconnectedGame.botGame);
                 setReconnectGame(true);
             } catch (error) {
@@ -223,7 +232,7 @@ export const useBotGameManagement = ({
                 setLoadingReconnectGame(false);
             }
         }
-    }, [botGame, playerDynamic, playerStatic, setErrorReconnectGame, setLoadingReconnectGame, sendReconnectBotGame, setOrientation, setFen, setPlayerTurn, setHistory, setBotGame, setReconnectGame]);
+    }, [botGame, playerDynamic, playerStatic, setErrorReconnectGame, setLoadingReconnectGame, sendReconnectBotGame, setOrientation, setFen, setPlayerTurn, setHistory, setRemainingHints, setRemainingUndos, setHelp, setDifficulty, setBotGame, setReconnectGame]);
     
     return {
         handleCreateBotGame,

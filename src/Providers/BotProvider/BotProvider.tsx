@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import { BotContextType, BotGame } from './BotProviderTypes';
 import { GameMoves } from '../../components/Dashboard/InGameStats/InGameStatsTypes';
 import { Move, Chess, Square } from 'chess.js';
@@ -6,12 +6,6 @@ import { useBotChessGame } from '../../Hooks/useBotChessGame/useBotChessGame';
 import { useBotGameManagement } from '../../Hooks/useBotGameManagement/useBotGameManagement';
 
 const BotContext = createContext<BotContextType | undefined>(undefined);
-
-const helpSettings = {
-    assisted: Infinity,
-    friendly: 3,
-    challenge: 0
-};
 
 /**
  * BotProvider component manages the state and logic for bot games, providing context to its child components.
@@ -26,8 +20,8 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
 
     const [difficulty, setDifficulty] = useState<"novice" | "intermediate" | "advanced" | "master">("novice");
     const [help, setHelp] = useState<"assisted" | "friendly" | "challenge">("friendly");
-    const [remainingUndos, setRemainingUndos] = useState<number>(helpSettings[help]);
-    const [remainingHints, setRemainingHints] = useState<number>(helpSettings[help]);
+    const [remainingUndos, setRemainingUndos] = useState<number>(0);
+    const [remainingHints, setRemainingHints] = useState<number>(0);
     const [hint, setHint] = useState<[Square,Square] | null>(null);
     const [orientation, setOrientation] = useState<"w" | "b">("w");
     const [playerTurn, setPlayerTurn] = useState<"w" | "b">("w");
@@ -116,15 +110,6 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
         setHighlightedSquares({});
     }, []);
 
-    /**
-     * Reset state when the `help` setting changes.
-     */
-    useEffect(() => {
-        setRemainingUndos(helpSettings[help]);
-        setRemainingHints(helpSettings[help]);
-        setHint(null);
-    }, [help]);
-
     const { 
         handleCreateBotGame,
         handleForfeit,
@@ -153,6 +138,10 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
         setErrorReconnectGame,
         setLoadingReconnectGame,
         setReconnectGame,
+        setRemainingUndos,
+        setRemainingHints,
+        setDifficulty,
+        setHelp
     });
 
     return (

@@ -124,8 +124,12 @@ export interface BotContextType {
  * @extends Game
  * @property {"novice" | "intermediate" | "advanced" | "master"} difficulty - The difficulty level of the bot.
  * @property {"assisted" | "friendly" | "challenge"} help - The level of assistance provided during the game.
+ * @property {number} remainingUndos - The number of undos left for the player in the game.
+ * @property {number} remainingHints - The number of hints left for the player in the game.
  */
 export interface BotGame extends Game{
     difficulty: "novice" | "intermediate" | "advanced" | "master";
     help: "assisted" | "friendly" | "challenge";
+    remainingUndos: number;
+    remainingHints: number;
 }

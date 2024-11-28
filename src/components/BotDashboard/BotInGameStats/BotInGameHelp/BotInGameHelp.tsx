@@ -22,7 +22,7 @@ export default function BotInGameHelp(): JSX.Element {
                 imgSrc={undo} 
                 imgAlt="Undo Icon" 
                 label="Undo"
-                tallyCount={remainingUndos !== Infinity ? remainingUndos : undefined} 
+                tallyCount={remainingUndos !== -1 ? remainingUndos : undefined} 
                 onClick={undoPreviousMove} 
                 disable={remainingUndos === 0} 
             />
@@ -31,7 +31,7 @@ export default function BotInGameHelp(): JSX.Element {
                 imgSrc={hint} 
                 imgAlt='Hint Icon' 
                 label='Hint' 
-                tallyCount={remainingHints !== Infinity ? remainingHints : undefined} 
+                tallyCount={remainingHints !== -1 ? remainingHints : undefined} 
                 onClick={requestHint} 
                 disable={remainingHints === 0} 
             />

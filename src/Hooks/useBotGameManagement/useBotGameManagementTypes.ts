@@ -17,16 +17,20 @@ import { BotGame } from '../../Providers/BotProvider/BotProviderTypes';
  * @property {(value: string | null) => void} setErrorCreateGame - Function to set an error message when creating a bot game fails.
  * @property {"w" | "b"} orientation - The player's orientation in the game ("w" for white, "b" for black).
  * @property {"novice" | "intermediate" | "advanced" | "master"} difficulty - The difficulty level of the bot opponent.
- * @property {"assisted" | "friendly" | "challenge"} help - The help mode selected for the game (e.g., assisted for maximum help, challenge for no help).
+ * @property {"assisted" | "friendly" | "challenge"} help - The help mode selected for the game (e.g., "assisted" for maximum help, "challenge" for no help).
  * @property {(value: boolean) => void} setLoadingOver - Function to set the loading state when closing a bot game.
  * @property {(value: string | null) => void} setErrorOver - Function to set an error message when closing a bot game fails.
  * @property {(value: boolean) => void} setLoadingForfeit - Function to set the loading state when forfeiting a game.
  * @property {(value: string | null) => void} setErrorForfeit - Function to set an error message when forfeiting a game fails.
  * @property {(value: boolean) => void} setForfeitBotGame - Function to update the state indicating whether a forfeit action is active.
- * @property {() => "playerA" | "playerB" | "draw" | null} findWinner - Function to determine the winner of the game.
+ * @property {() => "playerA" | "playerB" | "draw" | null} findWinner - Function to determine the winner of the game. Returns "playerA", "playerB", "draw", or `null` if the game is ongoing.
  * @property {(value: boolean) => void} setReconnectGame - Function to update the state indicating whether the game should reconnect.
  * @property {(value: boolean) => void} setLoadingReconnectGame - Function to set the loading state when reconnecting to a game.
  * @property {(value: string | null) => void} setErrorReconnectGame - Function to set an error message when reconnecting to a game fails.
+ * @property {(value: number) => void} setRemainingUndos - Function to update the remaining undo moves count.
+ * @property {(value: number) => void} setRemainingHints - Function to update the remaining hint moves count.
+ * @property {(help: "assisted" | "friendly" | "challenge") => void} setHelp - Function to update the help mode for the game.
+ * @property {(difficulty: "novice" | "intermediate" | "advanced" | "master") => void} setDifficulty - Function to update the bot's difficulty level.
  */
 export interface UseBotGameManagementProps {
     cleanup: () => void;
@@ -51,6 +55,10 @@ export interface UseBotGameManagementProps {
     setReconnectGame: (value: boolean) => void;
     setLoadingReconnectGame: (value: boolean) => void;
     setErrorReconnectGame: (value: string | null) => void;
+    setRemainingUndos: (value: number) => void;
+    setRemainingHints: (value: number) => void;
+    setHelp: (help: "assisted" | "friendly" | "challenge") => void;
+    setDifficulty: (difficulty: "novice" | "intermediate" | "advanced" | "master") => void;
 }
 
 /**

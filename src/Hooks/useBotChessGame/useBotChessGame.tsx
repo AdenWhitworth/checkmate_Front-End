@@ -4,6 +4,8 @@ import { useSocket } from "../../Providers/SocketProvider/SocketProvider";
 import { GameMoves } from "../../components/Dashboard/InGameStats/InGameStatsTypes";
 import { UseBotChessGameOutput, UseBotChessGameProps } from "./useBotChessGameTypes";
 import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
+import { collection, doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 
 /**
  * Custom hook for managing a bot chess game using socket connections.
@@ -171,74 +173,78 @@ export const useBotChessGame = ({
   /**
    * Handles undo functionality, allowing the player to undo their last move and the bot's response.
    */
-  const undoPreviousMove = useCallback(() => {
-    if (remainingUndos === 0) {
-      console.log("No undos remaining.");
-      return;
-    }
+  const undoPreviousMove = useCallback(async () => {
+    try {
+      if (remainingUndos === 0) throw new Error("No undos remaining.");
+      if (!botGame) throw new Error("Active game required in order to undo moves");
 
-    const isPlayerTurn = chess.turn() === orientation;
+      const isPlayerTurn = chess.turn() === orientation;
+      if (!isPlayerTurn) throw new Error("Undo is only allowed on your turn.");
 
-    if (isPlayerTurn) {
       const playerMove = chess.undo();
       const opponentMove = playerMove ? chess.undo() : null;
+      if (!playerMove || !opponentMove) throw new Error("Not enough moves to undo.");
 
-      if (playerMove && opponentMove) {
-        setRemainingUndos((prev) => (prev !== Infinity ? prev - 1 : prev));
-        setFen(chess.fen());
-        setGameMoves((prevMoves: GameMoves[]) => {
-          const updatedMoves = [...prevMoves];
+      const updatedRemainingUndos = remainingUndos !== -1 ? remainingUndos - 1 : remainingUndos;
+      
+      const gamesCollection = collection(db, 'botGames');
+      const docRefGame = doc(gamesCollection, botGame.gameId);
+      await updateDoc(docRefGame, { remainingUndos: updatedRemainingUndos });
 
-          if (updatedMoves.length > 0) {
-            const lastMove = updatedMoves[updatedMoves.length - 1];
+      setRemainingUndos(updatedRemainingUndos);
+      setFen(chess.fen());
+      setGameMoves((prevMoves: GameMoves[]) => {
+        const updatedMoves = [...prevMoves];
 
-            if (lastMove.rowMoves.blackMove) {
-              lastMove.rowMoves.blackMove = "";
-            } else {
-              updatedMoves.pop();
-            }
+        if (updatedMoves.length > 0) {
+          const lastMove = updatedMoves[updatedMoves.length - 1];
 
-            if (updatedMoves.length > 0) {
-              updatedMoves[updatedMoves.length - 1].rowMoves.whiteMove = "";
-            }
+          if (lastMove.rowMoves.blackMove) {
+            lastMove.rowMoves.blackMove = "";
+          } else {
+            updatedMoves.pop();
           }
 
-          return updatedMoves;
-        });
+          if (updatedMoves.length > 0) {
+            updatedMoves[updatedMoves.length - 1].rowMoves.whiteMove = "";
+          }
+        }
 
-        setHistory(chess.history({ verbose: true }));
-        setPlayerTurn(chess.turn());
+        return updatedMoves;
+      });
+      setHistory(chess.history({ verbose: true }));
+      setPlayerTurn(chess.turn());
 
-        console.log("Two moves undone. Remaining undos:", remainingUndos - 1);
-      } else {
-        console.log("Not enough moves to undo.");
-      }
-    } else {
-      console.log("Undo is only allowed on your turn.");
+    } catch (error) {
+      console.error(error);
     }
-  }, [chess, orientation, remainingUndos, setFen, setGameMoves, setHistory, setPlayerTurn, setRemainingUndos]);
+  }, [botGame, chess, orientation, remainingUndos, setFen, setGameMoves, setHistory, setPlayerTurn, setRemainingUndos]);
 
   /**
    * Fetches a hint for the player's next move from the bot.
    */
   const requestHint = useCallback(async () => {
-    if (remainingHints === 0) {
-      console.log("No hints remaining.");
-      return;
-    }
-
     try {
+      if (remainingUndos === 0) throw new Error("No hints remaining.");
       if (!botGame) throw new Error("Bot game is not set.");
       const {move} = await sendGetMoveHint({
         fen: chess.fen(),
         currentTurn: chess.turn(),
       });
+
+
+      const updatedRemainingHints = remainingHints !== -1 ? remainingHints - 1 : remainingHints;
+      
+      const gamesCollection = collection(db, 'botGames');
+      const docRefGame = doc(gamesCollection, botGame.gameId);
+      await updateDoc(docRefGame, { remainingHints: updatedRemainingHints });
+
       setHint([move.from as Square, move.to as Square]);
-      setRemainingHints((prev) => (prev !== Infinity ? prev - 1 : prev));
+      setRemainingHints(updatedRemainingHints);
     } catch (error) {
       console.error("Error fetching hint:", error);
     }
-}, [botGame, chess, remainingHints, sendGetMoveHint, setHint, setRemainingHints]);
+}, [botGame, chess, remainingHints, remainingUndos, sendGetMoveHint, setHint, setRemainingHints]);
 
   /**
    * Determines the winner of the game based on the game state.
