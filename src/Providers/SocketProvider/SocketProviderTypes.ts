@@ -400,6 +400,7 @@ export interface CloseBotGameArgs {
 export interface GetMoveHintArgs {
     fen: string;
     currentTurn: "w" | "b";
+    history: Move[];
 }
 
 /**

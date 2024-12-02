@@ -232,8 +232,8 @@ export const useBotChessGame = ({
       const {move} = await sendGetMoveHint({
         fen: chess.fen(),
         currentTurn: chess.turn(),
+        history: chess.history({verbose: true})
       });
-
 
       const updatedRemainingHints = remainingHints !== -1 ? remainingHints - 1 : remainingHints;
       
