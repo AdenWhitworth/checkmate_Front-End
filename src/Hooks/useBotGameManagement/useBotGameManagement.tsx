@@ -94,7 +94,7 @@ export const useBotGameManagement = ({
             const playerB: InGamePlayer = {
                 userId: "botUserId",
                 playerId: "botPlayerId",
-                username: "BOT",
+                username: `BOT (${difficulty})`,
                 elo: 1200,
                 connected: "pending",
                 orientation: orientation === "w"? "b" : "w",

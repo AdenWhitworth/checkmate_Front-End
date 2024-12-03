@@ -66,6 +66,7 @@ import { PromotionPieceOption } from "react-chessboard/dist/chessboard/types";
  * @property {(value: string | null) => void} setErrorHint - Updates the error message for hint requests.
  * @property {string | null} errorUndo - Error message for failed undo actions.
  * @property {(value: string | null) => void} setErrorUndo - Updates the error message for undo actions.
+ * @property {boolean} loadingHint - Indicates whether the hint has been proccessed or is loading.
  */
 export interface BotContextType {
     difficulty: "novice" | "intermediate" | "advanced" | "master";
@@ -123,6 +124,7 @@ export interface BotContextType {
     setErrorHint: (value: string | null) => void;
     errorUndo: string | null;
     setErrorUndo: (value: string | null) => void;
+    loadingHint: boolean;
 }
 
 /**

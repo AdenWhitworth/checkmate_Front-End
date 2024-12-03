@@ -11,6 +11,8 @@ import CreateBotGameAlertBadge from '../AlertBadge/CreateBotGameAlertBadge/Creat
 import BotMoveAlertBadge from '../AlertBadge/BotMoveAlertBadge/BotMoveAlertBadge';
 import ReconnectBotGameModal from '../Modal/ReconnectBotGameModel/ReconnectBotGameModel';
 import ReconnectBotGameBadge from '../AlertBadge/ReconnectBotGameBadge/ReconnectBotGameBadge';
+import BotHintAlertBadge from '../AlertBadge/BotHintAlertBadge/BotHintAlertBadge';
+import BotUndoAlertBadge from '../AlertBadge/BotUndoAlertBadge/BotUndoAlertBadge';
 
 /**
  * BotDashboard component that serves as the main container for the active game,
@@ -52,6 +54,8 @@ export default function BotDashboard(): JSX.Element {
             <CreateBotGameAlertBadge />
             <BotMoveAlertBadge />
             <ReconnectBotGameBadge />
+            <BotHintAlertBadge />
+            <BotUndoAlertBadge />
         </>
     );
 }

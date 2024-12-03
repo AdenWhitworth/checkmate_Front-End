@@ -1,6 +1,7 @@
 import React from 'react';
 import { BotInGameHelpCardProps } from './BotGameHelpCardTypes';
 import "./BotGameHelpCard.css";
+import LoadingDots from '../../../../LoadingDots/LoadingDots';
 
 /**
  * Renders an in-game help card for bot chess games. Displays an icon, a label, and a tally of remaining actions.
@@ -13,6 +14,7 @@ import "./BotGameHelpCard.css";
  * @param {number | undefined} props.tallyCount - The number of remaining actions to display as tally dots (0 to 3). If undefined, no tally is shown.
  * @param {() => void} props.onClick - The function to handle card click events.
  * @param {boolean} props.disable - Whether the card is disabled (non-interactive).
+ * @param {boolean} props.loading - Whether the card is loading or active.
  * @returns {JSX.Element} - The rendered BotInGameHelpCard component.
  */
 export default function BotInGameHelpCard({
@@ -21,7 +23,8 @@ export default function BotInGameHelpCard({
     label,
     tallyCount,
     onClick,
-    disable
+    disable,
+    loading,
 }: BotInGameHelpCardProps): JSX.Element {
     /**
      * Renders the tally dots based on the `tallyCount` value.
@@ -50,11 +53,17 @@ export default function BotInGameHelpCard({
 
     return (
         <div onClick={onClick} className={`ingame-help-card ${disable? "card-disable" : "card-active"}`}>
-            <div className="ingame-help-icon">
-                <img src={imgSrc} alt={imgAlt} />
-            </div>
-            <h5>{label}</h5>
-            {renderTally()}
+            {loading? (
+                <LoadingDots position='center' size='small' color='grey' />
+            ):(
+                <>
+                    <div className="ingame-help-icon">
+                        <img src={imgSrc} alt={imgAlt} />
+                    </div>
+                    <h5>{label}</h5>
+                    {renderTally()}
+                </>
+            )}
         </div>
     );
 }

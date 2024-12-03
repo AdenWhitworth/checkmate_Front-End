@@ -5,16 +5,15 @@ import hint from "../../../../Images/hint white.svg";
 import BotInGameHelpCard from './BotGameHelpCard/BotGameHelpCard';
 import { useBot } from '../../../../Providers/BotProvider/BotProvider';
 
-
 /**
  * Renders the in-game help options for a bot chess game. Includes buttons for undoing moves
- * and requesting hints, along with indicators for the remaining available actions.
+ * and requesting hints, along with indicators for the remaining available actions and loading states.
  *
  * @component
  * @returns {JSX.Element} - The rendered BotInGameHelp component.
  */
 export default function BotInGameHelp(): JSX.Element {
-    const { remainingUndos, undoPreviousMove, requestHint, remainingHints } = useBot();
+    const { remainingUndos, undoPreviousMove, requestHint, remainingHints, loadingHint } = useBot();
 
     return (
         <div className='ingame-help'>
@@ -33,7 +32,8 @@ export default function BotInGameHelp(): JSX.Element {
                 label='Hint' 
                 tallyCount={remainingHints !== -1 ? remainingHints : undefined} 
                 onClick={requestHint} 
-                disable={remainingHints === 0} 
+                disable={remainingHints === 0}
+                loading={loadingHint}
             />
         </div>
     );

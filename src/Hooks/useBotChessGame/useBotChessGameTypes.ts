@@ -28,6 +28,9 @@ import { Move, Chess, Square } from "chess.js";
  * @property {boolean} reconnectGame - The flag for when a game is reconnected to.
  * @property {(value: string | null) => void} setErrorUndo - Function to set an error message when an undo action fails.
  * @property {(value: string | null) => void} setErrorHint - Function to set an error message when fetching a hint fails.
+ * @property {(value: boolean) => void} setLoadingHint - Function to update the loading state for hints.
+ * @property {boolean} loadingHint - Indicates whether a hint request is currently in progress.
+ * @property {[Square, Square] | null} hint - The currently suggested hint for the player's next move, or `null` if no hint is available.
  */
 export interface UseBotChessGameProps {
     botGame: BotGame | null;
@@ -51,6 +54,9 @@ export interface UseBotChessGameProps {
     reconnectGame: boolean;
     setErrorUndo: (value: string | null) => void;
     setErrorHint: (value: string | null) => void;
+    setLoadingHint: (value: boolean) => void;
+    loadingHint: boolean;
+    hint: [Square,Square] | null;
 }
 
 /**

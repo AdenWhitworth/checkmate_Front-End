@@ -74,6 +74,7 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
 
     const [highlightedSquares, setHighlightedSquares] = useState<Record<string, any>>({});
 
+    const [loadingHint, setLoadingHint] = useState<boolean>(false);
     const [errorHint, setErrorHint] = useState<string | null>(null);
     const [errorUndo, setErrorUndo] = useState<string | null>(null);
 
@@ -98,7 +99,10 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
         help,
         reconnectGame,
         setErrorHint,
-        setErrorUndo
+        setErrorUndo,
+        setLoadingHint,
+        loadingHint,
+        hint
     });
 
     /**
@@ -205,7 +209,8 @@ export const BotProvider = ({ children }: { children: React.ReactNode }): JSX.El
             errorHint,
             setErrorHint,
             errorUndo,
-            setErrorUndo
+            setErrorUndo,
+            loadingHint
         }}>
             {children}
         </BotContext.Provider>

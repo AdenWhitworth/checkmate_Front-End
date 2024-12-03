@@ -31,6 +31,11 @@ import { db } from "../../firebase";
  * @param {(value: Record<string, any>) => void} props.setHighlightedSquares - Function to update the highlighted squares on the chessboard.
  * @param {"assisted" | "friendly" | "challenge"} props.help - The level of assistance during the game.
  * @param {boolean} props.reconnectGame - Whether the player is reconnecting to an active game.
+ * @param {(value: string | null) => void} props.setErrorUndo - Function to set an error message when an undo action fails.
+ * @param {(value: string | null) => void} props.setErrorHint - Function to set an error message when fetching a hint fails.
+ * @param {(value: boolean) => void} props.setLoadingHint - Function to update the loading state for hints.
+ * @param {boolean} props.loadingHint - Indicates whether a hint request is currently in progress.
+ * @param {[Square, Square] | null} props.hint - The currently suggested hint for the player's next move, or `null` if no hint is available.
  * @returns {UseBotChessGameOutput} - The returned functions and properties for managing the bot chess game.
  */
 export const useBotChessGame = ({ 
@@ -55,6 +60,9 @@ export const useBotChessGame = ({
   reconnectGame,
   setErrorUndo,
   setErrorHint,
+  setLoadingHint,
+  loadingHint,
+  hint
 }: UseBotChessGameProps): UseBotChessGameOutput => {
   const { sendGetBotMove, sendGetMoveHint } = useSocket();
 
@@ -150,7 +158,9 @@ export const useBotChessGame = ({
     const move = makeAMove(moveData);
     if (!move) return false;
     setHint(null);
-    makeBotMove();
+    if(!chess.isGameOver()){
+      makeBotMove();
+    }
     return true;
   }, [chess, orientation, botGame, makeAMove, setHint, makeBotMove]);
 
@@ -229,6 +239,10 @@ export const useBotChessGame = ({
     try {
       if (remainingUndos === 0) throw new Error("No hints remaining.");
       if (!botGame) throw new Error("Bot game is not set.");
+      if(loadingHint || hint) throw new Error("Hint already requested.");
+
+      setLoadingHint(true);
+
       const {move} = await sendGetMoveHint({
         fen: chess.fen(),
         currentTurn: chess.turn(),
@@ -245,8 +259,10 @@ export const useBotChessGame = ({
       setRemainingHints(updatedRemainingHints);
     } catch (error) {
       setErrorHint("Move hint failed. Please try again.");
+    } finally {
+      setLoadingHint(false);
     }
-}, [botGame, chess, remainingHints, remainingUndos, sendGetMoveHint, setErrorHint, setHint, setRemainingHints]);
+}, [botGame, chess, hint, loadingHint, remainingHints, remainingUndos, sendGetMoveHint, setErrorHint, setHint, setLoadingHint, setRemainingHints]);
 
   /**
    * Determines the winner of the game based on the game state.

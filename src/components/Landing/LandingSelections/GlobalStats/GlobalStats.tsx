@@ -25,7 +25,7 @@ export default function GlobalStats(): JSX.Element {
                 </div>
 
                 <div className='global-stats-row-2'>
-                    <h5>TOTOAL PLAYERS</h5>
+                    <h5>TOTAL PLAYERS</h5>
                 </div>
             </div>
 
@@ -40,7 +40,7 @@ export default function GlobalStats(): JSX.Element {
                 </div>
 
                 <div className='global-stats-row-2'>
-                    <h5>TOTOAL GAMES</h5>
+                    <h5>TOTAL GAMES</h5>
                 </div>
             </div>
         </div>          

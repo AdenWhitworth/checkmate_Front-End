@@ -24,3 +24,9 @@
     padding: 0;
     margin: 0;
 }
+
+@media(max-height: 790px){
+    .bot-lobby-title {
+        flex-direction: row;
+    }
+}
