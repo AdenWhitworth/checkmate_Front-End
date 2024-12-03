@@ -68,7 +68,7 @@ export default function BotHelp(): JSX.Element {
                 </div>
                 <h3>{help.charAt(0).toUpperCase() + help.slice(1)}</h3>
             </div>
-            <h3>{helpDescriptions[help]}</h3>
+            <h3 className='help-description'>{helpDescriptions[help]}</h3>
         </div>
     );
 }
