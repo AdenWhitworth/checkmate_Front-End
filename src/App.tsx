@@ -14,6 +14,7 @@ import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import ResetPassword from './components/ResetPassword/ResetPassword';
 import BotDashboard from './components/BotDashboard/BotDashboard';
 import { BotProvider } from './Providers/BotProvider/BotProvider';
+import PuzzleDashboard from './components/PuzzleDashboard/PuzzleDashboard';
 
 /**
  * The main App component that sets up the routing and providers for the application.
@@ -31,7 +32,7 @@ import { BotProvider } from './Providers/BotProvider/BotProvider';
  * 
  * @remarks
  * - The App uses `Routes` and `Route` from `react-router-dom` to define the routes of the application.
- * - The `/dashboard` and `profile` routes are protected by `PrivateRoute`, which checks if a user is authenticated before allowing access.
+ * - The `/dashboard`, `/botDashboard`, `/puzzleDashboard`, and `/profile` routes are protected by `PrivateRoute`, which checks if a user is authenticated before allowing access.
  * - Environment variable `REACT_APP_BASE_URL` is used for the SocketProvider's URL.
  */
 function App(): JSX.Element {
@@ -51,6 +52,7 @@ function App(): JSX.Element {
                   <Route path='/forgotPassword' element={<ForgotPassword></ForgotPassword>}></Route>
                   <Route path='/resetPassword' element={<ResetPassword></ResetPassword>}></Route>
                   <Route path='/botDashboard' element={<PrivateRoute><BotDashboard></BotDashboard></PrivateRoute>}></Route>
+                  <Route path='/puzzleDashboard' element={<PrivateRoute><PuzzleDashboard></PuzzleDashboard></PrivateRoute>}></Route>
                 </Routes>
               </BotProvider>
             </GameProvider>

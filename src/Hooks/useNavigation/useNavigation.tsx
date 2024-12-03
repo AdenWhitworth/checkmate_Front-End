@@ -67,6 +67,13 @@ export const useNavigation = (): UseNavigationOutput => {
     }, [navigate]);
 
     /**
+     * Navigates the user to the puzzle dashboard.
+     */
+    const handleSendToPuzzleDashboard = useCallback(() => {
+        navigate('/PuzzleDashboard', { replace: true });
+    }, [navigate]);
+
+    /**
      * Opens the signup page, closes the menu, and selects the signup form.
      */
     const handleSignupClick = useCallback(() => {
@@ -134,6 +141,7 @@ export const useNavigation = (): UseNavigationOutput => {
         handleSendToDashboard,
         handleSendToBotDashboard,
         handleForgotPasswordClick,
-        handleBotFlagClick
+        handleBotFlagClick,
+        handleSendToPuzzleDashboard
     };
 };

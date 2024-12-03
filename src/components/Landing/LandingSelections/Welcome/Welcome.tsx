@@ -20,7 +20,7 @@ import WelcomeCard from './WelcomeCard/WelcomeCard';
  */
 export default function Welcome(): JSX.Element {
     
-    const { handleSendToDashboard, handleSendToBotDashboard } = useNavigation();
+    const { handleSendToDashboard, handleSendToBotDashboard, handleSendToPuzzleDashboard } = useNavigation();
     
     return (
         <div className="welcome">
@@ -34,8 +34,8 @@ export default function Welcome(): JSX.Element {
             <WelcomeCard 
                 imgSrc={puzzle} 
                 title='Puzzles' 
-                text='Train with more than 500,000 puzzles'
-                onClick={() => console.log("Puzzles")}
+                text='Train with more than 1,000 puzzles'
+                onClick={handleSendToPuzzleDashboard}
             ></WelcomeCard>
 
             <WelcomeCard

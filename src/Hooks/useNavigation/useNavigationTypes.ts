@@ -16,6 +16,7 @@
  * @property {function} handleSendToBotDashboard - Navigates the user to the bot dashboard page.
  * @property {function} handleForgotPasswordClick - Navigates the user to the forgot password page.
  * @property {function} handleBotFlagClick - Closes the menu and sets the state to forfeit the bot game.
+ * @property {function} handleSendToPuzzleDashboard - Navigates the user to the puzzle dashboard page.
  */
 export interface UseNavigationOutput {
     handleKingClick: () => void;
@@ -32,4 +33,5 @@ export interface UseNavigationOutput {
     handleSendToBotDashboard: () => void;
     handleForgotPasswordClick: () => void;
     handleBotFlagClick: () => void;
+    handleSendToPuzzleDashboard: () => void;
 }
