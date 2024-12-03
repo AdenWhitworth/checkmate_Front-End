@@ -12,7 +12,7 @@ import { AlertColor } from '@mui/material/Alert';
  * @component
  * @returns {JSX.Element} The rendered CreateRoomAlertBadge component.
  */
-export default function MoveAlertBadge() {
+export default function MoveAlertBadge(): JSX.Element {
     const { errorMove, setErrorMove } = useGame();
     
     const [open, setOpen] = useState<boolean>(false);

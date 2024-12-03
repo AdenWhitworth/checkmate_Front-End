@@ -98,6 +98,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                     draw: data.draw ?? 0,
                     elo: data.elo ?? 1200,
                     currentGameId: data.currentGameId ?? undefined,
+                    currentBotGameId: data.currentBotGameId ?? undefined,
                     email: data.email,
                     gamesPlayed: data.gamesPlayed ?? 0,
                 };
@@ -116,7 +117,8 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                         prev?.loss !== newPlayerDynamic.loss ||
                         prev?.draw !== newPlayerDynamic.draw ||
                         prev?.elo !== newPlayerDynamic.elo ||
-                        prev?.currentGameId !== newPlayerDynamic.currentGameId
+                        prev?.currentGameId !== newPlayerDynamic.currentGameId ||
+                        prev?.currentBotGameId !== newPlayerDynamic.currentBotGameId
                     return hasChanged? newPlayerDynamic : prev;
                 });
 

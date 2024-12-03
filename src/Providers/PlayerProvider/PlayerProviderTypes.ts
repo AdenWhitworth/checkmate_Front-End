@@ -31,6 +31,7 @@ export interface PlayerDynamic {
     draw?: number;
     elo: number;
     currentGameId?: string;
+    currentBotGameId?: string;
     email: string;
     gamesPlayed: number;
 }

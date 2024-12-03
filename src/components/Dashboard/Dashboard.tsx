@@ -25,7 +25,7 @@ import OpponentReconnectRoomBadge from '../AlertBadge/OpponentReconnectRoomBadge
  * @returns {JSX.Element} - The rendered Dashboard component.
  */
 export default function Dashboard(): JSX.Element {
-    const { game } = useGame();
+    const { game, orientation, fen, onDrop } = useGame();
 
     return (
         <>  
@@ -33,7 +33,11 @@ export default function Dashboard(): JSX.Element {
 
             <section className="dashboard">
                 <div className="dashboard-content">
-                    <ActiveGame />
+                    <ActiveGame 
+                        orientation={orientation}
+                        fen={fen}
+                        onDrop={onDrop}
+                    />
                     {game ? <InGameStats /> : <Lobby />}
                 </div>
             </section>

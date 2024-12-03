@@ -4,6 +4,7 @@ import { useAuth } from "../../Providers/AuthProvider/AuthProvider";
 import { usePlayer } from "../../Providers/PlayerProvider/PlayerProvider";
 import { useNavigate } from "react-router-dom";
 import { UseNavigationOutput } from "./useNavigationTypes";
+import { useBot } from "../../Providers/BotProvider/BotProvider";
 
 /**
  * Custom hook to handle navigation and menu interactions within the application.
@@ -13,6 +14,7 @@ import { UseNavigationOutput } from "./useNavigationTypes";
 export const useNavigation = (): UseNavigationOutput => {
     const { logout, setIsLoginSelected } = useAuth();
     const { setExitGame, setForfeitGame } = useGame();
+    const { setForfeitBotGame } = useBot();
     const { setLobbySelection } = usePlayer();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -58,6 +60,20 @@ export const useNavigation = (): UseNavigationOutput => {
     }, [navigate]);
 
     /**
+     * Navigates the user to the bot dashboard.
+     */
+    const handleSendToBotDashboard = useCallback(() => {
+        navigate('/botDashboard', { replace: true });
+    }, [navigate]);
+
+    /**
+     * Navigates the user to the puzzle dashboard.
+     */
+    const handleSendToPuzzleDashboard = useCallback(() => {
+        navigate('/PuzzleDashboard', { replace: true });
+    }, [navigate]);
+
+    /**
      * Opens the signup page, closes the menu, and selects the signup form.
      */
     const handleSignupClick = useCallback(() => {
@@ -81,6 +97,14 @@ export const useNavigation = (): UseNavigationOutput => {
         setIsMenuOpen(false);
         setForfeitGame(true);
     }, [setForfeitGame]);
+
+    /**
+     * Closes the menu and sets the state to forfeit the bot game.
+     */
+    const handleBotFlagClick = useCallback(() => {
+        setIsMenuOpen(false);
+        setForfeitBotGame(true);
+    }, [setForfeitBotGame]);
 
     /**
      * Navigates to the profile component.
@@ -115,6 +139,9 @@ export const useNavigation = (): UseNavigationOutput => {
         toggleMenu, 
         isMenuOpen,
         handleSendToDashboard,
-        handleForgotPasswordClick
+        handleSendToBotDashboard,
+        handleForgotPasswordClick,
+        handleBotFlagClick,
+        handleSendToPuzzleDashboard
     };
 };

@@ -4,29 +4,71 @@ import { InGamePlayer, Opponent } from '../GameProvider/GameProviderTypes';
 import { Socket } from 'socket.io-client';
 import { Message } from '../../components/Dashboard/GameChat/GameChatTypes';
 import { Game } from '../GameProvider/GameProviderTypes';
+import { BotGame } from '../BotProvider/BotProviderTypes';
 
 /**
- * Represents the context type for the Socket Provider.
+ * Represents the context type for the Socket Provider, which handles socket-based interactions
+ * for various game-related features, such as managing game rooms, sending moves, and interacting
+ * with bots.
+ *
  * @interface SocketContextType
  * @property {boolean} isConnected - Indicates if the socket is currently connected.
  * @property {string | null} errorSocket - Holds any error messages related to the socket connection.
  * @property {boolean} refresh - Indicates if a refresh is required.
  * @property {boolean} errorReconnect - Indicates if there was an error during socket reconnection.
- * @property {React.Dispatch<React.SetStateAction<boolean>>} setErrorReconnect - Function to set the errorReconnect state.
- * @property {React.Dispatch<React.SetStateAction<boolean>>} setRefresh - Function to set the refresh state.
+ * @property {React.Dispatch<React.SetStateAction<boolean>>} setErrorReconnect - Function to update the errorReconnect state.
+ * @property {React.Dispatch<React.SetStateAction<boolean>>} setRefresh - Function to update the refresh state.
  * @property {Function} sendAddUser - Sends a request to add a user to the socket connection.
+ * @param {AddUserArgs} addUserArgs - Arguments required to add a user.
+ * @returns {Promise<boolean>} Resolves to `true` if the user was successfully added, otherwise `false`.
  * @property {Function} connectSocket - Connects the socket with a provided access token.
+ * @param {string} accessToken - The access token to authenticate the socket connection.
+ * @returns {void}
  * @property {Function} disconnectSocket - Disconnects the current socket connection.
+ * @returns {void}
  * @property {Function} sendCreateRoom - Sends a request to create a game room.
+ * @param {CreateRoomArgs} createRoomArgs - Arguments required to create a game room.
+ * @returns {Promise<{ game: Game } | null>} Resolves with the created game instance or `null` if creation fails.
  * @property {Function} sendJoinRoom - Sends a request to join a game room.
+ * @param {JoinRoomArgs} joinRoomArgs - Arguments required to join a game room.
+ * @returns {Promise<{ game: Game } | null>} Resolves with the joined game instance or `null` if joining fails.
  * @property {Function} sendCloseRoom - Sends a request to close a game room.
+ * @param {CloseRoomArgs} closeRoomArgs - Arguments required to close a game room.
+ * @returns {Promise<boolean>} Resolves to `true` if the room was successfully closed, otherwise `false`.
  * @property {Function} sendInGameMessage - Sends an in-game message through the socket connection.
+ * @param {InGameMessageArgs} inGameMessageArgs - Arguments required to send the message.
+ * @returns {Promise<boolean>} Resolves to `true` if the message was successfully sent, otherwise `false`.
  * @property {Function} sendMove - Sends a move in a game through the socket connection.
+ * @param {MoveArgs} moveArgs - Arguments required to make a move.
+ * @returns {Promise<boolean>} Resolves to `true` if the move was successfully made, otherwise `false`.
  * @property {Function} sendForfeit - Sends a forfeit request for the current game.
+ * @param {ForfeitArgs} forfeitArgs - Arguments required to forfeit the game.
+ * @returns {Promise<boolean>} Resolves to `true` if the game was successfully forfeited, otherwise `false`.
  * @property {string | null} responseMessage - Holds any response messages received from the server.
  * @property {MutableRefObject<Socket | null>} socketRef - A mutable reference object pointing to the active socket connection.
  * @property {Function} handleCallback - Handles the callback functions with a message and optional data.
+ * @param {Function} callback - The callback function to handle.
+ * @param {string} message - The message to pass to the callback.
+ * @param {any} [data] - Optional additional data for the callback.
+ * @returns {void}
  * @property {Function} sendReconnectRoom - Sends a request to rejoin a game room.
+ * @param {ReconnectRoomArgs} reconnectRoomArgs - Arguments required to reconnect to a game room.
+ * @returns {Promise<{ game: Game } | null>} Resolves with the reconnected game instance or `null` if reconnection fails.
+ * @property {Function} sendGetBotMove - Sends a request to get the bot's next move.
+ * @param {GetBotMoveArgs} getBotMoveArgs - Arguments required to fetch the bot's move.
+ * @returns {Promise<{ botMove: Move }>} Resolves with the bot's calculated move.
+ * @property {Function} sendCreateBotGame - Sends a request to create a bot game.
+ * @param {CreateBotGameArgs} createBotGameArgs - Arguments required to create a bot game.
+ * @returns {Promise<{ botGame: BotGame } | null>} Resolves with the created bot game instance or `null` if creation fails.
+ * @property {Function} sendGetMoveHint - Sends a request to fetch a move hint.
+ * @param {GetMoveHintArgs} getMoveHintArgs - Arguments required to get a move hint.
+ * @returns {Promise<{ move: Move }>} Resolves with the suggested move as a hint.
+ * @property {Function} sendCloseBotGame - Sends a request to close a bot game.
+ * @param {CloseBotGameArgs} closeBotGameArgs - Arguments required to close a bot game.
+ * @returns {Promise<boolean>} Resolves to `true` if the bot game was successfully closed, otherwise `false`.
+ * @param {ReconnectBotGameArgs} reconnectBotGameArgs - The arguments required to reconnect to the bot game, including the game ID.
+ * @returns {Promise<{ botGame: BotGame } | null>} A promise that resolves with the reconnected bot game details if successful, 
+ *                                                 or `null` if the reconnection fails.
  */
 export interface SocketContextType {
     isConnected: boolean;
@@ -48,6 +90,11 @@ export interface SocketContextType {
     socketRef: MutableRefObject<Socket | null>;
     handleCallback: (callback: Function, message: string, data?: any) => void;
     sendReconnectRoom: (reconnectRoomArgs: ReconnectRoomArgs) => Promise<{ game: Game } | null>;
+    sendGetBotMove: ( getBotMoveArgs: GetBotMoveArgs) => Promise<{ botMove: Move }>;
+    sendCreateBotGame: ( createBotGameArgs: CreateBotGameArgs) => Promise<{ botGame: BotGame } | null>;
+    sendGetMoveHint: (getMoveHintArgs: GetMoveHintArgs) => Promise<{ move: Move }>;
+    sendCloseBotGame: (closeBotGameArgs: CloseBotGameArgs) => Promise<boolean>;
+    sendReconnectBotGame: (reconnectBotGameArgs: ReconnectBotGameArgs) => Promise<{ botGame: BotGame } | null>;
 }
 
 /**
@@ -115,6 +162,65 @@ export interface CallbackResponseCloseRoom extends CallbackResponse {
  */
 export interface CallbackResponseReconnectRoom extends CallbackResponse {
     game: Game;
+}
+
+/**
+ * Represents the response received after getting the bot's next move.
+ * Extends the base `CallbackResponse` interface with specific properties for the bot move response.
+ *
+ * @interface CallbackResponseGetBotMove
+ * @extends CallbackResponse
+ * @property {Move} botMove - The next move determined by the bot.
+ */
+export interface CallbackResponseGetBotMove extends CallbackResponse {
+    botMove: Move
+}
+
+/**
+ * Represents the response received after creating a game against a bot.
+ * Extends the base `CallbackResponse` interface with specific properties for the created bot game.
+ *
+ * @interface CallbackResponseCreateBotGame
+ * @extends CallbackResponse
+ * @property {BotGame} botGame - The details of the created bot game.
+ */
+export interface CallbackResponseCreateBotGame extends CallbackResponse {
+    botGame: BotGame;
+}
+
+/**
+ * Represents the response received after closing a bot game.
+ * Extends the base `CallbackResponse` interface with specific properties for the closed bot game.
+ *
+ * @interface CallbackResponseCloseBotGame
+ * @extends CallbackResponse
+ * @property {BotGame} botGame - The details of the bot game that was closed.
+ */
+export interface CallbackResponseCloseBotGame extends CallbackResponse {
+    botGame: BotGame;
+}
+
+/**
+ * Represents the response received after getting a move hint from the bot.
+ * Extends the base `CallbackResponse` interface with specific properties for the move hint response.
+ *
+ * @interface CallbackResponseGetMoveHint
+ * @extends CallbackResponse
+ * @property {Move} move - The suggested move as a hint for the player.
+ */
+export interface CallbackResponseGetMoveHint extends CallbackResponse {
+    move: Move
+}
+
+/**
+ * Represents the response received after attempting to reconnect to a bot game.
+ *
+ * @interface CallbackResponseReconnectBotGame
+ * @extends CallbackResponse
+ * @property {BotGame} botGame - The bot game object containing the game state and details of the reconnected game.
+ */
+export interface CallbackResponseReconnectBotGame extends CallbackResponse {
+    botGame: BotGame;
 }
 
 /**
@@ -239,3 +345,70 @@ export interface RoomReconnectedArgs {
     game: Game,
     connectUserId: string;
 };
+
+/**
+ * Represents the arguments required to request the bot's next move in the current game.
+ *
+ * @interface GetBotMoveArgs
+ * @property {BotGame} botGame - The game object containing details about the current game session, such as player information, game state, and game ID.
+ * @property {"novice" | "intermediate" | "advanced" | "master"} difficulty - The bot's difficulty level, determining the complexity of its decisions.
+ * @property {string} fen - The current board position in FEN (Forsyth–Edwards Notation) format, representing the game state after the most recent move.
+ * @property {"w" | "b"} currentTurn - Indicates whose turn it is to play: `"w"` for white or `"b"` for black.
+ * @property {Move[]} history - An array of moves made so far in the game, providing a complete record of the game’s progression.
+ */
+export interface GetBotMoveArgs {
+    botGame: BotGame;
+    difficulty: "novice" | "intermediate" | "advanced" | "master";
+    fen: string;
+    currentTurn: "w" | "b";
+    history: Move[];
+}
+
+/**
+ * Represents the arguments required to create a new game against a bot.
+ *
+ * @interface CreateBotGameArgs
+ * @property {InGamePlayer} playerA - The player initiating the game (Player A), including their details and orientation.
+ * @property {InGamePlayer} playerB - The bot player (Player B), including its details and orientation.
+ * @property {"novice" | "intermediate" | "advanced" | "master"} difficulty - The bot's difficulty level.
+ * @property {"assisted" | "friendly" | "challenge"} help - The level of assistance available to the player during the game.
+ */
+export interface CreateBotGameArgs {
+    playerA: InGamePlayer;
+    playerB: InGamePlayer;
+    difficulty: "novice" | "intermediate" | "advanced" | "master";
+    help: "assisted" | "friendly" | "challenge";
+}
+
+/**
+ * Represents the arguments required to close an active bot game.
+ *
+ * @interface CloseBotGameArgs
+ * @property {BotGame} botGame - The game object representing the bot game session that needs to be closed.
+ */
+export interface CloseBotGameArgs {
+    botGame: BotGame;
+}
+
+/**
+ * Represents the arguments required to request a move hint for the current game.
+ *
+ * @interface GetMoveHintArgs
+ * @property {string} fen - The current board position in FEN (Forsyth–Edwards Notation) format, representing the game state after the most recent move.
+ * @property {"w" | "b"} currentTurn - Indicates whose turn it is to play: `"w"` for white or `"b"` for black.
+ */
+export interface GetMoveHintArgs {
+    fen: string;
+    currentTurn: "w" | "b";
+    history: Move[];
+}
+
+/**
+ * Represents the arguments required to reconnect to an existing bot game.
+ *
+ * @interface ReconnectBotGameArgs
+ * @property {string} gameId - The unique identifier of the bot game to reconnect to.
+ */
+export interface ReconnectBotGameArgs {
+    gameId: string;
+}

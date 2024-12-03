@@ -9,6 +9,7 @@ import { useGame } from '../../../Providers/GameProvider/GameProvider';
 import { usePlayer } from '../../../Providers/PlayerProvider/PlayerProvider';
 import { HeaderLinksProps } from './HeaderLinksTypes';
 import ProfileCircle from './ProfileCircle/ProfileCircle';
+import { useBot } from '../../../Providers/BotProvider/BotProvider';
 
 /**
  * HeaderLinks component displays navigation links and buttons for user interactions
@@ -17,7 +18,6 @@ import ProfileCircle from './ProfileCircle/ProfileCircle';
  * @component
  * @returns {JSX.Element} The rendered HeaderLinks component.
  */
-
 export default function HeaderLinks({
     handleArrowClick, 
     handleBadgeClick, 
@@ -26,16 +26,19 @@ export default function HeaderLinks({
     handleLogoutClick, 
     handleSignupClick,
     handleProfileClick,
+    handleBotFlagClick,
     isMenuOpen 
 }: HeaderLinksProps): JSX.Element {
     const { currentUser, loadingAuth } = useAuth();
     const { game } = useGame();
     const { invitesCount } = usePlayer();
+    const { botGame } = useBot();
 
-    const isNoActiveRoom = currentUser && !game;
+    const isNoActiveRoom = currentUser && !game && !botGame;
     const isRoomActive = game && (game.playerA.connected || game.playerB.connected);
     const isGameFull = isRoomActive && (game.playerA.connected && game.playerB.connected);
     const isGameNotFull = isRoomActive && !(game.playerA.connected && game.playerB.connected);
+    const isActiveBotGame = currentUser && botGame;
     
     /**
      * Renders the authentication buttons (Sign Up and Log In) if no user is currently authenticated.
@@ -114,6 +117,17 @@ export default function HeaderLinks({
                     <img 
                         className='end-game-flag' 
                         onClick={handleFlagClick} 
+                        src={flag} 
+                        alt="End Game" 
+                    />
+                </li>
+            }
+
+            {isActiveBotGame && 
+                <li>
+                    <img 
+                        className='end-game-flag' 
+                        onClick={handleBotFlagClick} 
                         src={flag} 
                         alt="End Game" 
                     />

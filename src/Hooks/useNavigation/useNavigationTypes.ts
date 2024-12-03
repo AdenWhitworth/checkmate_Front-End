@@ -13,7 +13,10 @@
  * @property {function} toggleMenu - Toggles the state of the navigation menu.
  * @property {boolean} isMenuOpen - A boolean indicating whether the navigation menu is currently open or closed.
  * @property {function} handleSendToDashboard - Navigates the user to the dashboard page.
+ * @property {function} handleSendToBotDashboard - Navigates the user to the bot dashboard page.
  * @property {function} handleForgotPasswordClick - Navigates the user to the forgot password page.
+ * @property {function} handleBotFlagClick - Closes the menu and sets the state to forfeit the bot game.
+ * @property {function} handleSendToPuzzleDashboard - Navigates the user to the puzzle dashboard page.
  */
 export interface UseNavigationOutput {
     handleKingClick: () => void;
@@ -27,5 +30,8 @@ export interface UseNavigationOutput {
     toggleMenu: () => void;
     isMenuOpen: boolean;
     handleSendToDashboard: () => void;
+    handleSendToBotDashboard: () => void;
     handleForgotPasswordClick: () => void;
+    handleBotFlagClick: () => void;
+    handleSendToPuzzleDashboard: () => void;
 }

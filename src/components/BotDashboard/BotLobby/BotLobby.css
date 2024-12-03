@@ -1,0 +1,24 @@
+.bot-lobby{
+    background-color: hsl(0, 0%, 9%);
+    border-radius: 20px;
+    height: 100%;
+    width: 30vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.bot-options-btn{
+    width: 90%;
+    margin-bottom: 5%;
+    margin-top: 5%;
+}
+
+@media(max-width: 900px){
+    .bot-lobby{
+        width: 100%;
+        margin-left: 0;
+        height: 75vh;
+    }
+}

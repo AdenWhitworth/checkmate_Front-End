@@ -1,0 +1,9 @@
+.ingame-help{
+    width: 90%;
+    height: 40px;
+    margin-left: 5%;
+    margin-top: 5%;
+    display: flex;
+    color: #FFFFFF;
+    gap: 5%;
+}

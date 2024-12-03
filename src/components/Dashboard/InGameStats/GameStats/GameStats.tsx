@@ -1,6 +1,7 @@
 import React from 'react';
 import { GameStatsProps } from './GameStatsTypes';
 import user_circle from "../../../../Images/User Circle.svg";
+import bot from "../../../../Images/bot white.svg";
 import { PieceType } from '../InGameStatsTypes';
 import LoadingDots from '../../../LoadingDots/LoadingDots';
 import GamePiece from './GamePiece/GamePiece';
@@ -17,6 +18,7 @@ import './GameStats.css';
  * @param {Record<PieceType, PieceState>} props.pieces - An object containing the player's captured pieces and their corresponding states.
  * @param {boolean} props.isTurn - Whether it's currently the player's turn.
  * @param {boolean} props.isLoading - Indicates whether the captured pieces data is still loading.
+ * @param {boolean} props.isBot - A boolean indicating whether the player whose stats are being displayed is a bot.
  * 
  * @returns {JSX.Element} The rendered GameStats component.
  */
@@ -25,13 +27,14 @@ export default function GameStats({
     elo,
     pieces, 
     isTurn,
-    isLoading
+    isLoading,
+    isBot,
 }: GameStatsProps): JSX.Element {
     return (
         <div className={`game-info ${isTurn ? 'player-turn' : ''}`}>
             <div className="game-stats">
                 <div className="game-row-1">
-                    <img className="game-icon" src={user_circle} alt={`${username} icon`} />
+                    <img className="game-icon" src={isBot? bot : user_circle} alt={`${username} icon`} />
                     <h3 className="game-username">{`${username} (${elo})`}</h3>
                 </div>
 
