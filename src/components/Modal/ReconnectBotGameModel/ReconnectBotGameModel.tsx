@@ -13,6 +13,7 @@ import { useBot } from '../../../Providers/BotProvider/BotProvider';
 export default function ReconnectBotGameModal(): JSX.Element | null {
     const { loadingReconnectGame, errorReconnectGame, handleReconnectBotGame, botGame, difficulty} = useBot();
     if (!loadingReconnectGame && !errorReconnectGame) return null;
+    if (!botGame) return null;
 
     return (
         <Modal
