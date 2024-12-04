@@ -94,7 +94,7 @@ export const useCapturedPieces = ({orientation, history}: UseCapturedPiecesProps
     const updatePieces = useCallback((playerIdx: number, piecesStateSetter: React.Dispatch<React.SetStateAction<Record<PieceType, PieceState>>>) => {
         pieceTypes.forEach((pieceType) => {
             const count = capturedPieces[playerIdx][pieceType];
-            const img = pieceImages[playerIdx === 0 ? 1 : 0][pieceType][count - 1] || "";
+            const img = pieceImages[playerIdx === 0 ? 1 : 0][pieceType][count - 1] || pawn_black8;
             const style = count > 0 ? "game-pieces-captured" : "game-pieces-captured-hidden";
 
             piecesStateSetter((prevState) => ({
