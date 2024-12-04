@@ -14,7 +14,7 @@ import { useBot } from "../../Providers/BotProvider/BotProvider";
 export const useNavigation = (): UseNavigationOutput => {
     const { logout, setIsLoginSelected } = useAuth();
     const { setExitGame, setForfeitGame } = useGame();
-    const { setForfeitBotGame } = useBot();
+    const { setForfeitBotGame, setBotGame } = useBot();
     const { setLobbySelection } = usePlayer();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -23,8 +23,9 @@ export const useNavigation = (): UseNavigationOutput => {
      * Navigates the user to the home page.
      */
     const handleKingClick = useCallback(() => {
+        setBotGame(null);
         navigate('/', { replace: true });
-    }, [navigate]);
+    }, [navigate, setBotGame]);
 
     /**
      * Opens the lobby selection, closes the menu, and navigates the user to the dashboard.

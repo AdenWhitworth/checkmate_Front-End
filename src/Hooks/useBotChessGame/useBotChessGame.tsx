@@ -121,10 +121,26 @@ export const useBotChessGame = ({
       if (chess.isGameOver()) {
         console.warn("Bot move skipped as the game is over.");
       } else {
+        chess.undo();
+        setFen(chess.fen());
+        setGameMoves((prevMoves: GameMoves[]) => {
+          const updatedMoves = [...prevMoves];
+          if (updatedMoves.length > 0) {
+            const lastMove = updatedMoves[updatedMoves.length - 1];
+            if (!lastMove.rowMoves.blackMove) {
+              updatedMoves.pop();
+            } else {
+              lastMove.rowMoves.blackMove = "";
+            }
+          }
+          return updatedMoves;
+        });
+        setHistory(chess.history({ verbose: true }));
+        setPlayerTurn(chess.turn());
         setErrorMove("Bot move failed. Please try again.");
       }
     }
-  }, [botGame, difficulty, chess, sendGetBotMove, makeAMove, setErrorMove]);
+  }, [botGame, sendGetBotMove, difficulty, chess, makeAMove, setFen, setHistory, setPlayerTurn, setGameMoves, setErrorMove]);
 
   /**
    * Handles the player's move and triggers the bot's response.
