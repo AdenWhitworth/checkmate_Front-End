@@ -142,7 +142,7 @@ This setup allows you to simulate a game between two players on separate browser
 
 ## Database Structure
 
-The application uses Firebase Firestore to store user data and game information. Below is the structure of the **users**, **players**, and **games** collections:
+Below is the schema for the Firestore database used to manage user profiles, active games, and bot interactions. This structure ensures scalability and efficiency for real-time updates.
 
 ```json
 {
@@ -230,6 +230,8 @@ The application uses Firebase Firestore to store user data and game information.
         "connected": "$connected",             // Connection status of player B which is always true for the bot
         "orientation": "$orientation",         // Board orientation of player B ("w" or "b")
       },
+      "remainingHints": "$remainingHints",     // The amount of hints left (Infinite as -1 or 0 to 3)
+      "remainingUndos": "$remainingUndos",     // The amount of undos left (Infinite as -1 or 0 to 3)
       "status": "$status",                     // Current status of the game ("in-progress", "completed", or "waiting")
       "winner": "$winner"                      // Winner of the game ("playerA", "playerB", "draw", or null if ongoing)
     }
