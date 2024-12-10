@@ -2,7 +2,7 @@
 
 # Checkmate Front-End
 
-Welcome to the **Checkmate Front-End**! This repository contains the code for the web-based user interface, allowing players to challenge friends to chess matches, chat during the game, and track their rankings. The project integrates seamlessly with the back-end to provide real-time multiplayer chess gameplay.
+Welcome to the **Checkmate Front-End**! This repository contains the code for the web-based user interface, allowing players to challenge friends, chat during matches, track their rankings, and hone their skills against various AI-powered bots. The project integrates seamlessly with the back-end to provide real-time multiplayer chess gameplay.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -22,7 +22,7 @@ Welcome to the **Checkmate Front-End**! This repository contains the code for th
 
 ## Overview
 
-The Checkmate Front-End is built using React and provides a responsive, real-time chess-playing experience. Users can create and join chess games, communicate through in-game chat, and track their performance using the integrated ranking system.
+Checkmate Front-End is a dynamic, user-focused interface that brings the classic game of chess to life. Built with React, this responsive web app allows players to challenge friends, hone their skills against AI-powered bots, and track their progress in real-time.
 
 ## Checkmate Demo
 
@@ -44,7 +44,9 @@ Try out the app using the following demo accounts:
 - **ELO Ranking System**: Track your performance and compare rankings with friends.
 - **In-Game Statistics**: Track real-time game stats during play and review detailed outcomes of past games.
 - **Responsive Design**: Optimized for desktop and mobile devices, ensuring a great user experience on any screen size.
-- **Game Persistence**: Stay in the game, even if you loose connection, with a reliable rejoin feature.
+- **Game Persistence**: Stay in the game, even if you lose connection, with a reliable rejoin feature.
+- **Account History**: Update your account details, review your current game statistics, and access a comprehensive history of your past game results.
+- **Dynamic Bot Opponents**: Endlessly practice your chess skills against dynamic bot opponents.
 
 ## Technologies Used
 
@@ -201,6 +203,36 @@ The application uses Firebase Firestore to store user data and game information.
       "status": "$status",                     // Current status of the game ("in-progress", "completed", or "waiting")
       "winner": "$winner"                      // Winner of the game ("playerA", "playerB", "draw", or null if ongoing)
     }
+  },
+  "botGames": {
+    "$gameId": {                               
+      "createdAt": "$createdAt",               // Timestamp of when the game was created
+      "currentTurn": "$currentTurn",           // Indicates whose turn it is ("w" for white, "b" for black)
+      "difficulty": "$difficulty",             // Indicates the bots level of difficulty ("novice", "intermediate", "advanced", or "master")
+      "fen": "$fen",                           // FEN (Forsyth-Edwards Notation) string representing the board state
+      "gameId": "$gameId",                     // Unique identifier for the game
+      "help": "$help",                         // Indicates the level of assistance ("assisted", "friendly", or "challenge")
+      "history": ["$move1", "$move2", "..."],  // Array of moves made during the game
+      "lastMoveTime": "$lastMoveTime",         // Timestamp of when the last move was made
+      "playerA": {                             
+        "userId": "$userId",                   // User ID of player A
+        "playerId": "$playerId",               // Player ID of player A
+        "username": "$username",               // Username of player A
+        "elo": "$elo",                         // Elo rank of player A
+        "connected": "$connected",             // Connection status of player A (true, false, or "pending")
+        "orientation": "$orientation"          // Board orientation of player A ("w" or "b")
+      },
+      "playerB": {                             
+        "userId": "$userId",                   // User ID of player B which is always the bot
+        "playerId": "$playerId",               // Player ID of player B which is always the bot
+        "username": "$username",               // Username of player B which is always the bot
+        "elo": "$elo",                         // Elo rank of player B which is always the bot
+        "connected": "$connected",             // Connection status of player B which is always true for the bot
+        "orientation": "$orientation",         // Board orientation of player B ("w" or "b")
+      },
+      "status": "$status",                     // Current status of the game ("in-progress", "completed", or "waiting")
+      "winner": "$winner"                      // Winner of the game ("playerA", "playerB", "draw", or null if ongoing)
+    }
   }
 }
 ```
@@ -209,7 +241,7 @@ The application uses Firebase Firestore to store user data and game information.
 
 Here are a few exciting features that we are planning to add:
 
-1. **Solo Practice**: Implement AI opponents for solo play.
+1. **Practice Puzzles**: Integrate Lichess puzzles to help players improve their timing and accuracy in critical chess positions, enhancing decision-making skills under pressure.
 2. **Competition Timing**: Add a timer feature for each game to enhance competitive gameplay.
 3. **Live Stream**: Enable real-time streaming of friends' games so you can watch matches live.
 
