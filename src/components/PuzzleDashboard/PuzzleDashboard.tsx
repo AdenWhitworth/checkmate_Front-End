@@ -1,30 +1,54 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from '../Header/Header';
 import "./PuzzleDashboard.css";
-import puzzle_piece from "../../Images/puzzle piece yellow.svg";
+import ActiveGame from '../Dashboard/ActiveGame/ActiveGame';
+import { usePuzzle } from '../../Providers/PuzzleProvider/PuzzleProvider';
+import PuzzleLobby from './PuzzleLobby/PuzzleLobby';
+import PuzzleInGameStats from './PuzzleInGameStats/PuzzleInGameStats';
+import PuzzleOverModal from '../Modal/PuzzleOverModal/PuzzleOverModal';
+import ReconnectPuzzleModal from '../Modal/ReconnectPuzzleModal/ReconnectPuzzleModal';
+import CreatePuzzleAlertBadge from '../AlertBadge/CreatePuzzleAlertBadge/CreatePuzzleAlertBadge';
+import ReconnectPuzzleBadge from '../AlertBadge/ReconnectPuzzleBadge/ReconnectPuzzleBadge';
 
 /**
- * PuzzleDashboard component.
- *
- * Displays a "Coming Soon" message for the Checkmate puzzle feature. Includes a header, 
- * a placeholder image, and a brief description to inform users about the upcoming feature.
- *
- * @returns {JSX.Element} The rendered PuzzleDashboard component.
+ * PuzzleDashboard component that serves as the main container for the active game,
+ * lobby, and various puzzle game-related modals and alerts.
+ * 
+ * @component
+ * @returns {JSX.Element} - The rendered PuzzleDashboard component.
  */
 export default function PuzzleDashboard(): JSX.Element {
+    
+    const { orientation, fen, onDrop, onPromotionPieceSelect, puzzle, handleReconnectPuzzle} = usePuzzle();
+
+    /**
+     * Attempt to reconnect to an active puzzle game if present.
+     */
+    useEffect(() => {
+        handleReconnectPuzzle();
+    },[handleReconnectPuzzle])
+    
     return (
         <>  
             <Header />
 
             <section className="puzzle-dashboard">
                 <div className="puzzle-dashboard-content">
-                    <div>
-                        <img src={puzzle_piece} alt='Puzzle piece icon'></img>
-                    </div>
-                    <h2>Comming Soon!</h2>
-                    <p>Checkmate is excited to offer practice puzzles here soon. Keep an eye out for when this feature goes live!</p>
+                    <ActiveGame 
+                        orientation={orientation}
+                        fen={fen}
+                        onDrop={onDrop}
+                        onPromotionPieceSelect={onPromotionPieceSelect}
+                    />
+
+                    {puzzle? <PuzzleInGameStats /> : <PuzzleLobby />}
                 </div>
             </section>
+
+            <PuzzleOverModal />
+            <ReconnectPuzzleModal />
+            <CreatePuzzleAlertBadge />
+            <ReconnectPuzzleBadge />
         </>
     );
 }

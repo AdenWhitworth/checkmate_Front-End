@@ -5,6 +5,7 @@ import { usePlayer } from "../../Providers/PlayerProvider/PlayerProvider";
 import { useNavigate } from "react-router-dom";
 import { UseNavigationOutput } from "./useNavigationTypes";
 import { useBot } from "../../Providers/BotProvider/BotProvider";
+import { usePuzzle } from "../../Providers/PuzzleProvider/PuzzleProvider";
 
 /**
  * Custom hook to handle navigation and menu interactions within the application.
@@ -15,6 +16,7 @@ export const useNavigation = (): UseNavigationOutput => {
     const { logout, setIsLoginSelected } = useAuth();
     const { setExitGame, setForfeitGame } = useGame();
     const { setForfeitBotGame, setBotGame } = useBot();
+    const { setPuzzle } = usePuzzle();
     const { setLobbySelection } = usePlayer();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -24,8 +26,9 @@ export const useNavigation = (): UseNavigationOutput => {
      */
     const handleKingClick = useCallback(() => {
         setBotGame(null);
+        setPuzzle(null);
         navigate('/', { replace: true });
-    }, [navigate, setBotGame]);
+    }, [navigate, setBotGame, setPuzzle]);
 
     /**
      * Opens the lobby selection, closes the menu, and navigates the user to the dashboard.

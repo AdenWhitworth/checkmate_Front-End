@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { db } from '../../firebase';
 import { collection, query, where, getDocs, onSnapshot, doc } from 'firebase/firestore';
 import { useAuth } from '../AuthProvider/AuthProvider';
-import { PlayerDynamic, PlayerList, PlayerContextType, Invite, PlayerStatic } from './PlayerProviderTypes';
+import { PlayerDynamic, PlayerList, PlayerContextType, Invite, PlayerStatic, CompletedPuzzle } from './PlayerProviderTypes';
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
@@ -11,6 +11,7 @@ const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
  * - Current player info
  * - Players list
  * - Invites list
+ * - Completed puzzles list
  * - Loading and error states
  * 
  * @component
@@ -36,16 +37,19 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
     const [playersLoaded, setPlayersLoaded] = useState<boolean>(false);
     const [invitesLoaded, setInvitesLoaded] = useState<boolean>(false);
 
+    const [completedPuzzles, setCompletedPuzzles] = useState<CompletedPuzzle[]>([]);
+    const [completedPuzzlesLoaded, setCompletedPuzzlesLoaded] = useState<boolean>(false);
+
     const invitesUserIDs = useMemo(() => invites.map(invite => invite.requestUserId).concat(playerStatic?.userId || ''), [invites, playerStatic]);
 
     /**
      * Checks if all loading states are complete and sets loading to false if so.
      */
     const checkAllLoaded = useCallback(() => {
-        if (playerUserIdLoaded && playerLoaded && playersLoaded && invitesLoaded) {
+        if (playerUserIdLoaded && playerLoaded && playersLoaded && invitesLoaded && completedPuzzlesLoaded) {
             setLoading(false);
         }
-    }, [playerUserIdLoaded, playerLoaded, playersLoaded, invitesLoaded]);
+    }, [playerUserIdLoaded, playerLoaded, playersLoaded, invitesLoaded, completedPuzzlesLoaded]);
 
     /**
      * Fetches the current user's userId from Firestore.
@@ -101,6 +105,12 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                     currentBotGameId: data.currentBotGameId ?? undefined,
                     email: data.email,
                     gamesPlayed: data.gamesPlayed ?? 0,
+                    activePuzzle: data.activePuzzle ?? null,
+                    lastPuzzle: {
+                        easy: data.lastPuzzle?.easy ?? 0,
+                        medium: data.lastPuzzle?.medium ?? 0,
+                        hard: data.lastPuzzle?.hard ?? 0,
+                    },
                 };
 
                 setPlayerStatic((prev) => {
@@ -112,14 +122,18 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
                 });
 
                 setPlayerDynamic((prev) => {
-                    const hasChanged = 
+                    const hasChanged =
                         prev?.win !== newPlayerDynamic.win ||
                         prev?.loss !== newPlayerDynamic.loss ||
                         prev?.draw !== newPlayerDynamic.draw ||
                         prev?.elo !== newPlayerDynamic.elo ||
                         prev?.currentGameId !== newPlayerDynamic.currentGameId ||
-                        prev?.currentBotGameId !== newPlayerDynamic.currentBotGameId
-                    return hasChanged? newPlayerDynamic : prev;
+                        prev?.currentBotGameId !== newPlayerDynamic.currentBotGameId ||
+                        prev?.activePuzzle !== newPlayerDynamic.activePuzzle ||
+                        prev?.lastPuzzle?.easy !== newPlayerDynamic.lastPuzzle.easy ||
+                        prev?.lastPuzzle?.medium !== newPlayerDynamic.lastPuzzle.medium ||
+                        prev?.lastPuzzle?.hard !== newPlayerDynamic.lastPuzzle.hard;
+                    return hasChanged ? newPlayerDynamic : prev;
                 });
 
                 setPlayerLoaded(true);
@@ -161,6 +175,30 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
     }, [playerStatic, invitesUserIDs]);
 
     /**
+     * Fetches a list of the completed puzzles by the current user from Firestore.
+     * Sets the currentPuzzles state and currentPuzzlesLoaded flag when successful.
+     */
+    const fetchCompletedPuzzles = useCallback(() => {
+        if (!playerStatic || !playerStatic.userId) return;
+
+        const completedPuzzlesRef = collection(db, "users", playerStatic.userId, "completedPuzzles");
+
+        return onSnapshot(completedPuzzlesRef, (snapshot) => {
+            try {
+                const puzzles: CompletedPuzzle[] = snapshot.docs.map((doc) => ({
+                    puzzleId: doc.id,
+                    completedAt: doc.data().completedAt,
+                    timeToComplete: doc.data().timeToComplete,
+                }));
+                setCompletedPuzzles(puzzles);
+                setCompletedPuzzlesLoaded(true);
+            } catch (error) {
+                setError("Error fetching completed puzzles.");
+            }
+        });
+    }, [playerStatic]);
+
+    /**
      * Fetches a list of invites for the current user from Firestore.
      * Sets the invites state, invites count, and invitesLoaded flag when successful.
      */
@@ -200,7 +238,7 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
      */
     useEffect(() => {
         checkAllLoaded();
-    }, [playerLoaded, playersLoaded, invitesLoaded, checkAllLoaded]);
+    }, [playerLoaded, playersLoaded, invitesLoaded, completedPuzzlesLoaded, checkAllLoaded]);
 
     /**
      * Fetches the current user's player data if a current user is available.
@@ -228,6 +266,15 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
         const unsubscribePlayers = fetchPlayers();
         return unsubscribePlayers;
     }, [invites, fetchPlayers]);
+
+    /**
+     * Subscribes to the user's completed puzzles collection to fetch the completed puzzles by the current user.
+     * The fetchCompletedPuzzles function is triggered initially when the component mounts.
+     */
+    useEffect(() => {
+        const unsubscribeCompletedPuzzles = fetchCompletedPuzzles();
+        return unsubscribeCompletedPuzzles;
+    }, [fetchCompletedPuzzles]);
 
     /**
      * Subscribes to the invites collection to fetch invites for the current player.
@@ -262,7 +309,8 @@ export const PlayerProvider = ({ children }: { children: React.ReactNode }): JSX
             invites, 
             invitesCount,
             lobbySelection, 
-            setLobbySelection
+            setLobbySelection,
+            completedPuzzles
         }}>
             {children}
         </PlayerContext.Provider>

@@ -6,7 +6,7 @@ import medal from "../../../../Images/medal yellow.svg";
 import trophy from "../../../../Images/trophy yellow.svg";
 import crown from "../../../../Images/crown yellow.svg";
 import { useBot } from '../../../../Providers/BotProvider/BotProvider';
-import { Option } from './BotOptionListTypes';
+import { OptionBot } from './BotOptionListTypes';
 
 /**
  * A React functional component that renders a list of bot difficulty options for selection.
@@ -18,7 +18,7 @@ import { Option } from './BotOptionListTypes';
  * @returns {JSX.Element} The JSX representation of the bot options list.
  */
 export default function BotOptionList(): JSX.Element {
-    const options: Option[] = [
+    const options: OptionBot[] = [
         { icon: star, label: "Novice", range: "< 1000", value: "novice" },
         { icon: medal, label: "Intermediate", range: "1000-1500", value: "intermediate" },
         { icon: trophy, label: "Advanced", range: "1500-2000", value: "advanced" },

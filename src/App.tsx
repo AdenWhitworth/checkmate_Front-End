@@ -15,11 +15,13 @@ import ResetPassword from './components/ResetPassword/ResetPassword';
 import BotDashboard from './components/BotDashboard/BotDashboard';
 import { BotProvider } from './Providers/BotProvider/BotProvider';
 import PuzzleDashboard from './components/PuzzleDashboard/PuzzleDashboard';
+import { PuzzleProvider } from './Providers/PuzzleProvider/PuzzleProvider';
 
 /**
  * The main App component that sets up the routing and providers for the application.
  * This component wraps the application in necessary context providers like 
- * `AuthProvider`, `PlayerProvider`, `SocketProvider`, and `GameProvider`.
+ * `AuthProvider`, `PlayerProvider`, `SocketProvider`, `GameProvider`, 
+ * `BotProvider`, and `PuzzleProvider`.
  * 
  * @component
  * @returns {JSX.Element} - The rendered App component containing all routes and providers.
@@ -29,6 +31,8 @@ import PuzzleDashboard from './components/PuzzleDashboard/PuzzleDashboard';
  * - `PlayerProvider` provides state and functions for managing player-related data.
  * - `SocketProvider` provides socket connection and communication functionality.
  * - `GameProvider` provides state and functions for managing the game logic.
+ * - `BotProvider` provides state and functions for managing the bot game logic.
+ * - `PuzzleProvider` provides state and functions for managing the puzzle game logic.
  * 
  * @remarks
  * - The App uses `Routes` and `Route` from `react-router-dom` to define the routes of the application.
@@ -44,16 +48,18 @@ function App(): JSX.Element {
           <SocketProvider url={process.env.REACT_APP_BASE_URL as string}>
             <GameProvider>
               <BotProvider>
-                <Routes>
-                  <Route path='/' element={<Landing></Landing>}></Route>
-                  <Route path='/auth' element={<Authentication></Authentication>}></Route>
-                  <Route path='/dashboard' element={<PrivateRoute><Dashboard></Dashboard></PrivateRoute>}></Route>
-                  <Route path='/profile' element={<PrivateRoute><Profile></Profile></PrivateRoute>}></Route>
-                  <Route path='/forgotPassword' element={<ForgotPassword></ForgotPassword>}></Route>
-                  <Route path='/resetPassword' element={<ResetPassword></ResetPassword>}></Route>
-                  <Route path='/botDashboard' element={<PrivateRoute><BotDashboard></BotDashboard></PrivateRoute>}></Route>
-                  <Route path='/puzzleDashboard' element={<PrivateRoute><PuzzleDashboard></PuzzleDashboard></PrivateRoute>}></Route>
-                </Routes>
+                <PuzzleProvider>
+                  <Routes>
+                    <Route path='/' element={<Landing></Landing>}></Route>
+                    <Route path='/auth' element={<Authentication></Authentication>}></Route>
+                    <Route path='/dashboard' element={<PrivateRoute><Dashboard></Dashboard></PrivateRoute>}></Route>
+                    <Route path='/profile' element={<PrivateRoute><Profile></Profile></PrivateRoute>}></Route>
+                    <Route path='/forgotPassword' element={<ForgotPassword></ForgotPassword>}></Route>
+                    <Route path='/resetPassword' element={<ResetPassword></ResetPassword>}></Route>
+                    <Route path='/botDashboard' element={<PrivateRoute><BotDashboard></BotDashboard></PrivateRoute>}></Route>
+                    <Route path='/puzzleDashboard' element={<PrivateRoute><PuzzleDashboard></PuzzleDashboard></PrivateRoute>}></Route>
+                  </Routes>
+                </PuzzleProvider>
               </BotProvider>
             </GameProvider>
           </SocketProvider>
