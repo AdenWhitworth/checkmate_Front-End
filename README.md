@@ -2,7 +2,7 @@
 
 # Checkmate Front-End
 
-Welcome to the **Checkmate Front-End**! This repository contains the code for the web-based user interface, allowing players to challenge friends, chat during matches, track their rankings, and hone their skills against various AI-powered bots. The project integrates seamlessly with the back-end to provide real-time multiplayer chess gameplay.
+Welcome to the **Checkmate Front-End**! This repository contains the code for the web-based user interface, enabling players to challenge friends, chat during matches, track their rankings, solve over 3,000 interactive puzzles, and hone their skills against AI-powered bots. The project integrates seamlessly with the back-end to deliver real-time multiplayer chess gameplay and an engaging, feature-rich experience for chess enthusiasts of all levels.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -22,11 +22,11 @@ Welcome to the **Checkmate Front-End**! This repository contains the code for th
 
 ## Overview
 
-Checkmate Front-End is a dynamic, user-focused interface that brings the classic game of chess to life. Built with React, this responsive web app allows players to challenge friends, hone their skills against AI-powered bots, and track their progress in real-time.
+Checkmate Front-End is a dynamic, user-focused interface that brings the classic game of chess to life. Built with React, this responsive web app empowers players to challenge friends, sharpen their skills against AI-powered bots, practice chess strategies with interactive puzzles, and track their progress in real-time.
 
 ## Checkmate Demo
 
-The Checkmate application is live and can be accessed here: [Checkmate Demo](https://checkmateplay.com). You can explore all features of the game, including real-time gameplay, chat, and rankings.
+The Checkmate application is live and can be accessed here: [Checkmate Demo](https://checkmateplay.com). You can explore all features of the game, including real-time gameplay, puzzles, chat, and rankings.
 
 <img width="600" src="https://github.com/AdenWhitworth/aden_whitworth_portfolio/raw/master/src/Images/chess_demo.png" alt="Checkmate Demo">
 
@@ -49,6 +49,7 @@ Try out the app using the following demo accounts:
 - **Game Persistence**: Stay in the game, even if you lose connection, with a reliable rejoin feature.
 - **Account History**: Update your account details, review your current game statistics, and access a comprehensive history of your past game results.
 - **Dynamic Bot Opponents**: Endlessly practice your chess skills against dynamic bot opponents.
+- **Interactive Puzzles**: Solve over 3000 puzzles designed for various skill levels, helping you improve your chess strategies and tactics.
 
 ## Technologies Used
 
@@ -167,6 +168,25 @@ Below is the schema for the Firestore database used to manage user profiles, act
           "requestUsername": "$requestUsername",   // Requester's username
           "requestElo": "$requestElo"              // Requester's ELO rank
         }
+      },
+      "completedPuzzles": {
+        "$completedPuzzleID": {
+          "puzzleId": "$puzzleId",             // ID of the completed puzzle
+          "completedAt": "$completedAt",       // Timestamp of when the puzzle was completed
+          "difficulty": "$difficulty",         // Difficulty level ("easy", "medium", or "hard")
+          "timeToComplete": "$timeToComplete"  // Time taken to complete the puzzle in seconds
+        }
+      },
+      "lastPuzzle": {
+        "easy": "$easyPuzzleNumber",           // Last completed puzzle number for easy difficulty
+        "medium": "$mediumPuzzleNumber",       // Last completed puzzle number for medium difficulty
+        "hard": "$hardPuzzleNumber"            // Last completed puzzle number for hard difficulty
+      },
+      "activePuzzle": {
+        "puzzleId": "$puzzleId",               // ID of the currently active puzzle
+        "difficulty": "$difficulty",           // Difficulty level of the puzzle ("easy", "medium", or "hard")
+        "puzzleNumber": "$puzzleNumber",       // Sequential number of the active puzzle
+        "startedAt": "$startedAt"              // Timestamp of when the puzzle was started
       }
     }
   },
@@ -174,7 +194,7 @@ Below is the schema for the Firestore database used to manage user profiles, act
     "$playerId": {
       "userId": "$userId",             // User ID of the player
       "username": "$username",         // Username of the player
-      "elo": "$elo",                   // Elo rank of the player
+      "elo": "$elo"                    // Elo rank of the player
     }
   },
   "games": {
@@ -210,7 +230,7 @@ Below is the schema for the Firestore database used to manage user profiles, act
     "$gameId": {                               
       "createdAt": "$createdAt",               // Timestamp of when the game was created
       "currentTurn": "$currentTurn",           // Indicates whose turn it is ("w" for white, "b" for black)
-      "difficulty": "$difficulty",             // Indicates the bots level of difficulty ("novice", "intermediate", "advanced", or "master")
+      "difficulty": "$difficulty",             // Indicates the bot's level of difficulty ("novice", "intermediate", "advanced", or "master")
       "fen": "$fen",                           // FEN (Forsyth-Edwards Notation) string representing the board state
       "gameId": "$gameId",                     // Unique identifier for the game
       "help": "$help",                         // Indicates the level of assistance ("assisted", "friendly", or "challenge")
@@ -230,12 +250,25 @@ Below is the schema for the Firestore database used to manage user profiles, act
         "username": "$username",               // Username of player B which is always the bot
         "elo": "$elo",                         // Elo rank of player B which is always the bot
         "connected": "$connected",             // Connection status of player B which is always true for the bot
-        "orientation": "$orientation",         // Board orientation of player B ("w" or "b")
+        "orientation": "$orientation"          // Board orientation of player B ("w" or "b")
       },
       "remainingHints": "$remainingHints",     // The amount of hints left (Infinite as -1 or 0 to 3)
       "remainingUndos": "$remainingUndos",     // The amount of undos left (Infinite as -1 or 0 to 3)
       "status": "$status",                     // Current status of the game ("in-progress", "completed", or "waiting")
       "winner": "$winner"                      // Winner of the game ("playerA", "playerB", "draw", or null if ongoing)
+    }
+  },
+  "puzzles": {
+    "$puzzleID": {
+      "puzzleTag": "$puzzleTag",           // Unique tag for the puzzle
+      "puzzleNumber": "$puzzleNumber",     // Sequential number for the puzzle within its difficulty level
+      "fen": "$fen",                       // FEN string representing the puzzle state
+      "moves": ["$move1", "$move2"],       // Correct move sequence to solve the puzzle
+      "rating": "$rating",                 // Rating of the puzzle
+      "popularity": "$popularity",         // Popularity score of the puzzle
+      "numberPlays": "$numberPlays",       // Number of times the puzzle has been played
+      "themes": ["$theme1", "$theme2"],    // Themes associated with the puzzle
+      "difficulty": "$difficulty"          // Difficulty level ("easy", "medium", or "hard")
     }
   }
 }
@@ -245,9 +278,10 @@ Below is the schema for the Firestore database used to manage user profiles, act
 
 Here are a few exciting features that we are planning to add:
 
-1. **Practice Puzzles**: Integrate Lichess puzzles to help players improve their timing and accuracy in critical chess positions, enhancing decision-making skills under pressure.
-2. **Competition Timing**: Add a timer feature for each game to enhance competitive gameplay.
-3. **Live Stream**: Enable real-time streaming of friends' games so you can watch matches live.
+1. **Social Platform**: Connect with friends and build your chess network. Features will include a friends list to challenge specific players, a private game feed to view completed games and puzzles, and activity updates to celebrate your friends' progress.
+2. **Competition Timing**: Enhance gameplay with advanced timer options, such as classic chess clocks, time increments per move, and blitz-style controls for fast-paced matches.
+3. **Live Stream**: Watch friends' games live with real-time updates. Future enhancements may include features like game highlights, real-time commentary, or reactions to key moves.
+4. **Game Evaluations**: Analyze completed games move by move to identify strengths and mistakes. Features will include engine-powered AI insights, color-coded move evaluations (great moves, inaccuracies, blunders), and suggestions for improvement to help players sharpen their skills.
 
 ## Contributing
 
