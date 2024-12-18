@@ -19,11 +19,14 @@ import BotUndoAlertBadge from '../AlertBadge/BotUndoAlertBadge/BotUndoAlertBadge
  * lobby, and various bot game-related modals and alerts.
  * 
  * @component
- * @returns {JSX.Element} - The rendered Dashboard component.
+ * @returns {JSX.Element} - The rendered BotDashboard component.
  */
 export default function BotDashboard(): JSX.Element {
     const { botGame, orientation, fen, onDrop, hint, onSquareClick, highlightedSquares, onPromotionPieceSelect, handleReconnectBotGame } = useBot();
 
+    /**
+     * Attempt to reconnect to an active bot game if present.
+     */
     useEffect(() => {
         handleReconnectBotGame();
     },[handleReconnectBotGame])

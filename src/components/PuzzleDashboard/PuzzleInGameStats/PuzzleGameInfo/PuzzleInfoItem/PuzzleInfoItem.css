@@ -1,0 +1,33 @@
+.odd-color{
+    background-color: #3D3D3D;
+}
+
+.even-color{
+    background-color: #212121;
+}
+
+.puzzle-info-line{
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 45px;
+}
+
+.puzzle-info-line-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    height: 100%;
+}
+
+.puzzle-info-scroll{
+    width: 105%;
+}
+
+.puzzle-info-line h3{
+    font-size: 14px;
+}

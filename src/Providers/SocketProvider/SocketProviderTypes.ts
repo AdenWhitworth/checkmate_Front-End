@@ -5,11 +5,12 @@ import { Socket } from 'socket.io-client';
 import { Message } from '../../components/Dashboard/GameChat/GameChatTypes';
 import { Game } from '../GameProvider/GameProviderTypes';
 import { BotGame } from '../BotProvider/BotProviderTypes';
+import { ActivePuzzle, LastPuzzle } from '../PlayerProvider/PlayerProviderTypes';
+import { Puzzle } from '../PuzzleProvider/PuzzleProviderTypes';
 
 /**
  * Represents the context type for the Socket Provider, which handles socket-based interactions
- * for various game-related features, such as managing game rooms, sending moves, and interacting
- * with bots.
+ * for various game-related features, such as managing game rooms, sending moves, puzzles, and bot interactions.
  *
  * @interface SocketContextType
  * @property {boolean} isConnected - Indicates if the socket is currently connected.
@@ -66,9 +67,18 @@ import { BotGame } from '../BotProvider/BotProviderTypes';
  * @property {Function} sendCloseBotGame - Sends a request to close a bot game.
  * @param {CloseBotGameArgs} closeBotGameArgs - Arguments required to close a bot game.
  * @returns {Promise<boolean>} Resolves to `true` if the bot game was successfully closed, otherwise `false`.
- * @param {ReconnectBotGameArgs} reconnectBotGameArgs - The arguments required to reconnect to the bot game, including the game ID.
- * @returns {Promise<{ botGame: BotGame } | null>} A promise that resolves with the reconnected bot game details if successful, 
- *                                                 or `null` if the reconnection fails.
+ * @property {Function} sendReconnectBotGame - Sends a request to reconnect to a bot game.
+ * @param {ReconnectBotGameArgs} reconnectBotGameArgs - Arguments required to reconnect to a bot game.
+ * @returns {Promise<{ botGame: BotGame } | null>} Resolves with the reconnected bot game instance or `null` if reconnection fails.
+ * @property {Function} sendStartPuzzle - Sends a request to start a puzzle game.
+ * @param {StartPuzzleArgs} startPuzzleArgs - Arguments required to start a puzzle.
+ * @returns {Promise<{ puzzle: Puzzle } | null>} Resolves with the puzzle instance if successful, or `null` if it fails.
+ * @property {Function} sendClosePuzzle - Sends a request to close a puzzle.
+ * @param {ClosePuzzleArgs} closePuzzleArgs - Arguments required to close a puzzle.
+ * @returns {Promise<boolean>} Resolves to `true` if the puzzle was successfully closed, otherwise `false`.
+ * @property {Function} sendReconnectPuzzle - Sends a request to reconnect to an active puzzle.
+ * @param {ReconnectPuzzleArgs} reconnectPuzzleArgs - Arguments required to reconnect to a puzzle.
+ * @returns {Promise<{ puzzle: Puzzle } | null>} Resolves with the reconnected puzzle instance or `null` if reconnection fails.
  */
 export interface SocketContextType {
     isConnected: boolean;
@@ -95,6 +105,9 @@ export interface SocketContextType {
     sendGetMoveHint: (getMoveHintArgs: GetMoveHintArgs) => Promise<{ move: Move }>;
     sendCloseBotGame: (closeBotGameArgs: CloseBotGameArgs) => Promise<boolean>;
     sendReconnectBotGame: (reconnectBotGameArgs: ReconnectBotGameArgs) => Promise<{ botGame: BotGame } | null>;
+    sendStartPuzzle: (startPuzzleArgs: StartPuzzleArgs) => Promise<{puzzle: Puzzle} | null>;
+    sendClosePuzzle: (closePuzzleArgs: ClosePuzzleArgs) => Promise<boolean>;
+    sendReconnectPuzzle: (reconnectPuzzleArgs: ReconnectPuzzleArgs) => Promise<{puzzle: Puzzle} | null>;
 }
 
 /**
@@ -221,6 +234,28 @@ export interface CallbackResponseGetMoveHint extends CallbackResponse {
  */
 export interface CallbackResponseReconnectBotGame extends CallbackResponse {
     botGame: BotGame;
+}
+
+/**
+ * Represents the response received after attempting to start a puzzle game.
+ *
+ * @interface CallbackResponseStartPuzzle
+ * @extends CallbackResponse
+ * @property {Puzzle} puzzle - The puzzle game object containing the game state and details of the created puzzle.
+ */
+export interface CallbackResponseStartPuzzle extends CallbackResponse {
+    puzzle: Puzzle;
+}
+
+/**
+ * Represents the response received after attempting to reconnect to a puzzle game.
+ *
+ * @interface CallbackResponseReconnectPuzzle
+ * @extends CallbackResponse
+ * @property {Puzzle} puzzle - The puzzle game object containing the game state and details of the reconnected puzzle.
+ */
+export interface CallbackResponseReconnectPuzzle extends CallbackResponse {
+    puzzle: Puzzle;
 }
 
 /**
@@ -411,4 +446,40 @@ export interface GetMoveHintArgs {
  */
 export interface ReconnectBotGameArgs {
     gameId: string;
+}
+
+/**
+ * Represents the arguments required to start a new chess puzzle.
+ *
+ * @interface StartPuzzleArgs
+ * @property {"easy" | "medium" | "hard"} difficulty - The difficulty level of the puzzle to start.
+ * @property {LastPuzzle} lastPuzzle - An object containing the last completed puzzle number for each difficulty.
+ */
+export interface StartPuzzleArgs {
+    difficulty: "easy" | "medium" | "hard";
+    lastPuzzle: LastPuzzle;
+}
+
+/**
+ * Represents the arguments required to close a chess puzzle.
+ *
+ * @interface ClosePuzzleArgs
+ * @property {"easy" | "medium" | "hard"} difficulty - The difficulty level of the puzzle being closed.
+ * @property {string} puzzleId - The unique identifier of the puzzle being closed.
+ * @property {number} timeToComplete - The time taken to complete the puzzle, in seconds.
+ */
+export interface ClosePuzzleArgs {
+    difficulty: "easy" | "medium" | "hard";
+    puzzleId: string;
+    timeToComplete: number;
+}
+
+/**
+ * Represents the arguments required to reconnect to an active puzzle.
+ *
+ * @interface ReconnectPuzzleArgs
+ * @property {ActivePuzzle} activePuzzle - The currently active puzzle details, including its ID, difficulty, number, and start time.
+ */
+export interface ReconnectPuzzleArgs {
+    activePuzzle: ActivePuzzle;
 }

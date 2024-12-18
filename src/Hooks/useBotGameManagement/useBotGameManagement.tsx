@@ -7,7 +7,7 @@ import { BotGame } from '../../Providers/BotProvider/BotProviderTypes';
 import { Move } from 'chess.js';
 
 /**
- * Custom hook for managing a bot chess game. Provides functionality to create, forfeit, and close bot games.
+ * Custom hook for managing a bot chess game. Provides functionality to create, forfeit, close, and reconnect bot games.
  *
  * @param {UseBotGameManagementProps} props - The properties required by the hook.
  * @param {Function} props.cleanup - Function to clean up the current game state.
@@ -29,6 +29,13 @@ import { Move } from 'chess.js';
  * @param {Function} props.setErrorOver - Function to set the error message when closing a game.
  * @param {Function} props.setLoadingOver - Function to set the loading state when closing a game.
  * @param {Function} props.findWinner - Function to determine the winner of the game.
+ * @param {Function} props.setReconnectGame - Function to set the reconnect game state.
+ * @param {Function} props.setLoadingReconnectGame - Function to set the loading state for reconnecting a game.
+ * @param {Function} props.setErrorReconnectGame - Function to set the error state for reconnecting a game.
+ * @param {Function} props.setRemainingUndos - Function to update the remaining undo moves.
+ * @param {Function} props.setRemainingHints - Function to update the remaining hints.
+ * @param {Function} props.setHelp - Function to update the help mode of the game.
+ * @param {Function} props.setDifficulty - Function to update the bot game difficulty.
  * @returns {UseBotGameManagementOutput} - The returned functions for managing the bot chess game.
  */
 export const useBotGameManagement = ({
@@ -186,15 +193,11 @@ export const useBotGameManagement = ({
     }, [setErrorOver, setLoadingOver, findWinner, botGame, sendCloseBotGame, setPlayerDynamic, cleanup]);
     
     /**
-     * Handles reconnecting to an active bot game.
+     * Handles reconnecting to an active bot game. Fetches the game's data from the server
+     * and restores the board, history, and player settings.
      *
-     * This function attempts to re-establish a connection to an ongoing bot game
-     * using the player's current game ID. It fetches the game's data, updates
-     * the game state, and restores the board, history, and player settings.
-     * 
-     * @returns {Promise<void>} - A promise that resolves when the reconnection process is complete.
-     * 
-     * @throws {Error} If the game cannot be reconnected due to invalid data or missing game details.
+     * @async
+     * @returns {Promise<void>} - Resolves when the reconnection is complete, or handles errors otherwise.
      */
     const handleReconnectBotGame = useCallback(async (): Promise<void> => {
         if (!botGame && playerDynamic?.currentBotGameId && playerStatic?.userId) {
@@ -227,7 +230,7 @@ export const useBotGameManagement = ({
                 setReconnectGame(true);
             } catch (error) {
                 setFen("start");
-                setErrorReconnectGame("Failed to reconnect to the active game. Please try again.")
+                setErrorReconnectGame("Failed to reconnect to the active game. Please try again.");
             } finally {
                 setLoadingReconnectGame(false);
             }

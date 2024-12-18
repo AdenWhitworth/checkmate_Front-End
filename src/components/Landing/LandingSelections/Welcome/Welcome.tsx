@@ -34,7 +34,7 @@ export default function Welcome(): JSX.Element {
             <WelcomeCard 
                 imgSrc={puzzle} 
                 title='Puzzles' 
-                text='Train with more than 1,000 puzzles'
+                text='Train with more than 3,000 puzzles'
                 onClick={handleSendToPuzzleDashboard}
             ></WelcomeCard>
 

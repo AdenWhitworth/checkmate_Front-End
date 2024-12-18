@@ -25,13 +25,19 @@ import {
   GetMoveHintArgs,
   CloseBotGameArgs,
   ReconnectBotGameArgs,
-  CallbackResponseReconnectBotGame
+  CallbackResponseReconnectBotGame,
+  StartPuzzleArgs,
+  CallbackResponseStartPuzzle,
+  ClosePuzzleArgs,
+  ReconnectPuzzleArgs,
+  CallbackResponseReconnectPuzzle
 } from './SocketProviderTypes';
 import { usePlayer } from '../PlayerProvider/PlayerProvider';
 import { CallbackResponse } from './SocketProviderTypes';
 import { Game } from '../GameProvider/GameProviderTypes';
 import { Move } from 'chess.js';
 import { BotGame } from '../BotProvider/BotProviderTypes';
+import { Puzzle } from '../PuzzleProvider/PuzzleProviderTypes';
 
 const SocketContext: React.Context<SocketContextType | undefined> = createContext<SocketContextType | undefined>(undefined);
 
@@ -395,6 +401,84 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
   }, [isConnected]);
 
   /**
+   * Sends a request to start a puzzle game by emitting the "startPuzzle" event through a socket connection.
+   * 
+   * @param {StartPuzzleArgs} startPuzzleArgs - The arguments required to start a puzzle.
+   * @returns {Promise<{ puzzle: Puzzle }>} - Resolves with the puzzle data if the request is successful.
+   * @throws {Error} Throws an error if the request fails or the socket is not connected.
+   */
+  const sendStartPuzzle = useCallback((startPuzzleArgs: StartPuzzleArgs): Promise<{ puzzle: Puzzle }> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("startPuzzle", startPuzzleArgs, (response: CallbackResponseStartPuzzle) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(new Error(response.message));
+          } else {
+            setResponseMessage(response.message);
+            resolve({ puzzle: response.puzzle });
+          }
+        });
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
+
+  /**
+   * Sends a request to close a puzzle game by emitting the "closePuzzle" event through a socket connection.
+   *
+   * @param {ClosePuzzleArgs} closePuzzleArgs - The arguments required to close the puzzle.
+   * @returns {Promise<boolean>} - Resolves to `true` if the request is successful.
+   * @throws {Error} Throws an error if the request fails or the socket is not connected.
+   */
+  const sendClosePuzzle = useCallback((closePuzzleArgs: ClosePuzzleArgs): Promise<boolean> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("closePuzzle", closePuzzleArgs, (response: CallbackResponse) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(new Error(response.message));
+          } else {
+            setResponseMessage(response.message);
+            resolve(true);
+          }
+        });
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
+
+  /**
+   * Sends a request to reconnect to an ongoing puzzle game by emitting the "reconnectPuzzle" event through a socket connection.
+   * 
+   * @param {ReconnectPuzzleArgs} reconnectPuzzleArgs - The arguments required to reconnect to a puzzle.
+   * @returns {Promise<{ puzzle: Puzzle }>} - Resolves with the puzzle data if the request is successful.
+   * @throws {Error} Throws an error if the request fails or the socket is not connected.
+   */
+  const sendReconnectPuzzle = useCallback((reconnectPuzzleArgs: ReconnectPuzzleArgs): Promise<{ puzzle: Puzzle }> => {
+    return new Promise((resolve, reject) => {
+      if (socketRef.current && isConnected) {
+        socketRef.current.emit("reconnectPuzzle", reconnectPuzzleArgs, (response: CallbackResponseReconnectPuzzle) => {
+          if (response.error) {
+            setResponseMessage(response.message);
+            reject(new Error(response.message));
+          } else {
+            setResponseMessage(response.message);
+            resolve({ puzzle: response.puzzle });
+          }
+        });
+      } else {
+        setErrorSocket('Socket is not connected');
+        reject(false);
+      }
+    });
+  }, [isConnected]);
+
+  /**
    * Establishes a socket connection using the provided access token.
    * 
    * @param {string} accessToken - The access token used for authenticating the socket connection.
@@ -505,7 +589,8 @@ export const SocketProvider = ({ url, children }: SocketProviderProps): JSX.Elem
       isConnected, errorSocket, refresh, errorReconnect, setErrorReconnect, setRefresh,
       sendAddUser, sendCreateRoom, sendJoinRoom, sendCloseRoom, sendInGameMessage, connectSocket, 
       disconnectSocket, sendMove, sendForfeit, responseMessage, socketRef, handleCallback, sendReconnectRoom, 
-      sendGetBotMove, sendCreateBotGame, sendGetMoveHint, sendCloseBotGame, sendReconnectBotGame
+      sendGetBotMove, sendCreateBotGame, sendGetMoveHint, sendCloseBotGame, sendReconnectBotGame, sendStartPuzzle,
+      sendClosePuzzle, sendReconnectPuzzle
     }}>
       {children}
     </SocketContext.Provider>

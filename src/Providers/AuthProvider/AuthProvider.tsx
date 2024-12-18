@@ -138,6 +138,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.E
         gamesPlayed: 0,
         elo: 1200,
         createdAt: Timestamp.now(),
+        lastPuzzle: {
+          easy: 0,
+          medium: 0,
+          hard: 0,
+        },
       });
 
       batch.set(playerDocRef, {

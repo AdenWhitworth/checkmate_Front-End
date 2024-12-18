@@ -1,0 +1,46 @@
+.puzzle-option {
+    color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 60px;
+    background-color: #3D3D3D;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.puzzle-option-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 80%;
+    height: 100%;
+}
+
+.puzzle-option-difficulty {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.puzzle-option-icon {
+    height: 30px;
+    width: 30px;
+}
+
+.puzzle-option-icon img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+.puzzle-option-difficulty-txt,
+.puzzle-option-range {
+    font-size: 18px;
+}
+
+.puzzle-selected{
+    border: 0.5px solid #FFCD05;
+}
