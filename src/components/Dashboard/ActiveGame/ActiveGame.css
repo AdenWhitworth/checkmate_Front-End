@@ -10,6 +10,11 @@
 }
 
 @media(max-width: 900px){
+    .active-game{
+        height: auto;
+        max-height: unset;
+    }
+    
     .board{
         width: 80vw;
         margin: auto;
