@@ -12,11 +12,12 @@ import king_logo_black from '../../../Images/King Logo Black.svg';
 export default function ReconnectModal(): JSX.Element | null {
     const { loadingReconnectGame, errorReconnectGame, handleReconnectRoom, game, opponent} = useGame();
 
-    if (!(loadingReconnectGame || errorReconnectGame || !game)) {
+    const isOpponentPlayerA = game?.playerA.userId === opponent?.opponentUserId;
+    const playerUsername = isOpponentPlayerA? game?.playerA?.username : game?.playerB?.username
+
+    if (!(loadingReconnectGame && !game) || (errorReconnectGame && !game)) {
         return null;
     }
-
-    const isOpponentPlayerA = game?.playerA.userId === opponent?.opponentUserId;
 
     return (
         <Modal
@@ -26,7 +27,7 @@ export default function ReconnectModal(): JSX.Element | null {
             styleType="primary"
             addClose={false}
             logoSrc={king_logo_black}
-            title={game? `Reconnecting to active game against ${isOpponentPlayerA? game?.playerA.username : game?.playerB.username}!` : "Reconnecting to active game..."}
+            title={playerUsername? `Reconnecting to active game against ${playerUsername}!` : "Reconnecting to active game..."}
             body={""}
             loading={loadingReconnectGame}
             error={errorReconnectGame}

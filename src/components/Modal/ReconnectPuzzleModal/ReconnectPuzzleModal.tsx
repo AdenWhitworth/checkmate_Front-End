@@ -13,6 +13,8 @@ import { usePuzzle } from '../../../Providers/PuzzleProvider/PuzzleProvider';
 export default function ReconnectPuzzleModal(): JSX.Element | null {
     const { loadingReconnectPuzzle, errorReconnectPuzzle, handleReconnectPuzzle, puzzle, difficulty} = usePuzzle();
 
+    const puzzleInfo = puzzle?.puzzleTag;
+
     if (!(loadingReconnectPuzzle || errorReconnectPuzzle || !puzzle)) {
         return null;
     }
@@ -25,7 +27,7 @@ export default function ReconnectPuzzleModal(): JSX.Element | null {
             styleType="primary"
             addClose={false}
             logoSrc={king_logo_black}
-            title={puzzle? `Reconnecting to active ${difficulty} puzzle #${puzzle.puzzleTag}!` : "Reconnecting to active puzzle..."}
+            title={puzzleInfo? `Reconnecting to active ${difficulty} puzzle #${puzzle.puzzleTag}!` : "Reconnecting to active puzzle..."}
             body={""}
             loading={loadingReconnectPuzzle}
             error={errorReconnectPuzzle}

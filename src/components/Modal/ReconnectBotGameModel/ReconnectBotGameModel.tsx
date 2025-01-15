@@ -12,8 +12,10 @@ import { useBot } from '../../../Providers/BotProvider/BotProvider';
  */
 export default function ReconnectBotGameModal(): JSX.Element | null {
     const { loadingReconnectGame, errorReconnectGame, handleReconnectBotGame, botGame, difficulty} = useBot();
-    
-    if (!(loadingReconnectGame || errorReconnectGame || !botGame)) {
+
+    const opponentUsername = botGame?.playerB?.username;
+
+    if (!(loadingReconnectGame && !botGame) || (errorReconnectGame && !botGame)) {
         return null;
     }
 
@@ -25,7 +27,7 @@ export default function ReconnectBotGameModal(): JSX.Element | null {
             styleType="primary"
             addClose={false}
             logoSrc={king_logo_black}
-            title={botGame? `Reconnecting to active game against ${difficulty} ${botGame?.playerB.username}!` : "Reconnecting to an active game..."}
+            title={opponentUsername? `Reconnecting to active game against ${difficulty} ${opponentUsername}!` : "Reconnecting to an active game..."}
             body={""}
             loading={loadingReconnectGame}
             error={errorReconnectGame}
