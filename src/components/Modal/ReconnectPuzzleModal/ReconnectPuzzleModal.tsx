@@ -15,7 +15,12 @@ export default function ReconnectPuzzleModal(): JSX.Element | null {
 
     const puzzleInfo = puzzle?.puzzleTag;
 
+    /*
     if (!(loadingReconnectPuzzle || errorReconnectPuzzle || !puzzle)) {
+        return null;
+    }*/
+
+    if (!(loadingReconnectPuzzle && !puzzle) || (errorReconnectPuzzle && !puzzle)) {
         return null;
     }
 
@@ -27,7 +32,7 @@ export default function ReconnectPuzzleModal(): JSX.Element | null {
             styleType="primary"
             addClose={false}
             logoSrc={king_logo_black}
-            title={puzzleInfo? `Reconnecting to active ${difficulty} puzzle #${puzzle.puzzleTag}!` : "Reconnecting to active puzzle..."}
+            title={puzzleInfo? `Reconnecting to active ${difficulty} puzzle #${puzzleInfo}!` : "Reconnecting to active puzzle..."}
             body={""}
             loading={loadingReconnectPuzzle}
             error={errorReconnectPuzzle}
