@@ -28,7 +28,7 @@ export default function SignupForm({
     };
 
     return (
-        <form className='auth-form' onSubmit={handleSubmit}>
+        <form className='auth-form' onSubmit={handleSubmit} data-testid="signup-form">
             <h2>Create an account</h2>
 
             <InputField
@@ -38,7 +38,9 @@ export default function SignupForm({
                 type='text'
                 label='Username'
                 isSpellCheck={false}
+                data-testid="username-input"
             />
+
 
             <InputField
                 onChange={handleInputChange}
@@ -47,7 +49,9 @@ export default function SignupForm({
                 type='email'
                 label='Email'
                 isSpellCheck={false}
+                data-testid="email-input"
             />
+
 
             <InputField
                 onChange={handleInputChange}
@@ -56,6 +60,7 @@ export default function SignupForm({
                 type='password'
                 label='Password'
                 isSpellCheck={false}
+                data-testid="password-input"
             />
 
             <Button type="submit" disabled={loadingAuth} styleType='primary'>

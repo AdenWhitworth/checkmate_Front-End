@@ -32,7 +32,7 @@ export default function LoginForm({
     };
 
     return (
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <form className="auth-form" onSubmit={handleSubmit} data-testid="login-form">
             <h2>Welcome back</h2>
 
             <InputField
@@ -42,6 +42,7 @@ export default function LoginForm({
                 type="email"
                 label="Email"
                 isSpellCheck={false}
+                data-testid="email-input"
             />
 
             <InputField
@@ -51,6 +52,7 @@ export default function LoginForm({
                 type="password"
                 label="Password"
                 isSpellCheck={false}
+                data-testid="password-input"
             />
 
             <p><span onClick={handleForgotPasswordClick} className="auth-selection">Forgot Password?</span></p>

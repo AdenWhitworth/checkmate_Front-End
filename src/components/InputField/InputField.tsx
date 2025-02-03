@@ -29,6 +29,7 @@ export default function InputField({
     isRequired,
     isSpellCheck,
     isDisabled,
+    'data-testid': testId
 }: InputFieldProps): JSX.Element {
 
     const [isFocused, setIsFocused] = useState(false);
@@ -48,10 +49,13 @@ export default function InputField({
     };
     
     return (
-        <div className={`input-container ${isFocused || value ? 'active' : ''}`}>
+        <div 
+            className={`input-container ${(isFocused || value) ? 'active' : ''}`} 
+            data-testid={`${testId}-input-container`}
+        >
             <label className="input-label">{label}</label>
-
             <input
+                {...(testId && { 'data-testid': testId })}
                 type={type}
                 value={value}
                 onChange={onChange}
@@ -60,7 +64,7 @@ export default function InputField({
                 name={name}
                 required={isRequired}
                 spellCheck={isSpellCheck}
-                disabled={isDisabled} 
+                disabled={isDisabled}
                 id={id}
             />
         </div>

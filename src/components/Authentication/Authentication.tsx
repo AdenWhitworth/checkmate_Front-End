@@ -7,7 +7,6 @@ import { FormData } from './AuthenticationTypes';
 import { useAuth } from '../../Providers/AuthProvider/AuthProvider';
 import { useNavigation } from '../../Hooks/useNavigation/useNavigation';
 
-
 /**
  * Renders the Authentication component, which includes login and signup forms.
  * @component
@@ -75,7 +74,7 @@ export default function Authentication(): JSX.Element {
     }, [currentUser, handleSendToDashboard]);
 
     return (
-        <section className='auth'>
+        <section className='auth' data-testid="auth-section">
             <div className='auth-content'>
                 <div className='auth-logo'>
                     <img 

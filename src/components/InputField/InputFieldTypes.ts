@@ -8,4 +8,5 @@ export interface InputFieldProps {
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     isSpellCheck: boolean;
     isDisabled?: boolean;
+    'data-testid'?: string;
 }
