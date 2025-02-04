@@ -16,7 +16,7 @@ export default function ErrorLoading({
     message,
 }: ErrorLoadingProps): JSX.Element {
     return (
-        <div className='loading-error'>
+        <div className='loading-error' data-testid="loading-error">
             <img className='loading-error-img' src={exclamation} alt='Exclamation Icon'></img>
             <h4 className='loading-error-txt'>{message}</h4>
         </div>
