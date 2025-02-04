@@ -40,10 +40,11 @@ export default function BotInGameHelpCard({
         }
 
         return (
-            <div className="ingame-help-tally">
+            <div className="ingame-help-tally" data-testid="tally-dots">
                 {tallyDots.map((tally, index) => (
                     <div
                         key={index}
+                        data-testid="tally-dot"
                         className={`tally-dot ${tally}`}
                     ></div>
                 ))}
@@ -52,7 +53,7 @@ export default function BotInGameHelpCard({
     };
 
     return (
-        <div onClick={onClick} className={`ingame-help-card ${disable? "card-disable" : "card-active"}`}>
+        <div onClick={onClick} className={`ingame-help-card ${disable? "card-disable" : "card-active"}`} data-testid="help-card">
             {loading? (
                 <LoadingDots position='center' size='small' color='grey' />
             ):(

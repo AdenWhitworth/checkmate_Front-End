@@ -21,7 +21,11 @@ import { BotOptionProps } from './BotOptionTypes';
  */
 export default function BotOption({ icon, label, range, isSelected, onClick }: BotOptionProps): JSX.Element {
     return (
-        <div onClick={onClick} className={`bot-option ${isSelected? "option-selected" : ""}`}>
+        <div 
+            onClick={onClick} 
+            className={`bot-option ${isSelected? "option-selected" : ""}`}
+            data-testid="bot-option"
+        >
             <div className="bot-option-container">
                 <div className="bot-option-difficulty">
                     <div className="bot-option-icon">

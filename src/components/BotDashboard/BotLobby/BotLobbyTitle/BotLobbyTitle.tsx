@@ -12,8 +12,8 @@ import bot from "../../../../Images/bot white.svg";
  */
 export default function BotLobbyTitle(): JSX.Element {
     return (
-        <div className="bot-lobby-title">
-            <div className="bot-lobby-title-img">
+        <div className="bot-lobby-title" data-testid="bot-lobby-title">
+            <div className="bot-lobby-title-img" data-testid="bot-lobby-title-img">
                 <img src={bot} alt="Bot icon" />
             </div>
             <h4>Play Bots</h4>

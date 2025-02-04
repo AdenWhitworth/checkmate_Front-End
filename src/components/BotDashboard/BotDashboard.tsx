@@ -35,8 +35,8 @@ export default function BotDashboard(): JSX.Element {
         <>  
             <Header />
 
-            <section className="bot-dashboard">
-                <div className="bot-dashboard-content">
+            <section className="bot-dashboard" data-testid="bot-dashboard">
+                <div className="bot-dashboard-content" data-testid="bot-dashboard-content">
                     <ActiveGame 
                         orientation={orientation}
                         fen={fen}

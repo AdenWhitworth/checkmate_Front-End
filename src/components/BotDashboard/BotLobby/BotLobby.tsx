@@ -24,7 +24,7 @@ export default function BotLobby(): JSX.Element {
     }
     
     return (
-        <div className="bot-lobby">
+        <div className="bot-lobby" data-testid="bot-lobby">
             <BotLobbyTitle />
             <BotOptionList />
             <BotSettings />

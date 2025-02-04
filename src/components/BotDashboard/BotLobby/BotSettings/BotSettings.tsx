@@ -15,7 +15,7 @@ import BotOrientation from './BotOrientation/BotOrientation';
  */
 export default function BotSettings(): JSX.Element {
     return (
-        <div className="bot-settings">
+        <div className="bot-settings" data-testid="bot-settings">
             <BotHelp />
             <BotOrientation />
         </div>

@@ -39,6 +39,7 @@ export default function BotOrientation(): JSX.Element {
             <h3>Play as:</h3>
 
             <div
+                data-testid="white-option"
                 className={`bot-orientation-option solid-color ${
                     selectedOption === "w" ? "orientation-selected" : ""
                 }`}
@@ -50,6 +51,7 @@ export default function BotOrientation(): JSX.Element {
             </div>
 
             <div
+                data-testid="random-option"
                 className={`bot-orientation-option split-color ${
                     selectedOption === "random" ? "orientation-selected" : ""
                 }`}
@@ -61,6 +63,7 @@ export default function BotOrientation(): JSX.Element {
             </div>
 
             <div
+                data-testid="black-option"
                 className={`bot-orientation-option solid-color ${
                     selectedOption === "b" ? "orientation-selected" : ""
                 }`}
@@ -73,5 +76,3 @@ export default function BotOrientation(): JSX.Element {
         </div>
     );
 }
-
-

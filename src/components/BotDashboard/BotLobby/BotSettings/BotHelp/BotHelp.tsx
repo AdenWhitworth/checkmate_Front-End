@@ -61,6 +61,7 @@ export default function BotHelp(): JSX.Element {
                             className="bot-help-flame"
                             key={index}
                             onClick={() => handleFlameClick(index)}
+                            data-testid={`flame-button-${index}`}
                         >
                             <img src={flame} alt={`Flame ${index + 1}`} />
                         </div>
