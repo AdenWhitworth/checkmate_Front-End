@@ -27,7 +27,11 @@ export default function ForgotPasswordForm({
     const { loadingAuth, error } = useAuth();
 
     return (
-        <form className="forgot-password-form" onSubmit={handleSubmit}>
+        <form 
+            className="forgot-password-form" 
+            onSubmit={handleSubmit}
+            data-testid="forgot-password-form"
+        >
             <h2>Reset your password</h2>
 
             <p>Enter your Email address and we will send you instructions to reset your password.</p>

@@ -57,9 +57,9 @@ export default function ForgotPassword(): JSX.Element {
     }, [currentUser, forgotPassword, formData, logout]);
 
     return (
-        <section className='forgot-password'>
-            <div className='forgot-password-content'>
-                <div className='forgot-password-logo'>
+        <section className='forgot-password' data-testid="forgot-password">
+            <div className='forgot-password-content' data-testid="forgot-password-content">
+                <div className='forgot-password-logo' data-testid="forgot-password-logo">
                     <img 
                         onClick={handleKingClick} 
                         className='forgot-password-logo-img' 
@@ -71,7 +71,7 @@ export default function ForgotPassword(): JSX.Element {
                 {emailSent? (
                     <SentEmailForm
                         handleSubmit={handleForgotPasswordSubmit}
-                    ></SentEmailForm>
+                    />
                 ):(
                     <ForgotPasswordForm 
                         handleInputChange={handleInputChange}

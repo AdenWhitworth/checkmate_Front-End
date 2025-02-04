@@ -22,16 +22,34 @@ export default function SentEmailForm({
     const { loadingAuth, error } = useAuth();
 
     return (
-        <form className="forgot-password-form" onSubmit={handleSubmit}>
-            <div className='forgot-password-form-logo'>
-                <img src={envelope} alt='Envelope check'></img>
+        <form 
+            className="forgot-password-form" 
+            onSubmit={handleSubmit}
+            data-testid="sent-email-form"
+        >
+            <div 
+                className='forgot-password-form-logo'
+                data-testid="form-logo"
+            >
+                <img 
+                    src={envelope} 
+                    alt='Envelope check'
+                    data-testid="envelope-icon"
+                />
             </div>
             
             <h2>Check your email</h2>
 
             <p>Please check the email address for instructions to reset your password.</p>
 
-            <Button className='full-button' type="submit" disabled={loadingAuth} styleType="primary" imgSrc={plane} imgAlt='Send plane'>
+            <Button 
+                className='full-button' 
+                type="submit" 
+                disabled={loadingAuth} 
+                styleType="primary" 
+                imgSrc={plane} 
+                imgAlt='Send plane'
+            >
                 {loadingAuth ? 'Resending...' : 'Resend Email'}
             </Button>
 
