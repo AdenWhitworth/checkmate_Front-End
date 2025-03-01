@@ -12,7 +12,7 @@ import { useGlobalStats } from '../../../../Hooks/useGlobalStats/useGlobalStats'
  */
 export default function GlobalStats(): JSX.Element {
 
-    const { globalGamesCount, globalPlayersCount} = useGlobalStats();
+    const { globalGamesCount, globalPlayersCount } = useGlobalStats();
 
     return (
         <div className="global">
@@ -21,7 +21,7 @@ export default function GlobalStats(): JSX.Element {
                     <div className='global-stats-icon'>
                         <img src={pawn} alt='Pawn logo'></img>
                     </div>
-                    <h1>{globalPlayersCount}</h1>
+                    <h1 data-testid="global-players-count">{globalPlayersCount}</h1>
                 </div>
 
                 <div className='global-stats-row-2'>
@@ -34,9 +34,9 @@ export default function GlobalStats(): JSX.Element {
             <div className='global-stats'>
                 <div className='global-stats-row-1'>
                     <div className='global-stats-icon'>
-                        <img src={board} alt='Pawn logo'></img>
+                        <img src={board} alt='Board logo'></img>
                     </div>
-                    <h1>{globalGamesCount}</h1>
+                    <h1 data-testid="global-games-count">{globalGamesCount}</h1>
                 </div>
 
                 <div className='global-stats-row-2'>

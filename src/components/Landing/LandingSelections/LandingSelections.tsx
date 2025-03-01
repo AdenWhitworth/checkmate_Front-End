@@ -11,7 +11,6 @@ import GlobalStats from './GlobalStats/GlobalStats';
  * @returns {JSX.Element} The rendered LandingSelections component, containing the Welcome and LeaderBoard components.
  */
 export default function LandingSelections(): JSX.Element {
-    
     return (
         <section className="content">
             <div className="container">

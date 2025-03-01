@@ -1,3 +1,4 @@
+import React from 'react';
 import gold_medal from "../../../../../Images/Gold Medal.svg";
 import silver_medal from "../../../../../Images/Silver Medal.svg";
 import bronze_medal from "../../../../../Images/Bronze Medal.svg";
@@ -19,7 +20,7 @@ import './LeaderBoardItem.css';
 export default function LeaderBoardItem({
     player, 
     index
-}: LeaderBoardItemProps) {
+}: LeaderBoardItemProps): JSX.Element {
 
     const place = index + 1;
 
@@ -29,8 +30,8 @@ export default function LeaderBoardItem({
     const colorClass = place % 2 === 0 ? "medal-list even-color" : "medal-list odd-color";
 
     return (
-        <li>
-            <div className={`${colorClass}`}>
+        <li data-testid={`leaderboard-item-${index}`}>
+            <div data-testid={`leaderboard-item-${index}-color`} className={`${colorClass}`}>
                 {medalImg && <img className={medalClass} src={medalImg} alt={`${place} place medal`} />}
                 <h3 className="medal-place">{place}.</h3>
                 <h3 className="medal-user">{player.username}</h3>

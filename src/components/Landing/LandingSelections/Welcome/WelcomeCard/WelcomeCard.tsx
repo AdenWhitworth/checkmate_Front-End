@@ -23,7 +23,7 @@ export default function WelcomeCard({
 }: WelcomeCardProps): JSX.Element {
     return (
         <>
-            <div onClick={onClick} className='welcome-card grow'>
+            <div data-testid="welcome-card" onClick={onClick} className='welcome-card grow'>
                 <div className='welcome-card-content'>
                     <div className='welcome-icon'>
                         <img src={imgSrc} alt='Card Icon'></img>
