@@ -1,4 +1,5 @@
 import React from 'react';
+import './HamburgerMenu.css';
 import { HamburgerMenuProps } from './HamburgerMenuTypes';
 
 /**
@@ -13,10 +14,10 @@ export default function HamburgerMenu({
     isMenuOpen
 }: HamburgerMenuProps): JSX.Element {
     return(
-        <div className="hamburger-menu" onClick={toggleMenu}>
-            <span className={`bar ${isMenuOpen ? 'open' : ''}`}></span>
-            <span className={`bar ${isMenuOpen ? 'open' : ''}`}></span>
-            <span className={`bar ${isMenuOpen ? 'open' : ''}`}></span>
+        <div className="hamburger-menu" onClick={toggleMenu} data-testid="hamburger-menu">
+            <span className={isMenuOpen? "bar open": "bar"} data-testid="bar"  ></span>
+            <span className={isMenuOpen? "bar open": "bar"} data-testid="bar"></span>
+            <span className={isMenuOpen? "bar open": "bar"} data-testid="bar"></span>
         </div>
     );
 }

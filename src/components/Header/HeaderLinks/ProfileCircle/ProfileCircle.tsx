@@ -66,7 +66,7 @@ export default function ProfileCircle({
     }, [getProfileInitials]);
 
     return (
-        <div onClick={onClick} className='profile-circle' style={{ backgroundColor }}>
+        <div onClick={onClick} className='profile-circle' style={{ backgroundColor }} data-testid="profile-circle">
             <h4>{initials}</h4>
         </div>
     );
