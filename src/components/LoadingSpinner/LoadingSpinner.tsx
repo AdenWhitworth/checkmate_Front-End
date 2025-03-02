@@ -9,9 +9,8 @@ import "./LoadingSpinner.css";
 
 export default function LoadingSpinner(): JSX.Element {
     return (
-        <div className="loading-container">
-            <div className="loader"></div>
+        <div className="loading-container" data-testid="loading-spinner">
+            <div className="loader" data-testid="loader"></div>
         </div>
     );
 }
-  
